@@ -121,10 +121,12 @@ namespace SapirSudoku
 
         public int[][] CloneSudoku()
         {
+
+
             int[][] sudoku = new int[this.sudoku.Length][];
             for (int row = 0;row < sudoku.Length; row++)
             {
-                sudoku[row] = new int[sudoku[row].Length];
+                sudoku[row] = new int[this.sudoku[row].Length];
                 for (int col = 0; col < sudoku[row].Length; col++)
                 {
                     sudoku[row][col] = this.sudoku[row][col];

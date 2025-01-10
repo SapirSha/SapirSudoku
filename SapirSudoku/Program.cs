@@ -106,12 +106,16 @@ namespace SapirSudoku
                 Sudoku sudoku = new Sudoku(grid);
                 sudoku.PrintLine();
                 Console.WriteLine(sudoku.IsValid());
-
-
-                SudokuSolver sudokuSolver = new SudokuSolver(grid);
+            
+            SudokuSolver sudokuSolver = new SudokuSolver(sudoku);
             Console.WriteLine(sudokuSolver.onlyOne.First());
             Console.WriteLine(sudoku.IsValid());
+            sudokuSolver.Insert(5, 4, 4);
             sudoku.PrintLine();
+            Console.WriteLine();
+            sudokuSolver.PrintLine();
+            Console.WriteLine(sudoku.IsValid());
+            Console.WriteLine(sudokuSolver.IsValid());
 
 
             /*

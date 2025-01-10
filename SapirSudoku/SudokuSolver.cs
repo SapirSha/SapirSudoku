@@ -29,10 +29,18 @@ namespace SapirSudoku
             if (sudoku.Length != sudoku[0].Length)
                 throw new InvalidSudokuException("Cannot create a sudoku with different height and width");
 
+            
             for (int row = 0; row < sudoku.Length; row++)
                 for (int col = 0; col < sudoku[0].Length; col++)
                     if (sudoku[row][col] != NONE)
-                        Insert(sudoku[row][col], row, col);
+                        try {
+                            Insert(sudoku[row][col], row, col);
+                        }
+                        catch (InvalidInsertionException iie)
+                        {
+                            throw new InvalidSudokuException("Invalid Sudoku");
+                        }
+                        
         }
 
         public SudokuSolver(Sudoku sudoku) : this(sudoku.CloneSudoku()) { }
