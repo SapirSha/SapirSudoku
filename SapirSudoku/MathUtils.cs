@@ -31,7 +31,12 @@ namespace SapirSudoku
                 throw new PrimeNumberException("Cannot find closest divisibles of a prime number");
 
             int smaller = (int)Math.Sqrt(number);
-            int bigger = (int)number / smaller;
+
+            while (number / smaller != (float)number / smaller)
+                smaller--;
+
+            int bigger = number / smaller;
+
             return (smaller, bigger);
         }
 

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Transactions;
 using CustomExceptions;
 
 namespace SapirSudoku
 {
     public class Sudoku
     {
-        static private HashSet<int> ALLOWABLES = new HashSet<int>();
+        static protected HashSet<int> ALLOWABLES = new HashSet<int>();
+        static protected int NONE = 0;
         static Sudoku()
         {
             ALLOWABLES.Add(0);
@@ -22,9 +24,9 @@ namespace SapirSudoku
             ALLOWABLES.Add(9);
         }
 
-        private int[][] sudoku;
-        private int grid_width;
-        private int grid_height;
+        protected int[][] sudoku;
+        protected int grid_width;
+        protected int grid_height;
 
 
         public Sudoku(int length = 9)
@@ -62,7 +64,9 @@ namespace SapirSudoku
                 for (int col = 0; col < sudoku[0].Length; col++)
                     Insert(sudoku[row][col], row, col);
 
-
+            (bool isValid, int? posRow, int? posCol) = this.IsValid();
+            if (!isValid)
+                throw new InvalidSudokuException($"Invalid Sudoku! rules collisions accrued at row: {posRow + 1}, col: {posCol + 1}");
         }
 
         public void Insert(int value, int row, int col)
@@ -71,7 +75,42 @@ namespace SapirSudoku
                 sudoku[row][col] = value;
             else
                 throw new InvalidValueException($"Cannot Insert '{value}' to sudoku");
+        }
 
+        public (bool,int?,int?) IsValid()
+        {
+            HashSet<int>[] rowsSet = new HashSet<int>[sudoku.Length];
+            HashSet<int>[] colsSet = new HashSet<int>[sudoku[0].Length]; ;
+            HashSet<int>[] gridsSet = new HashSet<int>[(sudoku.Length / grid_height) * (sudoku[0].Length / grid_width)]; ;
+
+            for (int row = 0; row < sudoku.Length; row++)
+            {
+                for (int col = 0; col < sudoku[row].Length; col++)
+                {
+
+                    int cur = sudoku[row][col];
+                    if (cur == NONE) continue;
+
+                    if (rowsSet[row] == null)
+                        rowsSet[row] = new HashSet<int>(sudoku.Length * 2);
+                    if (colsSet[col] == null)
+                        colsSet[col] = new HashSet<int>(sudoku[0].Length * 2);
+
+                    int gridPos = (col / grid_width) + ((row / grid_height) * 3);
+                    if (gridsSet[gridPos] == null)
+                        gridsSet[gridPos] = new HashSet<int>(sudoku.Length * 2);
+
+                    if (rowsSet[row].Contains(cur) || colsSet[col].Contains(cur) || gridsSet[gridPos].Contains(cur))
+                        return (false, row,col);
+                    else
+                    {
+                        rowsSet[row].Add(cur);
+                        colsSet[col].Add(cur);
+                        gridsSet[gridPos].Add(cur);
+                    }
+                }
+            }
+            return (true,null,null);
         }
 
         public void PrintLine()
@@ -80,7 +119,7 @@ namespace SapirSudoku
             {
                 if (row % grid_height == 0 && row != 0)
                     Console.WriteLine();
-                for (int col = 0; col < sudoku[0].Length; col++)
+                for (int col = 0; col < sudoku[row].Length; col++)
                 {
                     if (col % grid_width == 0 && col != 0)
                         Console.Write(" ");
@@ -88,9 +127,20 @@ namespace SapirSudoku
                 }
                 Console.WriteLine();
             }
-            
         }
 
-
+        public int[][] CloneSudoku()
+        {
+            int[][] sudoku = new int[this.sudoku.Length][];
+            for (int row = 0;row < sudoku.Length; row++)
+            {
+                sudoku[row] = new int[sudoku[row].Length];
+                for (int col = 0; col < sudoku[row].Length; col++)
+                {
+                    sudoku[row][col] = this.sudoku[row][col];
+                }
+            }
+            return sudoku;
+        }
     }
 }
