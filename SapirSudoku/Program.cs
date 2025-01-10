@@ -107,40 +107,46 @@ namespace SapirSudoku
                 sudoku.PrintLine();
                 Console.WriteLine(sudoku.IsValid());
 
+
                 SudokuSolver sudokuSolver = new SudokuSolver(grid);
-                /*
-            }
-            
-            catch (Exception e)
-            {
-                Console.WriteLine("EXCEPTION --- ");
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.GetType());
-                Console.WriteLine(e.StackTrace);
-                Console.WriteLine("EXCEPTION --- ");
-            }
-
-
-
-            //sudoku.Print();
+            Console.WriteLine(sudokuSolver.onlyOne.First());
+            Console.WriteLine(sudoku.IsValid());
+            sudoku.PrintLine();
 
 
             /*
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            sudoku.Print();
-            try
-            { sudoku.Solve(); }
-            catch (Exception ex)
-            {
-                Console.WriteLine("FINISH");
-            }
-            stopwatch.Stop();
-            TimeSpan ts = stopwatch.Elapsed;
+        }
 
-            long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-            Console.WriteLine($"Elapsed Time: {stopwatch.ElapsedMilliseconds} ms");
-            */
+        catch (Exception e)
+        {
+            Console.WriteLine("EXCEPTION --- ");
+            Console.WriteLine(e.Message);
+            Console.WriteLine(e.GetType());
+            Console.WriteLine(e.StackTrace);
+            Console.WriteLine("EXCEPTION --- ");
+        }
+
+
+
+        //sudoku.Print();
+
+
+        /*
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+        sudoku.Print();
+        try
+        { sudoku.Solve(); }
+        catch (Exception ex)
+        {
+            Console.WriteLine("FINISH");
+        }
+        stopwatch.Stop();
+        TimeSpan ts = stopwatch.Elapsed;
+
+        long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+        Console.WriteLine($"Elapsed Time: {stopwatch.ElapsedMilliseconds} ms");
+        */
 
 
 

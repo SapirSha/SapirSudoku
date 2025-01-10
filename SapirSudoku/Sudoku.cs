@@ -8,21 +8,11 @@ namespace SapirSudoku
 {
     public class Sudoku
     {
-        static protected HashSet<int> ALLOWABLES = new HashSet<int>();
         static protected int NONE = 0;
-        static Sudoku()
+        static protected HashSet<int> ALLOWABLES = new HashSet<int>
         {
-            ALLOWABLES.Add(0);
-            ALLOWABLES.Add(1);
-            ALLOWABLES.Add(2);
-            ALLOWABLES.Add(3);
-            ALLOWABLES.Add(4);
-            ALLOWABLES.Add(5);
-            ALLOWABLES.Add(6);
-            ALLOWABLES.Add(7);
-            ALLOWABLES.Add(8);
-            ALLOWABLES.Add(9);
-        }
+            NONE, 1, 2, 3, 4, 5, 6, 7, 8, 9
+        };
 
         protected int[][] sudoku;
         protected int grid_width;
