@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SapirSudoku
 {
@@ -76,6 +77,7 @@ namespace SapirSudoku
 
         public static void Main(string[] args)
         {
+            var watch = Stopwatch.StartNew();
             /*
             int[][] sudoku = new int[][]{
                 new int[]{5,3,0,0,7,0,0,0,0 },
@@ -109,13 +111,7 @@ namespace SapirSudoku
             
             SudokuSolver sudokuSolver = new SudokuSolver(sudoku);
             Console.WriteLine(sudokuSolver.onlyOne.First());
-            Console.WriteLine(sudoku.IsValid());
-            sudokuSolver.Insert(5, 4, 4);
-            sudoku.PrintLine();
-            Console.WriteLine();
-            sudokuSolver.PrintLine();
-            Console.WriteLine(sudoku.IsValid());
-            Console.WriteLine(sudokuSolver.IsValid());
+            Console.WriteLine(sudokuSolver.Count);
 
 
             /*
@@ -165,6 +161,12 @@ namespace SapirSudoku
                 + "400003020" 
                 + "900020005" 
                 + "000908030";*/
+
+            watch.Stop();
+
+            // Print the execution time in milliseconds 
+            // by using the property elapsed milliseconds 
+            Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
         }
     }
 }

@@ -8,8 +8,12 @@ namespace SapirSudoku
     {
         private HashSet<int>[][] avaliables;
         public LinkedList<(int value, int row, int col)> onlyOne;
+        public int Size;
+        public int Count;
         public SudokuSolver(int length = 9) : base(length)
         {
+            this.Size = length * length;
+            this.Count = 0;
             avaliables = new HashSet<int>[sudoku.Length][];
             onlyOne = new LinkedList<(int, int, int)>();
 
@@ -29,20 +33,23 @@ namespace SapirSudoku
             if (sudoku.Length != sudoku[0].Length)
                 throw new InvalidSudokuException("Cannot create a sudoku with different height and width");
 
-            
             for (int row = 0; row < sudoku.Length; row++)
+            {
                 for (int col = 0; col < sudoku[0].Length; col++)
+                {
                     if (sudoku[row][col] != NONE)
-                        try {
+                        try
+                        {
                             Insert(sudoku[row][col], row, col);
                         }
                         catch (InvalidInsertionException iie)
                         {
                             throw new InvalidSudokuException("Invalid Sudoku");
                         }
+                }
+            }
                         
         }
-
         public SudokuSolver(Sudoku sudoku) : this(sudoku.CloneSudoku()) { }
 
         public new void Insert(int value, int row, int col)
@@ -56,6 +63,8 @@ namespace SapirSudoku
             avaliables[row][col].Clear();
 
             base.Insert(value, row, col);
+            this.Count++;
+            Console.WriteLine($"{this.Count} INSERTING: {value} => {row},{col}");
 
             for (int rowPos = 0; rowPos < sudoku.Length; rowPos++)
             {
@@ -87,6 +96,12 @@ namespace SapirSudoku
                         onlyOne.AddFirst((avaliables[gridY + y][gridX + x].Single(), gridY + y, gridX + x));
                 }
             }
+        }
+
+        public Sudoku Solve()
+        {
+            // TODO: SolveSudoku
+            return null;
         }
 
 
