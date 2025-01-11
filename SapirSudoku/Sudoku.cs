@@ -72,7 +72,7 @@ namespace SapirSudoku
                 throw new InvalidValueException($"Cannot Insert '{value}' to sudoku");
         }
 
-        public (bool,int?,int?) IsValid()
+        public (bool valid,int? row,int? col) IsValid()
         {
             HashSet<int>[] rowsSet = new HashSet<int>[sudoku.Length];
             HashSet<int>[] colsSet = new HashSet<int>[sudoku[0].Length]; ;

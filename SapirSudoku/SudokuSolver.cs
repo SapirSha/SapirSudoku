@@ -137,8 +137,13 @@ namespace SapirSudoku
             {
                 (int value, int row, int col) nextInsertion = onlyOne.First();
                 onlyOne.RemoveFirst();
-
-                Insert(nextInsertion.value, nextInsertion.row, nextInsertion.col);
+                try
+                {
+                    Insert(nextInsertion.value, nextInsertion.row, nextInsertion.col);
+                }
+                catch (InvalidInsertionException)
+                {
+                }
             }
 
             if (IsSolved())

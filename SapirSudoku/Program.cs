@@ -7,7 +7,7 @@ namespace SapirSudoku
 {
     public static class Program
     {
-
+        //static int i = 0;
         public static void Print(this int[][] sudoku)
         {
             int count = 0;
@@ -71,8 +71,10 @@ namespace SapirSudoku
                     }
                 }
             }
-            sudoku.Print();
-            throw new Exception();
+            //sudoku.Print();
+            //i++;
+            //if (i >= 1000)
+            //    throw new Exception();
             return true;
         }
 
@@ -115,6 +117,16 @@ namespace SapirSudoku
             */
 
             int[][] grid ={
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,9,8,0,0,0,0,6,0 },
+                new int[]{8,0,0,0,6,0,0,0,3 },
+                new int[]{4,0,0,8,0,3,0,0,1 },
+                new int[]{7,0,0,0,2,0,0,0,6 },
+                new int[]{0,6,0,0,0,0,2,8,0 },
+                new int[]{0,0,0,4,1,9,0,0,5 },
+                new int[]{0,0,0,0,8,0,0,0,0 },
+                /*
                 new int[]{5,3,0,0,7,0,0,0,0 },
                 new int[]{6,0,0,1,9,5,0,0,0 },
                 new int[]{0,9,8,0,0,0,0,6,0 },
@@ -124,22 +136,47 @@ namespace SapirSudoku
                 new int[]{0,6,0,0,0,0,2,8,0 },
                 new int[]{0,0,0,4,1,9,0,0,5 },
                 new int[]{0,0,0,0,8,0,0,0,0 },
+                */
         };
 
             //try {
             Sudoku sudoku = new Sudoku(grid);
             
             SudokuSolver sudokuSolver = new SudokuSolver(sudoku);
-            Console.WriteLine(sudokuSolver.onlyOne.First());
             sudokuSolver.PrintLine();
             Console.WriteLine();
-            foreach (Sudoku s in sudokuSolver.NextSolve())
+            /*
+            try
+            {
+                Solve(grid);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("END");
+            }
+            */
+            /*foreach (Sudoku s in sudokuSolver.NextSolve())
             {
                 Console.WriteLine("SUDOKU SOLVER HELLO");
                 s.PrintLine();
+            }*/
+            
+            IEnumerable<Sudoku> solves = sudokuSolver.NextSolve();
+            int i = 0;
+            foreach (Sudoku s in solves)
+            {
+                if (i++ >= 1) break;
+                Console.WriteLine("\nSolves");
+                s.PrintLine();
+                if (!s.IsValid().valid)
+                {
+                    Console.WriteLine("NOT VALID");
+                    break;
+                }
+                Console.WriteLine("Same Base? " + IsSameBase(sudoku, s));
             }
-            Console.WriteLine();
-            sudokuSolver.PrintLine();
+            
+            
 
 
 
@@ -204,6 +241,8 @@ namespace SapirSudoku
 
             watch.Stop();
             //  Solve(grid) = 32ms
+            // Solve grid 1000 solves in 7421
+            // Sudoku.Solve in 4211
              
             // Print the execution time in milliseconds 
             // by using the property elapsed milliseconds 
