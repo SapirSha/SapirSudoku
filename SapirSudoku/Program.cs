@@ -139,9 +139,9 @@ namespace SapirSudoku
                 new int[]{7,0,0,0,2,0,0,0,6 },
                 new int[]{0,6,0,0,0,0,2,8,0 },
                 new int[]{0,0,0,4,1,9,0,0,5 },
-                new int[]{0,0,0,0,8,0,0,0,0 },
+                new int[]{0,0,0,0,8,0,0,7,9 },
                 */
-                /*
+                ///*
                 new int[]{8,0,0,0,0,0,0,0,0 },
                 new int[]{0,0,3,6,0,0,0,0,0 },
                 new int[]{0,7,0,0,9,0,2,0,0 },
@@ -151,30 +151,56 @@ namespace SapirSudoku
                 new int[]{0,0,1,0,0,0,0,6,8 },
                 new int[]{0,0,8,5,0,0,0,1,0 },
                 new int[]{0,9,0,0,0,0,4,0,0 },
-                */
-
+                //*/
+                /*
                 new int[]{0,0,0,1,0,0},
                 new int[]{0,0,0,5,0,6},
                 new int[]{2,0,0,0,5,0},
                 new int[]{0,5,0,0,0,2},
                 new int[]{6,0,3,0,0,0},
-                new int[]{0,0,4,0,0,0},
+                new int[]{0,0,0,6,1,3},
+                */
+                /* UNBEATABLE
+                new int[]{2,0,0,9,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,6,0 },
+                new int[]{0,0,0,0,0,1,0,0,0 },
+                new int[]{5,0,2,6,0,0,4,0,7 },
+                new int[]{0,0,0,0,0,4,1,0,0 },
+                new int[]{0,0,0,0,9,8,0,2,3 },
+                new int[]{0,0,0,0,0,3,0,8,0 },
+                new int[]{0,0,5,0,1,0,0,0,0 },
+                new int[]{0,0,7,0,0,0,0,0,0 },
+                */
+
         };
 
 
+            //Solve(grid);
+            
             Sudoku sudoku = new Sudoku(grid);
             sudoku.PrintLine();
             SudokuSolver solver = new SudokuSolver(sudoku);
             int i = 0;
-            foreach (Sudoku s in solver.Solve())
+            IEnumerable<Sudoku> answers = solver.Solve();
+            foreach (Sudoku s in answers)
             {
-                if (i >= 10) break;
+                if (i >= 1) break;
                 Console.WriteLine($"\n{++i}:");
                 s.PrintLine();
                 if (!(s.IsValid().valid && IsSameBase(sudoku, s)))
                     throw new Exception("ALALAL");
             }
+            if (i == 0)
+                Console.WriteLine("Unbeatable!");
+            
+            try
+            {
+                //Solve(grid);
+            }
+            catch (Exception ex)
+            {
 
+            }
 
 
 

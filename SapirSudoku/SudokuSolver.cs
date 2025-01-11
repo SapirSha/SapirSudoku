@@ -137,7 +137,7 @@ namespace SapirSudoku
                 if (avaliables[nextInsertion.row][nextInsertion.col].Count() == 1)
                     Insert(nextInsertion.value, nextInsertion.row, nextInsertion.col);
                 else
-                    yield return null;
+                    yield break;
             }
 
 
@@ -154,14 +154,13 @@ namespace SapirSudoku
                 int row = index / sudoku.Length;
                 int col = index % sudoku.Length;
 
-                foreach (int all in avaliables[row][col])
+                foreach (int value in avaliables[row][col])
                 {
                     SudokuSolver solver = new SudokuSolver(this);
-                    solver.Insert(all, row, col);
+                    solver.Insert(value, row, col);
                     foreach (Sudoku s in solver.Solve())
                     {
-                        if (s != null)
-                            yield return s;
+                        yield return s;
                     }
                 }
 
@@ -169,7 +168,7 @@ namespace SapirSudoku
 
         }
 
-
+        
 
 
     }
