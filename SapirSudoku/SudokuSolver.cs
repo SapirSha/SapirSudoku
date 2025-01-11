@@ -131,7 +131,7 @@ namespace SapirSudoku
             return Size == Count /*&& base.IsValid()*/;
         }
 
-        public IEnumerable<Sudoku> NextSolve()
+        public IEnumerable<Sudoku> Solve()
         {
             while (onlyOne.Count != 0)
             {
@@ -173,7 +173,7 @@ namespace SapirSudoku
                 {
                     SudokuSolver solver = new SudokuSolver(this);
                     solver.Insert(all, row, col);
-                    foreach (Sudoku s in solver.NextSolve())
+                    foreach (Sudoku s in solver.Solve())
                     {
                         yield return s;
                     }

@@ -7,7 +7,7 @@ namespace SapirSudoku
 {
     public static class Program
     {
-        //static int i = 0;
+        static int i = 0;
         public static void Print(this int[][] sudoku)
         {
             int count = 0;
@@ -71,10 +71,11 @@ namespace SapirSudoku
                     }
                 }
             }
-            //sudoku.Print();
-            //i++;
-            //if (i >= 1000)
-            //    throw new Exception();
+            i++;
+            Console.WriteLine("\n" + i + ":");
+            sudoku.Print();
+            if (i >= 10)
+                throw new Exception();
             return true;
         }
 
@@ -117,16 +118,18 @@ namespace SapirSudoku
             */
 
             int[][] grid ={
-                new int[]{0,0,0,0,0,0,0,0,0 },
-                new int[]{0,0,0,0,0,0,0,0,0 },
-                new int[]{0,9,8,0,0,0,0,6,0 },
-                new int[]{8,0,0,0,6,0,0,0,3 },
-                new int[]{4,0,0,8,0,3,0,0,1 },
-                new int[]{7,0,0,0,2,0,0,0,6 },
-                new int[]{0,6,0,0,0,0,2,8,0 },
-                new int[]{0,0,0,4,1,9,0,0,5 },
-                new int[]{0,0,0,0,8,0,0,0,0 },
                 /*
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,0,0 }, 
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,0,0,0,0,0,0,0 },
+                */
+                
                 new int[]{5,3,0,0,7,0,0,0,0 },
                 new int[]{6,0,0,1,9,5,0,0,0 },
                 new int[]{0,9,8,0,0,0,0,6,0 },
@@ -136,7 +139,7 @@ namespace SapirSudoku
                 new int[]{0,6,0,0,0,0,2,8,0 },
                 new int[]{0,0,0,4,1,9,0,0,5 },
                 new int[]{0,0,0,0,8,0,0,0,0 },
-                */
+                
         };
 
             //try {
@@ -161,22 +164,18 @@ namespace SapirSudoku
                 s.PrintLine();
             }*/
             
-            IEnumerable<Sudoku> solves = sudokuSolver.NextSolve();
-            int i = 0;
+            IEnumerable<Sudoku> solves = sudokuSolver.Solve();
+            int j = 0;
             foreach (Sudoku s in solves)
             {
-                if (i++ >= 1) break;
-                Console.WriteLine("\nSolves");
+                if (j++ >= 10) break;
+                Console.WriteLine("\n" + j + ":");
                 s.PrintLine();
-                if (!s.IsValid().valid)
-                {
-                    Console.WriteLine("NOT VALID");
-                    break;
-                }
-                Console.WriteLine("Same Base? " + IsSameBase(sudoku, s));
+                if (!(s.IsValid().valid && IsSameBase(sudoku, s)))
+                    throw new Exception("Somthing Went Wrong!");
             }
-            
-            
+            // 29 / 27 /26 /28
+            // 14 / 12 / 13 / 13
 
 
 
@@ -243,6 +242,10 @@ namespace SapirSudoku
             //  Solve(grid) = 32ms
             // Solve grid 1000 solves in 7421
             // Sudoku.Solve in 4211
+            // 469/491/483 .solve for empty 100
+            //476/496/496 solve() for empty
+            // no print empty solve() 230/222/230
+            // no print empty .solve 235/237/231
              
             // Print the execution time in milliseconds 
             // by using the property elapsed milliseconds 

@@ -52,8 +52,10 @@ namespace SapirSudoku
 
         public Sudoku(int[][] sudoku) : this(sudoku.Length)
         {
-            if (sudoku.Length != sudoku[0].Length)
-                throw new InvalidSudokuException("Cannot create a sudoku with different height and width");
+            int length = sudoku.Length;
+            foreach (int[]row in sudoku)
+                if (row.Length != length)
+                    throw new InvalidSudokuException("Sudoku size must be N*N");
 
             for (int row = 0; row < sudoku.Length; row++)
                 for (int col = 0; col < sudoku[0].Length; col++)
@@ -110,18 +112,20 @@ namespace SapirSudoku
 
         public void PrintLine()
         {
+            String msg = "";
             for (int row = 0; row < sudoku.Length; row++)
             {
                 if (row % grid_height == 0 && row != 0)
-                    Console.WriteLine();
+                    msg += "\n";
                 for (int col = 0; col < sudoku[row].Length; col++)
                 {
                     if (col % grid_width == 0 && col != 0)
-                        Console.Write(" ");
-                    Console.Write(sudoku[row][col]);
+                        msg += " ";
+                    msg += sudoku[row][col];
                 }
-                Console.WriteLine();
+                msg += "\n";
             }
+            Console.WriteLine(msg);
         }
 
         public int[][] CloneGrid()
