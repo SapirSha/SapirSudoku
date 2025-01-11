@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
 using CustomExceptions;
 
 namespace SapirSudoku
@@ -24,7 +22,7 @@ namespace SapirSudoku
                 }
             }
 
-            this.onlyOne = solver.onlyOne;
+            this.onlyOne = new LinkedList<(int value, int row, int col)>(solver.onlyOne);
             this.Size = solver.Size;
             this.Count = solver.Count;
 
@@ -41,8 +39,8 @@ namespace SapirSudoku
                 avaliables[row] = new HashSet<int>[sudoku[row].Length];
                 for (int col = 0; col < sudoku[row].Length; col++)
                 {
-                    avaliables[row][col] = new HashSet<int>(ALLOWABLES.Count());
-                    foreach (int i in ALLOWABLES)
+                    avaliables[row][col] = new HashSet<int>(allowables.Count());
+                    foreach (int i in allowables)
                         if (i != NONE)
                             avaliables[row][col].Add(i);
                 }
@@ -104,9 +102,9 @@ namespace SapirSudoku
                 }
             }
 
-            int gridPos = (col / grid_width) + ((row / grid_height) * 3);
+            int gridPos = (col / grid_width) + ((row / grid_height) * (sudoku[0].Length / grid_width));
             int gridX = gridPos % (sudoku[0].Length / grid_width) * grid_width;
-            int gridY = gridPos - (gridX / 3);
+            int gridY = gridPos - (gridX / (sudoku[0].Length / grid_width));
 
             for (int y = 0; y < grid_height; y++)
             {
@@ -128,46 +126,33 @@ namespace SapirSudoku
 
         public bool IsSolved()
         {
-            return Size == Count /*&& base.IsValid()*/;
+            return Size == Count;
         }
-
         public IEnumerable<Sudoku> Solve()
         {
             while (onlyOne.Count != 0)
             {
                 (int value, int row, int col) nextInsertion = onlyOne.First();
                 onlyOne.RemoveFirst();
-                try
-                {
+                if (avaliables[nextInsertion.row][nextInsertion.col].Count() == 1)
                     Insert(nextInsertion.value, nextInsertion.row, nextInsertion.col);
-                }
-                catch (InvalidInsertionException)
-                {
-                }
+                else
+                    yield return null;
             }
+
 
             if (IsSolved())
                 yield return this;
             else
             {
-
                 int index;
-                int min_index = -1;
                 for (index = 0; index < Size; index++)
                     if (sudoku[index / sudoku.Length][index % sudoku.Length] == 0)
-                        if (avaliables[index / sudoku.Length][index % sudoku.Length].Count() == 2)
-                        {
-                            min_index = index;
-                            break;
-                        }
-                        else if (min_index == -1 || avaliables[index / sudoku.Length][index % sudoku.Length].Count() < avaliables[min_index / sudoku.Length][min_index % sudoku.Length].Count())
-                        {
-                            min_index = index;
-                        }
+                        break;
 
 
-                int row = min_index / sudoku.Length;
-                int col = min_index % sudoku.Length;
+                int row = index / sudoku.Length;
+                int col = index % sudoku.Length;
 
                 foreach (int all in avaliables[row][col])
                 {
@@ -175,7 +160,8 @@ namespace SapirSudoku
                     solver.Insert(all, row, col);
                     foreach (Sudoku s in solver.Solve())
                     {
-                        yield return s;
+                        if (s != null)
+                            yield return s;
                     }
                 }
 

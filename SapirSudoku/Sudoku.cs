@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Transactions;
 using CustomExceptions;
 
 namespace SapirSudoku
@@ -9,10 +7,7 @@ namespace SapirSudoku
     public class Sudoku
     {
         static protected int NONE = 0;
-        static protected HashSet<int> ALLOWABLES = new HashSet<int>
-        {
-            NONE, 1, 2, 3, 4, 5, 6, 7, 8, 9
-        };
+        static protected HashSet<int> allowables = new HashSet<int>{NONE};
 
         protected int[][] sudoku;
         public int[][] SudokuGrid { get { return CloneGrid(); } }
@@ -27,13 +22,16 @@ namespace SapirSudoku
         }
         public Sudoku(int length = 9)
         {
+            for (int i = 1; i <= length; i++)
+                allowables.Add(i);
+
             try { 
                 (int smaller, int bigger) = MathUtils.ColsestDivisibles(length);
                 if (smaller == 0)
                     throw new InvalidSudokuException("Cannot create a sudoku with no length");
 
-                grid_height = smaller;
-                grid_width = bigger;
+                grid_height = smaller; // usually
+                grid_width = bigger;   // usually
             }
             catch (PrimeNumberException pne)
             {
@@ -68,7 +66,7 @@ namespace SapirSudoku
 
         public void Insert(int value, int row, int col)
         {
-            if (ALLOWABLES.Contains(value))
+            if (allowables.Contains(value))
                 sudoku[row][col] = value;
             else
                 throw new InvalidValueException($"Cannot Insert '{value}' to sudoku");
@@ -93,7 +91,7 @@ namespace SapirSudoku
                     if (colsSet[col] == null)
                         colsSet[col] = new HashSet<int>(sudoku[0].Length * 2);
 
-                    int gridPos = (col / grid_width) + ((row / grid_height) * 3);
+                    int gridPos = (col / grid_width) + ((row / grid_height) * (sudoku[0].Length / grid_width));
                     if (gridsSet[gridPos] == null)
                         gridsSet[gridPos] = new HashSet<int>(sudoku.Length * 2);
 

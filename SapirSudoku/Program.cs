@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Security.Cryptography;
 
 namespace SapirSudoku
 {
@@ -10,6 +9,7 @@ namespace SapirSudoku
         static int i = 0;
         public static void Print(this int[][] sudoku)
         {
+            String msg = "";
             int count = 0;
             int count2 = 1;
             foreach (int[] row in sudoku)
@@ -17,13 +17,14 @@ namespace SapirSudoku
                 foreach (int col in row)
                 {
                     if (count++ % 3 == 0)
-                        Console.Write(" ");
-                    Console.Write(col);
+                        msg += " ";
+                    msg += col;
                 }
                 if (count2++ % 3 == 0)
-                    Console.WriteLine();
-                Console.WriteLine();
+                    msg += "\n";
+                msg += "\n";
             }
+            Console.WriteLine(msg);
         }
 
 
@@ -74,7 +75,7 @@ namespace SapirSudoku
             i++;
             Console.WriteLine("\n" + i + ":");
             sudoku.Print();
-            if (i >= 10)
+            if (i >= 1)
                 throw new Exception();
             return true;
         }
@@ -129,7 +130,7 @@ namespace SapirSudoku
                 new int[]{0,0,0,0,0,0,0,0,0 },
                 new int[]{0,0,0,0,0,0,0,0,0 },
                 */
-                
+                /*
                 new int[]{5,3,0,0,7,0,0,0,0 },
                 new int[]{6,0,0,1,9,5,0,0,0 },
                 new int[]{0,9,8,0,0,0,0,6,0 },
@@ -139,44 +140,40 @@ namespace SapirSudoku
                 new int[]{0,6,0,0,0,0,2,8,0 },
                 new int[]{0,0,0,4,1,9,0,0,5 },
                 new int[]{0,0,0,0,8,0,0,0,0 },
-                
+                */
+                /*
+                new int[]{8,0,0,0,0,0,0,0,0 },
+                new int[]{0,0,3,6,0,0,0,0,0 },
+                new int[]{0,7,0,0,9,0,2,0,0 },
+                new int[]{0,5,0,0,0,7,0,0,0 },
+                new int[]{0,0,0,0,4,5,7,0,0 },
+                new int[]{0,0,0,1,0,0,0,3,0 },
+                new int[]{0,0,1,0,0,0,0,6,8 },
+                new int[]{0,0,8,5,0,0,0,1,0 },
+                new int[]{0,9,0,0,0,0,4,0,0 },
+                */
+
+                new int[]{0,0,0,1,0,0},
+                new int[]{0,0,0,5,0,6},
+                new int[]{2,0,0,0,5,0},
+                new int[]{0,5,0,0,0,2},
+                new int[]{6,0,3,0,0,0},
+                new int[]{0,0,4,0,0,0},
         };
 
-            //try {
+
             Sudoku sudoku = new Sudoku(grid);
-            
-            SudokuSolver sudokuSolver = new SudokuSolver(sudoku);
-            sudokuSolver.PrintLine();
-            Console.WriteLine();
-            /*
-            try
+            sudoku.PrintLine();
+            SudokuSolver solver = new SudokuSolver(sudoku);
+            int i = 0;
+            foreach (Sudoku s in solver.Solve())
             {
-                Solve(grid);
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("END");
-            }
-            */
-            /*foreach (Sudoku s in sudokuSolver.NextSolve())
-            {
-                Console.WriteLine("SUDOKU SOLVER HELLO");
-                s.PrintLine();
-            }*/
-            
-            IEnumerable<Sudoku> solves = sudokuSolver.Solve();
-            int j = 0;
-            foreach (Sudoku s in solves)
-            {
-                if (j++ >= 10) break;
-                Console.WriteLine("\n" + j + ":");
+                if (i >= 10) break;
+                Console.WriteLine($"\n{++i}:");
                 s.PrintLine();
                 if (!(s.IsValid().valid && IsSameBase(sudoku, s)))
-                    throw new Exception("Somthing Went Wrong!");
+                    throw new Exception("ALALAL");
             }
-            // 29 / 27 /26 /28
-            // 14 / 12 / 13 / 13
-
 
 
 

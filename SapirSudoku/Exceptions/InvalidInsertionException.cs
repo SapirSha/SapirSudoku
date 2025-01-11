@@ -6,6 +6,6 @@ namespace CustomExceptions
     public class InvalidInsertionException : Exception
     {
         public InvalidInsertionException() { }
-        public InvalidInsertionException(string message) { }
+        public InvalidInsertionException(string message) : base(message) { }
     }
 }
