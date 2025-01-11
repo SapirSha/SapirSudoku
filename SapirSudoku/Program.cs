@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using SapirSudoku;
 using System.Diagnostics;
 
-namespace SapirSudoku
+namespace MAIN
 {
     public static class Program
     {
+        static int MAX = 10;
         static int i = 0;
         public static void Print(this int[][] sudoku)
         {
@@ -75,7 +77,7 @@ namespace SapirSudoku
             i++;
             Console.WriteLine("\n" + i + ":");
             sudoku.Print();
-            if (i >= 1)
+            if (i >= MAX)
                 throw new Exception();
             return true;
         }
@@ -103,7 +105,7 @@ namespace SapirSudoku
 
         public static void Main(string[] args)
         {
-            var watch = Stopwatch.StartNew();
+            //var watch = Stopwatch.StartNew();
             /*
             int[][] sudoku = new int[][]{
                 new int[]{5,3,0,0,7,0,0,0,0 },
@@ -141,7 +143,7 @@ namespace SapirSudoku
                 new int[]{0,0,0,4,1,9,0,0,5 },
                 new int[]{0,0,0,0,8,0,0,7,9 },
                 */
-                ///*
+                /*
                 new int[]{8,0,0,0,0,0,0,0,0 },
                 new int[]{0,0,3,6,0,0,0,0,0 },
                 new int[]{0,7,0,0,9,0,2,0,0 },
@@ -151,7 +153,7 @@ namespace SapirSudoku
                 new int[]{0,0,1,0,0,0,0,6,8 },
                 new int[]{0,0,8,5,0,0,0,1,0 },
                 new int[]{0,9,0,0,0,0,4,0,0 },
-                //*/
+                */
                 /*
                 new int[]{0,0,0,1,0,0},
                 new int[]{0,0,0,5,0,6},
@@ -159,7 +161,7 @@ namespace SapirSudoku
                 new int[]{0,5,0,0,0,2},
                 new int[]{6,0,3,0,0,0},
                 new int[]{0,0,0,6,1,3},
-                */
+                
                 /* UNBEATABLE
                 new int[]{2,0,0,9,0,0,0,0,0 },
                 new int[]{0,0,0,0,0,0,0,6,0 },
@@ -171,12 +173,42 @@ namespace SapirSudoku
                 new int[]{0,0,5,0,1,0,0,0,0 },
                 new int[]{0,0,7,0,0,0,0,0,0 },
                 */
-
-        };
-
-
+                /*???
+                new int[]{0, 0, 0, 0, 9, 8, 0, 0, 0},
+                new int[]{0, 3, 0, 0, 0, 2, 0, 9, 0},
+                new int[]{0, 0, 9, 0, 0, 0, 0, 0, 8},
+                new int[]{0, 9, 0, 0, 0, 0, 0, 7, 0},
+                new int[]{0, 0, 0, 3, 0, 0, 0, 0, 9},
+                new int[]{0, 0, 0, 0, 0, 9, 8, 0, 0},
+                new int[]{8, 0, 0, 0, 0, 0, 0, 3, 0},
+                new int[]{0, 0, 0, 9, 0, 0, 0, 0, 0},
+                new int[]{0, 0, 0, 0, 0, 0, 9, 0, 0}
+                */
+                /*
+    new int[]{5, 0, 0, 0, 0, 0, 0, 0, 0},
+    new int[]{0, 3, 0, 0, 0, 0, 0, 0, 0},
+    new int[]{0, 0, 0, 0, 9, 0, 0, 0, 0},
+    new int[]{0, 9, 8, 0, 0, 0, 0, 0, 0},
+    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0},
+    new int[]{0, 0, 0, 0, 0, 0, 0, 3, 0},
+    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 9},
+    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0},
+    new int[]{0, 0, 0, 0, 0, 0, 0, 0, 5}
+                */
+                /*
+                new int[]     {8, 0, 0, 0, 0, 0, 0, 0, 0},
+   new int[] {0, 0, 3, 6, 0, 0, 0, 0, 0},
+   new int[] {0, 7, 0, 0, 9, 0, 2, 0, 0},
+   new int[] {0, 5, 0, 0, 0, 7, 0, 0, 0},
+  new int[]  {0, 0, 0, 0, 4, 5, 7, 0, 0},
+  new int[]  {0, 0, 0, 1, 0, 0, 0, 3, 0},
+  new int[]  {0, 0, 1, 0, 0, 0, 0, 6, 8},
+  new int[]  {0, 0, 8, 5, 0, 0, 0, 1, 0},
+  new int[]  {0, 9, 0, 0, 0, 0, 4, 0, 0}
+                */
+            };
             //Solve(grid);
-            
+            /*
             Sudoku sudoku = new Sudoku(grid);
             sudoku.PrintLine();
             SudokuSolver solver = new SudokuSolver(sudoku);
@@ -192,7 +224,7 @@ namespace SapirSudoku
             }
             if (i == 0)
                 Console.WriteLine("Unbeatable!");
-            
+            /*
             try
             {
                 //Solve(grid);
@@ -201,9 +233,31 @@ namespace SapirSudoku
             {
 
             }
-
-
-
+            */
+            
+            MAX = 1;
+            var watch = Stopwatch.StartNew();
+            Sudoku sudoku = new Sudoku(grid);
+            SudokuSolver solver = new SudokuSolver(sudoku);
+            solver.PrintLine();
+            int ans = 1;
+            foreach (Sudoku answer in solver.Solve())
+            {
+                Console.WriteLine("\n" + ans++ +": ");
+                answer.PrintLine();
+                if (ans >= MAX) break;
+            }
+            if (ans == 1)
+                Console.WriteLine("UNBEATABLE");
+            Console.WriteLine();
+            watch.Stop();
+            Console.WriteLine($"CLASS: {watch.ElapsedMilliseconds}ms");
+            
+            var watch2 = Stopwatch.StartNew();
+            try { Solve(grid); }
+            catch (Exception) { Console.WriteLine("STOP"); }
+            watch2.Stop();
+            Console.WriteLine($"FUNC: {watch2.ElapsedMilliseconds}ms");
 
             /*
         }
@@ -237,7 +291,7 @@ namespace SapirSudoku
 
         long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
         Console.WriteLine($"Elapsed Time: {stopwatch.ElapsedMilliseconds} ms");
-        
+
             new int[] { 5, 3, 0, 0, 7, 0, 0, 0, 0 },
                 new int[] { 6, 0, 0, 1, 9, 5, 0, 0, 0 },
                 new int[] { 0, 9, 8, 0, 0, 0, 0, 6, 0 },
@@ -261,7 +315,7 @@ namespace SapirSudoku
                 + "900020005" 
                 + "000908030";*/
 
-            watch.Stop();
+            //watch.Stop();
             //  Solve(grid) = 32ms
             // Solve grid 1000 solves in 7421
             // Sudoku.Solve in 4211
@@ -269,10 +323,10 @@ namespace SapirSudoku
             //476/496/496 solve() for empty
             // no print empty solve() 230/222/230
             // no print empty .solve 235/237/231
-             
+
             // Print the execution time in milliseconds 
             // by using the property elapsed milliseconds 
-            Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
+            //Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
         }
     }
 }

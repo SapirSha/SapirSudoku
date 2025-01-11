@@ -128,6 +128,8 @@ namespace SapirSudoku
         {
             return Size == Count;
         }
+
+        
         public IEnumerable<Sudoku> Solve()
         {
             while (onlyOne.Count != 0)
@@ -146,22 +148,24 @@ namespace SapirSudoku
             else
             {
                 int index;
+                int min_index = -1;
                 for (index = 0; index < Size; index++)
                     if (sudoku[index / sudoku.Length][index % sudoku.Length] == 0)
-                        break;
+                        if (min_index == -1 
+                            || avaliables[index / sudoku.Length][index % sudoku.Length].Count() 
+                            < avaliables[min_index / sudoku.Length][min_index % sudoku.Length].Count())
+                            min_index = index;
 
 
-                int row = index / sudoku.Length;
-                int col = index % sudoku.Length;
+                int row = min_index / sudoku.Length;
+                int col = min_index % sudoku.Length;
 
                 foreach (int value in avaliables[row][col])
                 {
                     SudokuSolver solver = new SudokuSolver(this);
                     solver.Insert(value, row, col);
                     foreach (Sudoku s in solver.Solve())
-                    {
                         yield return s;
-                    }
                 }
 
             }
