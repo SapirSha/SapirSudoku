@@ -15,13 +15,18 @@ namespace SapirSudoku
         };
 
         protected int[][] sudoku;
+        public int[][] SudokuGrid { get { return CloneGrid(); } }
         protected int grid_width;
         protected int grid_height;
 
-
+        public Sudoku(Sudoku sudoku)
+        {
+            this.sudoku = sudoku.CloneGrid();
+            this.grid_height = sudoku.grid_height;
+            this.grid_width = sudoku.grid_width;
+        }
         public Sudoku(int length = 9)
         {
-
             try { 
                 (int smaller, int bigger) = MathUtils.ColsestDivisibles(length);
                 if (smaller == 0)
@@ -119,20 +124,13 @@ namespace SapirSudoku
             }
         }
 
-        public int[][] CloneSudoku()
+        public int[][] CloneGrid()
         {
-
-
-            int[][] sudoku = new int[this.sudoku.Length][];
-            for (int row = 0;row < sudoku.Length; row++)
-            {
-                sudoku[row] = new int[this.sudoku[row].Length];
-                for (int col = 0; col < sudoku[row].Length; col++)
-                {
-                    sudoku[row][col] = this.sudoku[row][col];
-                }
-            }
-            return sudoku;
+            
+            int[][] grid = (int[][])this.sudoku.Clone();
+            for (int i = 0; i < sudoku.Length; i++)
+                grid[i] = (int[])sudoku[i].Clone();
+            return grid;
         }
     }
 }

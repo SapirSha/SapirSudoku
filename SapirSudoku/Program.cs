@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace SapirSudoku
 {
@@ -75,6 +76,27 @@ namespace SapirSudoku
             return true;
         }
 
+        public static bool IsSameBase(Sudoku s1, Sudoku s2)
+        {
+            int[][] grid1 = s1.SudokuGrid;
+            int[][] grid2 = s2.SudokuGrid;
+            if (grid1.Length != grid2.Length)
+                return false;
+
+            for (int row = 0; row < grid1.Length; row++)
+            {
+                for (int col = 0; col < grid1[row].Length; col++)
+                {
+                    if ((grid1[row][col] != 0 && grid2[row][col] != 0) && grid1[row][col] != grid2[row][col])
+                    {
+                        Console.WriteLine($"At {row},{col}: {grid1[row][col]} != {grid2[row][col]}");
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         public static void Main(string[] args)
         {
             var watch = Stopwatch.StartNew();
@@ -101,17 +123,27 @@ namespace SapirSudoku
                 new int[]{7,0,0,0,2,0,0,0,6 },
                 new int[]{0,6,0,0,0,0,2,8,0 },
                 new int[]{0,0,0,4,1,9,0,0,5 },
-                new int[]{0,0,0,0,8,0,0,7,9 },
+                new int[]{0,0,0,0,8,0,0,0,0 },
         };
 
             //try {
-                Sudoku sudoku = new Sudoku(grid);
-                sudoku.PrintLine();
-                Console.WriteLine(sudoku.IsValid());
+            Sudoku sudoku = new Sudoku(grid);
             
             SudokuSolver sudokuSolver = new SudokuSolver(sudoku);
             Console.WriteLine(sudokuSolver.onlyOne.First());
-            Console.WriteLine(sudokuSolver.Count);
+            sudokuSolver.PrintLine();
+            Console.WriteLine();
+            foreach (Sudoku s in sudokuSolver.NextSolve())
+            {
+                Console.WriteLine("SUDOKU SOLVER HELLO");
+                s.PrintLine();
+            }
+            Console.WriteLine();
+            sudokuSolver.PrintLine();
+
+
+
+
 
 
             /*
@@ -146,8 +178,16 @@ namespace SapirSudoku
 
         long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
         Console.WriteLine($"Elapsed Time: {stopwatch.ElapsedMilliseconds} ms");
-        */
-
+        
+            new int[] { 5, 3, 0, 0, 7, 0, 0, 0, 0 },
+                new int[] { 6, 0, 0, 1, 9, 5, 0, 0, 0 },
+                new int[] { 0, 9, 8, 0, 0, 0, 0, 6, 0 },
+                new int[] { 8, 0, 0, 0, 6, 0, 0, 0, 3 },
+                new int[] { 4, 0, 0, 8, 0, 3, 0, 0, 1 },
+                new int[] { 7, 0, 0, 0, 2, 0, 0, 0, 6 },
+                new int[] { 0, 6, 0, 0, 0, 0, 2, 8, 0 },
+                new int[] { 0, 0, 0, 4, 1, 9, 0, 0, 5 },
+                new int[] { 0, 0, 0, 0, 8, 0, 0, 7, 9 },
 
 
 
@@ -163,7 +203,8 @@ namespace SapirSudoku
                 + "000908030";*/
 
             watch.Stop();
-
+            //  Solve(grid) = 32ms
+             
             // Print the execution time in milliseconds 
             // by using the property elapsed milliseconds 
             Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
