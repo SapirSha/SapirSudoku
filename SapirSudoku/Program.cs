@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SapirSudoku;
+using Heap;
 using System.Diagnostics;
 
 namespace MAIN
@@ -234,7 +235,7 @@ namespace MAIN
 
             }
             */
-            
+            /*
             MAX = 1;
             var watch = Stopwatch.StartNew();
             Sudoku sudoku = new Sudoku(grid);
@@ -258,7 +259,7 @@ namespace MAIN
             catch (Exception) { Console.WriteLine("STOP"); }
             watch2.Stop();
             Console.WriteLine($"FUNC: {watch2.ElapsedMilliseconds}ms");
-
+            */
             /*
         }
 
@@ -327,6 +328,43 @@ namespace MAIN
             // Print the execution time in milliseconds 
             // by using the property elapsed milliseconds 
             //Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
+
+
+            Heap<int> hip = new Heap<int>(10, (x,y) => y > x);
+
+            int[] arr = new int[] { 10, 9, 5, 4, 7, 1, 2, 3,8,8,8 };
+            foreach (int i in arr)
+                hip.Push(i);
+
+            for (int i = 0; i < hip.values.Length; i++)
+            {
+                Console.WriteLine(hip.values[i]);
+                if (hip.values[i] == 7)
+                {
+                    Console.WriteLine(i);
+                    hip.Edit(i, 100);
+                    break;
+                }
+                
+            }
+            Console.WriteLine();
+
+            while (!hip.IsEmpty())
+            {
+                Console.WriteLine(hip.Pop());
+            }
+
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 }
