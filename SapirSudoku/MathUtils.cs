@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CustomExceptions;
 
-namespace SapirSudoku
+namespace Math2
 {
     public static class MathUtils
     {
@@ -40,6 +40,24 @@ namespace SapirSudoku
             return (smaller, bigger);
         }
 
+        public static int Max(params int[] values)
+        {
+            int max = values[0];
+
+            for (int i = 1; i < values.Length; i++)
+                if (max < values[i]) max = values[i];
+            return max;
+        }
+
+
+        public static int Min(params int[] values)
+        {
+            int min = values[0];
+
+            for (int i = 1; i < values.Length; i++)
+                if (min < values[i]) min = values[i];
+            return min;
+        }
 
     }
 }

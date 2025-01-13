@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using SapirSudoku;
+using SapirBitSet;
 using Heap;
 using System.Diagnostics;
+using System.Numerics;
+using System.Collections;
 
 namespace MAIN
 {
@@ -329,7 +332,7 @@ namespace MAIN
             // by using the property elapsed milliseconds 
             //Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
 
-
+            /*
             Heap<int> hip = new Heap<int>(10, (x,y) => y > x);
 
             int[] arr = new int[] { 10, 9, 5, 4, 7, 1, 2, 3,8,8,8 };
@@ -339,31 +342,29 @@ namespace MAIN
             for (int i = 0; i < hip.values.Length; i++)
             {
                 Console.WriteLine(hip.values[i]);
-                if (hip.values[i] == 7)
-                {
-                    Console.WriteLine(i);
-                    hip.Edit(i, 100);
-                    break;
-                }
+            }
+            */
+
+
+            BitSet set = new BitSet(32);
+
+            Console.WriteLine(set);
+
+            set.Add(1);
+            set.Add(32);
+            set.Add(9);
+            Console.WriteLine(set);
+
+            BitSet set2 = new BitSet(32);
+            set2.Add(1);
+            set2.Add(11);
+            set2.Add(12);
+
+            Console.WriteLine(set2);
+
+            Console.WriteLine(BitSet.Subtract(set, set2));
                 
-            }
-            Console.WriteLine();
-
-            while (!hip.IsEmpty())
-            {
-                Console.WriteLine(hip.Pop());
-            }
-
-
-
-
-
-
-
-
-
-
-
+                
 
         }
     }

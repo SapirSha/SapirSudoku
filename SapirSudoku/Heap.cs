@@ -113,7 +113,7 @@ namespace Heap
         public void Edit(int index, T value)
         {
             if (index > count || index < 0)
-                throw new HeapException("Index out of range");
+                throw new ArgumentOutOfRangeException("Heap Index out of range.");
             values[index] = value;
             Heapify(index);
             HeapifyUp(index);
