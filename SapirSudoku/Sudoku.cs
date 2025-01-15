@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CustomExceptions;
-using Math2;
+using SapirMath;
 
 namespace SapirSudoku
 {

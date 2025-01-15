@@ -345,26 +345,49 @@ namespace MAIN
             }
             */
 
-
             BitSet set = new BitSet(32);
 
+            Console.WriteLine("HERE");
             Console.WriteLine(set);
 
             set.Add(1);
+            set.Add(15);
             set.Add(32);
-            set.Add(9);
-            Console.WriteLine(set);
+            set.Add(18);
+            set.Add(7);
+
+            set.Toggle(2);
+            set.Toggle(15);
+
+            set.Remove(44);
+            set.Toggle(44);
+
+            Console.WriteLine("Set 1: " + set);
 
             BitSet set2 = new BitSet(32);
-            set2.Add(1);
-            set2.Add(11);
-            set2.Add(12);
+            set2.Add(9);
+            set2.Add(10);
+            set2.Add(8);
+            set2.Add(30);
+            set2.Add(32);
+            set2.Add(18);
+            Console.WriteLine("Set 2: " + set2);
+            Console.WriteLine("Subtr: " + BitSet.Subtract(set, set2));
 
-            Console.WriteLine(set2);
+            Console.WriteLine("Diffe: " + BitSet.Difference(set, set2));
+            Console.WriteLine("Inter: " + BitSet.Intersection(set, set2));
+            Console.WriteLine("Union: " + BitSet.Union(set,set2));
 
-            Console.WriteLine(BitSet.Subtract(set, set2));
-                
-                
+            Console.WriteLine(set.Count());
+            Console.WriteLine(set.CountIsAtLeast(3));
+
+
+
+
+
+
+
+
 
         }
     }

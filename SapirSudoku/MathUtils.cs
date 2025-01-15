@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using CustomExceptions;
 
-namespace Math2
+namespace SapirMath
 {
     public static class MathUtils
     {
@@ -55,7 +55,7 @@ namespace Math2
             int min = values[0];
 
             for (int i = 1; i < values.Length; i++)
-                if (min < values[i]) min = values[i];
+                if (min > values[i]) min = values[i];
             return min;
         }
 
