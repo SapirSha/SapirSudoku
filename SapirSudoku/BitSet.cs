@@ -71,7 +71,7 @@ namespace SapirBitSet
             for (int i = 0; i < set.Length; i++)
             {
                 if (set[i] != 0)
-                    return count + BitOperations.TrailingZeroCount(set[i]);
+                    return count + BitOperations.TrailingZeroCount(set[i]) + 1;
                 count += OBJECT_SIZE_BIT;
             }
             return -1;
@@ -80,7 +80,7 @@ namespace SapirBitSet
         public int GetLargest()
         {
             int count = OBJECT_SIZE_BIT * set.Length;
-            for (int i = set.Length - 1; i >= 0; i++)
+            for (int i = set.Length - 1; i >= 0; i--)
             {
                 if (set[i] != 0)
                     return count - BitOperations.LeadingZeroCount((uint)set[i]);

@@ -380,7 +380,12 @@ namespace MAIN
 
             Console.WriteLine(set2.Count());
             Console.WriteLine(set2.GetSmallest());
+            set2.Remove(10);
+            set2.Remove(30);
             set2.Remove(32);
+
+            set2.Remove(33);
+            set2.ClearAll();
             Console.WriteLine(set2);
             Console.WriteLine(set2.GetLargest());
 
