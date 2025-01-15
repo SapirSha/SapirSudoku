@@ -370,7 +370,7 @@ namespace MAIN
             set2.Add(8);
             set2.Add(30);
             set2.Add(32);
-            set2.Add(18);
+            set2.Add(33);
             Console.WriteLine("Set 2: " + set2);
             Console.WriteLine("Subtr: " + BitSet.Subtract(set, set2));
 
@@ -378,8 +378,11 @@ namespace MAIN
             Console.WriteLine("Inter: " + BitSet.Intersection(set, set2));
             Console.WriteLine("Union: " + BitSet.Union(set,set2));
 
-            Console.WriteLine(set.Count());
-            Console.WriteLine(set.CountIsAtLeast(3));
+            Console.WriteLine(set2.Count());
+            Console.WriteLine(set2.GetSmallest());
+            set2.Remove(32);
+            Console.WriteLine(set2);
+            Console.WriteLine(set2.GetLargest());
 
 
 
