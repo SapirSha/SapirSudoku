@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Runtime.ExceptionServices;
 using CustomExceptions;
 using SapirBitSet;
 
@@ -7,11 +9,15 @@ namespace SapirSudoku
 {
     public class SudokuSolver : Sudoku
     {
-        private BitSet[] possibilities; // Amount possible in a single column
+        private BitSet[] singlePossibilitesCounter;
 
-        private BitSet[,] row_availability; // Amount possible in all row
-        private BitSet[,] col_availability; // Amount possible in all col
-        private BitSet[,] grid_availability;// Amount possible in all grid
+        private BitSet[] rowAvailability; // Amount possible in all row
+        private int[][] rowAvailabilityCounter;
+        private BitSet[] colAvailability; // Amount possible in all col
+        private int[][] colAvailabilityCounter;
+        private BitSet[] gridAvailability;// Amount possible in all grid
+        private int[][] gridAvailabilityCounter;
+
         private BitSet full; // represents a full bitset
 
 
@@ -21,45 +27,48 @@ namespace SapirSudoku
                 full.Add(i);
 
 
-                this.possibilities = new BitSet[length + 1];
+            this.singlePossibilitesCounter = new BitSet[length + 1];
             for (int i = 0; i <= length; i++)
-                possibilities[i] = new BitSet(length);
-            foreach (var value in allowables)
-                if (value.Key != NONE)
-                    possibilities[length].Add(value.Value);
+                singlePossibilitesCounter[i] = new BitSet(length * length);
+            for (int i = 1; i <= length * length; i++)
+                singlePossibilitesCounter[length].Add(i);
 
-            this.row_availability = new BitSet[length, length + 1];
+            this.rowAvailability = new BitSet[length];
+            for (int i = 0; i < length; i++)
+                rowAvailability[i] = new BitSet(full);
+
+            this.rowAvailabilityCounter = new int[length][];
             for (int i = 0; i < length; i++)
             {
-                for (int j = 0; j <= length; j++)
-                    row_availability[i, j] = new BitSet(length);
-
-                foreach (var value in allowables)
-                    if (value.Key != NONE)
-                        row_availability[i, length].Add(value.Value);
-            }
-
-            this.col_availability = new BitSet[length, length + 1];
-            for (int i = 0; i < length; i++)
-            {
-                for (int j = 0; j <= length; j++)
-                    col_availability[i, j] = new BitSet(length);
-
-                foreach (var value in allowables)
-                    if (value.Key != NONE)
-                        col_availability[i, length].Add(value.Value);
+                rowAvailabilityCounter[i] = new int[length];
+                for (int j = 0; j < length; j++)
+                    rowAvailabilityCounter[i][j] = length;
             }
 
 
-            this.grid_availability = new BitSet[length, length + 1];
+
+            this.colAvailability = new BitSet[length];
+            for (int i = 0; i < length; i++)
+                colAvailability[i] = new BitSet(full);
+
+            this.colAvailabilityCounter = new int[length][];
             for (int i = 0; i < length; i++)
             {
-                for (int j = 0; j <= length; j++)
-                    grid_availability[i, j] = new BitSet(length);
+                colAvailabilityCounter[i] = new int[length];
+                for (int j = 0; j < length; j++)
+                    colAvailabilityCounter[i][j] = length;
+            }
 
-                foreach (var value in allowables)
-                    if (value.Key != NONE)
-                        grid_availability[i, length].Add(value.Value);
+            this.gridAvailability = new BitSet[length];
+            for (int i = 0; i < length; i++)
+                gridAvailability[i] = new BitSet(full);
+
+            this.gridAvailabilityCounter = new int[length][];
+            for (int i = 0; i < length; i++)
+            {
+                gridAvailabilityCounter[i] = new int[length];
+                for (int j = 0; j < length; j++)
+                    gridAvailabilityCounter[i][j] = length;
             }
         }
         public SudokuSolver(int[,] grid) : this(grid.GetLength(0))
@@ -70,34 +79,161 @@ namespace SapirSudoku
 
             for (int row = 0; row < sudoku.GetLength(0); row++)
                 for (int col = 0; col < sudoku.GetLength(1); col++)
-                    if (sudoku[row, col] != NONE)
-                        Insert(sudoku[row, col], row, col);
+                    if (sudoku[row, col] == NONE && grid[row,col] != NONE)
+                        Insert(grid[row, col], row, col);
 
-            if (!IsValid())
-                throw new InvalidSudokuException($"Invalid Sudoku! Collisions Accrued!");
+
+            Console.WriteLine("Row");
+
+            foreach (var i in rowAvailabilityCounter)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    Console.Write(j+1 + ": " + i[j] + " \t ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("Col");
+
+            foreach (var i in colAvailabilityCounter)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    Console.Write(j + 1 + ": " + i[j] + " \t ");
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("GRID");
+            foreach (var i in gridAvailabilityCounter)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    Console.Write(j + 1 + ": " + i[j] + " \t ");
+                }
+                Console.WriteLine();
+            }
+
+
+
+            //SolveTheRest();
         }
 
-        private new void Insert(int value, int row, int col)
+        public new void Insert(int value, int row, int col)
         {
-            
+            if (!InRange(row,col))
+                throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
+
+            BitSet possible = GetColumnPossibilities(row,col);
+            if (!possible.Contains(value)) 
+                throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
+
+            singlePossibilitesCounter[possible.Count()].Remove(value);
+            singlePossibilitesCounter[0].Add(value);
+
+            foreach (int possibilite in possible.GetValues())
+            {
+                if (possibilite == value) continue;
+                rowAvailabilityCounter[row][possibilite - 1]--;
+                colAvailabilityCounter[col][possibilite - 1]--;
+                gridAvailabilityCounter[GridPos(row, col)][possibilite - 1]--;
+            }
+
+            rowAvailabilityCounter[row][value - 1]= 0;
+            colAvailabilityCounter[col][value - 1]= 0;
+            gridAvailabilityCounter[GridPos(row,col)][value - 1] = 0;
+
+
+            for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
+            {
+                if (GridPos(rowPos, col) == GridPos(row, col)) continue;
+                BitSet p = GetColumnPossibilities(rowPos, col);
+                if (!p.Contains(value)) continue;
+                int count = p.Count();
+                if (count <= 1) throw new InvalidInsertionException();
+                singlePossibilitesCounter[count].Remove(RowColIndex(rowPos,col));
+                singlePossibilitesCounter[count-1].Add(RowColIndex(rowPos, col));
+                int posAva;
+                posAva = rowAvailabilityCounter[rowPos][value-1]--;
+                if (posAva == 0) throw new InvalidInsertionException();
+                posAva = gridAvailabilityCounter[GridPos(rowPos, col)][value - 1]--;
+                if (posAva == 0) throw new InvalidInsertionException();
+            }
+
+            for (int colPos = 0; colPos < sudoku.GetLength(0); colPos++)
+            {
+                if (GridPos(row, colPos) == GridPos(row, col)) continue;
+                BitSet p = GetColumnPossibilities(row, colPos);
+                if (!p.Contains(value)) continue;
+                int count = p.Count();
+                if (count <= 1) throw new InvalidInsertionException();
+                singlePossibilitesCounter[count].Remove(RowColIndex(row, colPos));
+                singlePossibilitesCounter[count - 1].Add(RowColIndex(row, colPos));
+                int posAva;
+                posAva = colAvailabilityCounter[colPos][value - 1]--;
+                if (posAva == 0) throw new InvalidInsertionException();
+                posAva = gridAvailabilityCounter[GridPos(row, colPos)][value - 1]--;
+                if (posAva == 0) throw new InvalidInsertionException();
+            }
+
+            (int initialRow, int initalCol) startInGridPos;
+            startInGridPos.initialRow = GridPos(row, col) / (sudoku.GetLength(1) / grid_width);
+            startInGridPos.initalCol = GridPos(row, col) * grid_width % sudoku.GetLength(1);
+            for (int rowPos = 0; rowPos < grid_height; rowPos++)
+            {
+                for (int colPos = 0; colPos < grid_width; colPos++)
+                {
+                    if (!InRange(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos))
+                        continue;
+                    BitSet p = GetColumnPossibilities(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos);
+                    if (!p.Contains(value)) continue;
+                    int count = p.Count();
+                    if (count <= 1) throw new InvalidInsertionException();
+                    singlePossibilitesCounter[count].Remove(RowColIndex(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos));
+                    singlePossibilitesCounter[count - 1].Add(RowColIndex(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos));
+                    int posAva;
+                    Console.WriteLine(startInGridPos.initialRow + rowPos);
+
+                    if (startInGridPos.initialRow + rowPos == row || startInGridPos.initalCol + colPos == col) continue;
+                    posAva = rowAvailabilityCounter[startInGridPos.initialRow + rowPos][value - 1]--;
+                    if (posAva == 0) throw new InvalidInsertionException();
+                    posAva = colAvailabilityCounter[startInGridPos.initalCol + colPos][value - 1]--;
+                    if (posAva == 0) throw new InvalidInsertionException();
+
+                }
+
+            }
+
+            rowAvailability[row].Remove(value);
+            colAvailability[col].Remove(value);
+            gridAvailability[GridPos(row, col)].Remove(value);
+            sudoku[row, col] = value;
+
         }
 
-        private new void Remove(int row, int col)
+        public new void Remove(int row, int col)
         {
 
         }
-        private int CountPossibilities(int row, int col)
+        private BitSet GetColumnPossibilities(int row, int col)
         {
-            if (sudoku[row, col] != NONE) return 0;
+            if (!InRange(row,col))
+                throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
+            if (sudoku[row, col] != NONE) return new BitSet(0);
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
-            return BitSet.Subtract(full, BitSet.Union(row_availability[row, 0], col_availability[col, 0], grid_availability[GridPos(row,col), 0])).Count();
+            return BitSet.Intersection(rowAvailability[row], colAvailability[col], gridAvailability[GridPos(row, col)]);
         }
 
-        private bool CanInsert(int value, int row, int col)
+        public new bool CanInsert(int value, int row, int col)
         {
-            if (sudoku[row, col] == NONE) return true;
-            return !BitSet.Union(row_availability[row, 0], col_availability[col, 0], grid_availability[GridPos(row, col), 0]).Contains(value);
+            if (sudoku[row, col] == NONE || !InRange(row,col)) return true;
+            return !BitSet.Union(rowAvailability[row], colAvailability[col], gridAvailability[GridPos(row, col)]).Contains(value);
+        }
+
+        private int RowColIndex(int row, int col)
+        {
+            return row * sudoku.GetLength(0) + col + 1;
         }
 
 

@@ -5,72 +5,72 @@ using SapirBitSet;
 using Heap;
 using System.Diagnostics;
 using System.Collections;
+using System.Numerics;
 
 namespace MAIN
 {
     public static class Program
-    {/*
+    {
         static int MAX = 10;
         static int i = 0;
-        public static void Print(this int[][] sudoku)
+        public static void Print(this int[,] sudoku)
         {
             String msg = "";
-            int count = 0;
-            int count2 = 1;
-            foreach (int[] row in sudoku)
+            for (int i =0; i < sudoku.GetLength(0); i++)
             {
-                foreach (int col in row)
-                {
-                    if (count++ % 3 == 0)
-                        msg += " ";
-                    msg += col;
-                }
-                if (count2++ % 3 == 0)
+                if (i != 0 && i % 3 == 0)
                     msg += "\n";
+                for( int j = 0; j < sudoku.GetLength(1); j++)
+                {
+                    if (j!= 0 && j%3 ==0)
+                        msg += " ";
+                    msg += sudoku[i, j];
+                }
                 msg += "\n";
+
             }
             Console.WriteLine(msg);
         }
 
 
-        public static bool CanInsert(this int[][] sudoku, int value, int row, int col)
+        public static bool CanInsert(this int[,] sudoku, int value, int row, int col)
         {
-            int length = sudoku.Length;
+            int length = sudoku.GetLength(0);
             int sqrlength = (int)Math.Sqrt(length);
 
             for (int i = 0; i < length; i++)
-                if (sudoku[row][i] == value) return false;
+                if (sudoku[row,i] == value) return false;
 
             for (int i = 0; i < length; i++)
-                if (sudoku[i][col] == value) return false;
+                if (sudoku[i,col] == value) return false;
 
             int square_start_row = (row / sqrlength) * sqrlength;
             int square_start_col = (col / sqrlength) * sqrlength;
 
             for (int i = 0; i < sqrlength; i++)
                 for (int j = 0; j < sqrlength; j++)
-                    if (sudoku[square_start_row + i][square_start_col + j] == value)
+                    if (sudoku[square_start_row + i, square_start_col + j] == value)
                         return false;
 
             return true;
         }
 
-        public static bool Solve(this int[][] sudoku)
+        public static bool Solve(this int[,] sudoku)
         {
-            int Length = sudoku.Length;
+            int Length = sudoku.GetLength(0);
             for (int i = 0; i < Length; i++)
             {
                 for (int j = 0; j < Length; j++)
                 {
-                    if (sudoku[i][j] == 0)
+                    if (sudoku[i,j] == 0)
                     {
                         for (int v = 1; v <= Length; v++)
                         {
                             if (sudoku.CanInsert(v, i, j))
                             {
-                                sudoku[i][j] = v;
+                                sudoku[i,j] = v;
                                 sudoku.Solve();
-                                sudoku[i][j] = 0;
+                                sudoku[i,j] = 0;
                             }
                         }
                         return false;
@@ -84,27 +84,6 @@ namespace MAIN
                 throw new Exception();
             return true;
         }
-
-        public static bool IsSameBase(Sudoku s1, Sudoku s2)
-        {
-            int[][] grid1 = s1.SudokuGrid;
-            int[][] grid2 = s2.SudokuGrid;
-            if (grid1.Length != grid2.Length)
-                return false;
-
-            for (int row = 0; row < grid1.Length; row++)
-            {
-                for (int col = 0; col < grid1[row].Length; col++)
-                {
-                    if ((grid1[row][col] != 0 && grid2[row][col] != 0) && grid1[row][col] != grid2[row][col])
-                    {
-                        Console.WriteLine($"At {row},{col}: {grid1[row][col]} != {grid2[row][col]}");
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }*/
 
         public static void Main(string[] args)
         {
@@ -135,7 +114,7 @@ namespace MAIN
                 new int[]{0,0,0,0,0,0,0,0,0 },
                 new int[]{0,0,0,0,0,0,0,0,0 },
                 */
-                
+                /*
                 {5,3,0,0,7,0,0,0,0 },
                 {6,0,0,1,9,5,0,0,0 },
                 {0,9,8,0,0,0,0,6,0 },
@@ -145,6 +124,17 @@ namespace MAIN
                 {0,6,0,0,0,0,2,8,0 },
                 {0,0,0,4,1,9,0,0,5 },
                 {0,0,0,0,8,0,0,7,9 },
+                */
+                {0,3,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+
                 
                 /*
                 new int[]{8,0,0,0,0,0,0,0,0 },
@@ -343,6 +333,13 @@ namespace MAIN
             */
 
             SudokuSolver solver = new SudokuSolver(grid);
+            SudokuSolver solver2 = new SudokuSolver(grid);
+            SudokuSolver solver3 = new SudokuSolver(grid);
+            SudokuSolver solver4 = new SudokuSolver(grid);
+
+            Console.WriteLine(solver);
+            //Solve(grid);
+
 
 
             watch.Stop();

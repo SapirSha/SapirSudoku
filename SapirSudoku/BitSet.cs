@@ -134,6 +134,10 @@ namespace SapirBitSet
         {
             Array.Clear(set, 0, set.Length);
         }
+        public void SetAll()
+        {
+            Array.Fill(set, -1);
+        }
 
         public static  BitSet Union(params BitSet[]sets)
         {
@@ -193,6 +197,23 @@ namespace SapirBitSet
             }
 
             return diffSet;
+        }
+
+        public IEnumerable GetValues()
+        {
+            int[] clone = (int[])set.Clone();
+            int count = 0;
+            for (int i = 0; i < clone.Length; i++)
+            {
+                while (clone[i] != 0)
+                {
+                    int smallest = count + BitOperations.TrailingZeroCount(clone[i]) + 1;
+                    yield return smallest;
+                    clone[i] ^=  1 << (smallest) >> 1;
+                }
+                count += OBJECT_SIZE_BIT;
+            }
+            yield break;
         }
         
 

@@ -25,6 +25,9 @@ namespace SapirSudoku
         {
             if (length < 2)
                 throw new InvalidSudokuException("Minimum Sudoku Length is 2");
+            if (length > 128)
+                throw new InvalidSudokuException("Maximum Sudoku Length is 128");
+
 
             for (int i = 1; i <= length; i++)
                 allowables.Add(i,i);
@@ -71,7 +74,7 @@ namespace SapirSudoku
 
         protected int GridPos(int row, int col)
         {
-            return (row / grid_height) * (sudoku.GetLength(0) / grid_width) + col / grid_width;
+            return (row / grid_height) * (sudoku.GetLength(1) / grid_width) + col / grid_width;
         }
 
         public void Remove(int row, int col)
@@ -91,7 +94,7 @@ namespace SapirSudoku
             if (allowables.ContainsKey(value) && CanInsert(value, row, col))
                 sudoku[row, col] = value;
             else
-                throw new InvalidValueException($"Cannot Insert '{value}' to sudoku");
+                throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
         }
 
         public bool IsValid()
