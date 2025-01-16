@@ -341,10 +341,9 @@ namespace MAIN
                 Console.WriteLine(hip.values[i]);
             }
             */
-            Sudoku su = new Sudoku(grid);
-            Console.WriteLine(su);
-            Console.WriteLine(su.IsValid());
-            Console.WriteLine(su.CanInsert(7,1,8));
+
+            SudokuSolver solver = new SudokuSolver(grid);
+
 
             watch.Stop();
             Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");

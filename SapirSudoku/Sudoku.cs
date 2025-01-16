@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Drawing;
 using CustomExceptions;
 using SapirBitSet;
 using SapirMath;
@@ -10,11 +8,10 @@ namespace SapirSudoku
 {
     public class Sudoku
     {
-        static protected int NONE = 0;
-        static protected Dictionary<int, int> allowables = new Dictionary<int, int>{ {NONE, 0} };
+        static protected readonly int NONE = 0;
+        protected Dictionary<int, int> allowables = new Dictionary<int, int>{ {NONE, 0} };
 
         protected int[,] sudoku;
-        public int[,] SudokuGrid { get { return CloneGrid(); } }
         protected int grid_width;
         protected int grid_height;
 
@@ -55,26 +52,48 @@ namespace SapirSudoku
         {
             int length = sudoku.GetLength(0);
             if (sudoku.GetLength(1) != length)
-                throw new InvalidSudokuException("Sudoku size must be N*N");
-
+                throw new InvalidSudokuException($"Sudoku size must be N*N, instead was {sudoku.GetLength(0)}*{sudoku.GetLength(1)}");
 
             for (int row = 0; row < sudoku.GetLength(0); row++)
                 for (int col = 0; col < sudoku.GetLength(1); col++)
-                    Insert(sudoku[row,col], row, col);
+                    if (sudoku[row,col] != NONE)
+                        Insert(sudoku[row,col], row, col);
             
             if (!IsValid())
                 throw new InvalidSudokuException($"Invalid Sudoku! Collisions Accrued!");
         }
-        
+        public bool InRange(int row, int col)
+        {
+            if (row < 0 || col < 0 || row >= sudoku.GetLength(0) || col >= sudoku.GetLength(1))
+                return false;
+            return true;
+        }
+
+        protected int GridPos(int row, int col)
+        {
+            return (row / grid_height) * (sudoku.GetLength(0) / grid_width) + col / grid_width;
+        }
+
+        public void Remove(int row, int col)
+        {
+            if (!InRange(row, col))
+                throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
+
+            sudoku[row, col] = NONE;
+        }
         public void Insert(int value, int row, int col)
         {
-            if (value == NONE) return;
+            if (!InRange(row, col))
+                throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
+
+
+            if (value == NONE) { Remove(row, col); return; }
             if (allowables.ContainsKey(value) && CanInsert(value, row, col))
-                sudoku[row,col] = value;
+                sudoku[row, col] = value;
             else
                 throw new InvalidValueException($"Cannot Insert '{value}' to sudoku");
         }
-        
+
         public bool IsValid()
         {
             BitSet[] rows = new BitSet[sudoku.GetLength(0)];
@@ -102,7 +121,7 @@ namespace SapirSudoku
 
                     }
 
-                    int gridPos =  (row / grid_height) * (sudoku.GetLength(0) / grid_width) + col / grid_width;
+                    int gridPos = GridPos(row,col);
                     if (grids[gridPos].Contains(cur))
                         return false;
                     else grids[gridPos].Add(cur);
@@ -113,6 +132,9 @@ namespace SapirSudoku
         
         public bool CanInsert(int value, int row, int col)
         {
+            if (!InRange(row, col))
+                throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
+
             if (value == NONE || sudoku[row,col] != NONE) return false;
 
             for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
@@ -127,9 +149,7 @@ namespace SapirSudoku
             int[] y = new int[] { -1,1,0,-1,1,0,-1,1,0};
 
             for (int index = 0; index < sudoku.GetLength(0); index++)
-                if ((row + y[index] < sudoku.GetLength(0)) && (col + x[index] < sudoku.GetLength(0)) 
-                    && (row + y[index] >= 0) && (col + x[index] >= 0))
-                if (sudoku[row + y[index], col + x[index]] == value)
+                if (InRange(row + y[index], col + x[index]) && sudoku[row + y[index], col + x[index]] == value)
                     return false;
 
             return true;
@@ -152,6 +172,12 @@ namespace SapirSudoku
             }
 
             return msg;
+        }
+
+        public IEnumerable<Sudoku> NextAnswer()
+        {
+            SudokuSolver solver = new SudokuSolver(sudoku);
+            yield break;
         }
         
         public int[,] CloneGrid()
