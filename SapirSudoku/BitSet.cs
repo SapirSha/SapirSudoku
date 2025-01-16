@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Xml;
 using SapirMath;
 
 namespace SapirBitSet

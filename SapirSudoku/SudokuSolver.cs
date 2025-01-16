@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CustomExceptions;
 
 namespace SapirSudoku
-{
+{/*
     public class SudokuSolver : Sudoku
     {
         private HashSet<int>[][] avaliables;
@@ -174,6 +174,6 @@ namespace SapirSudoku
 
         
 
-
-    }
+    
+    }*/
 }

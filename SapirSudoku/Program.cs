@@ -4,13 +4,12 @@ using SapirSudoku;
 using SapirBitSet;
 using Heap;
 using System.Diagnostics;
-using System.Numerics;
 using System.Collections;
 
 namespace MAIN
 {
     public static class Program
-    {
+    {/*
         static int MAX = 10;
         static int i = 0;
         public static void Print(this int[][] sudoku)
@@ -105,7 +104,7 @@ namespace MAIN
                 }
             }
             return true;
-        }
+        }*/
 
         public static void Main(string[] args)
         {
@@ -124,7 +123,7 @@ namespace MAIN
             };
             */
 
-            int[][] grid ={
+            int[,] grid ={
                 /*
                 new int[]{0,0,0,0,0,0,0,0,0 },
                 new int[]{0,0,0,0,0,0,0,0,0 },
@@ -136,17 +135,17 @@ namespace MAIN
                 new int[]{0,0,0,0,0,0,0,0,0 },
                 new int[]{0,0,0,0,0,0,0,0,0 },
                 */
-                /*
-                new int[]{5,3,0,0,7,0,0,0,0 },
-                new int[]{6,0,0,1,9,5,0,0,0 },
-                new int[]{0,9,8,0,0,0,0,6,0 },
-                new int[]{8,0,0,0,6,0,0,0,3 },
-                new int[]{4,0,0,8,0,3,0,0,1 },
-                new int[]{7,0,0,0,2,0,0,0,6 },
-                new int[]{0,6,0,0,0,0,2,8,0 },
-                new int[]{0,0,0,4,1,9,0,0,5 },
-                new int[]{0,0,0,0,8,0,0,7,9 },
-                */
+                
+                {5,3,0,0,7,0,0,0,0 },
+                {6,0,0,1,9,5,0,0,0 },
+                {0,9,8,0,0,0,0,6,0 },
+                {8,0,0,0,6,0,0,0,3 },
+                {4,0,0,8,0,3,0,0,1 },
+                {7,0,0,0,2,0,0,0,6 },
+                {0,6,0,0,0,0,2,8,0 },
+                {0,0,0,4,1,9,0,0,5 },
+                {0,0,0,0,8,0,0,7,9 },
+                
                 /*
                 new int[]{8,0,0,0,0,0,0,0,0 },
                 new int[]{0,0,3,6,0,0,0,0,0 },
@@ -211,6 +210,7 @@ namespace MAIN
   new int[]  {0, 9, 0, 0, 0, 0, 4, 0, 0}
                 */
             };
+            var watch = Stopwatch.StartNew();
             //Solve(grid);
             /*
             Sudoku sudoku = new Sudoku(grid);
@@ -240,7 +240,6 @@ namespace MAIN
             */
             /*
             MAX = 1;
-            var watch = Stopwatch.StartNew();
             Sudoku sudoku = new Sudoku(grid);
             SudokuSolver solver = new SudokuSolver(sudoku);
             solver.PrintLine();
@@ -319,7 +318,6 @@ namespace MAIN
                 + "900020005" 
                 + "000908030";*/
 
-            //watch.Stop();
             //  Solve(grid) = 32ms
             // Solve grid 1000 solves in 7421
             // Sudoku.Solve in 4211
@@ -330,7 +328,6 @@ namespace MAIN
 
             // Print the execution time in milliseconds 
             // by using the property elapsed milliseconds 
-            //Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
 
             /*
             Heap<int> hip = new Heap<int>(10, (x,y) => y > x);
@@ -344,58 +341,13 @@ namespace MAIN
                 Console.WriteLine(hip.values[i]);
             }
             */
+            Sudoku su = new Sudoku(grid);
+            Console.WriteLine(su);
+            Console.WriteLine(su.IsValid());
+            Console.WriteLine(su.CanInsert(7,1,8));
 
-            BitSet set = new BitSet(32);
-
-            Console.WriteLine("HERE");
-            Console.WriteLine(set);
-
-            set.Add(1);
-            set.Add(15);
-            set.Add(32);
-            set.Add(18);
-            set.Add(7);
-
-            set.Toggle(2);
-            set.Toggle(15);
-
-            set.Remove(44);
-            set.Toggle(44);
-
-            Console.WriteLine("Set 1: " + set);
-
-            BitSet set2 = new BitSet(32);
-            set2.Add(9);
-            set2.Add(10);
-            set2.Add(8);
-            set2.Add(30);
-            set2.Add(32);
-            set2.Add(33);
-            Console.WriteLine("Set 2: " + set2);
-            Console.WriteLine("Subtr: " + BitSet.Subtract(set, set2));
-
-            Console.WriteLine("Diffe: " + BitSet.Difference(set, set2));
-            Console.WriteLine("Inter: " + BitSet.Intersection(set, set2));
-            Console.WriteLine("Union: " + BitSet.Union(set,set2));
-
-            Console.WriteLine(set2.Count());
-            Console.WriteLine(set2.GetSmallest());
-            set2.Remove(10);
-            set2.Remove(30);
-            set2.Remove(32);
-
-            set2.Remove(33);
-            set2.ClearAll();
-            Console.WriteLine(set2);
-            Console.WriteLine(set2.GetLargest());
-
-
-
-
-
-
-
-
+            watch.Stop();
+            Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
 
         }
     }
