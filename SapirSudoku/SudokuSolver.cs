@@ -115,12 +115,15 @@ namespace SapirSudoku
 
             Console.WriteLine();
 
+            Console.WriteLine("0 : ");
             foreach ((int,int) i in singlePossibilitesCounter[0])
                     Console.Write(i.Item1 + " " + i.Item2 + "\t");
             Console.WriteLine();
+            Console.WriteLine("1 : ");
             foreach ((int, int) i in singlePossibilitesCounter[1])
                 Console.Write(i.Item1 + " " + i.Item2 + "\t");
             Console.WriteLine();
+            Console.WriteLine("2 : ");
             foreach ((int, int) i in singlePossibilitesCounter[2])
                 Console.Write(i.Item1 + " " + i.Item2 + "\t");
             Console.WriteLine();
@@ -142,8 +145,6 @@ namespace SapirSudoku
             {
                 if (possibilite == value) continue;
                 int posAva;
-                if (possibilite == 8 && col == 2)
-                    Console.WriteLine($"DEC IN GRID FOR 8 {row},{col}");
                 posAva = --rowAvailabilityCounter[row][possibilite - 1];
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) Console.WriteLine($"INSERT {possibilite} in row : {row}");
@@ -174,17 +175,15 @@ namespace SapirSudoku
                 if (!p.Contains(value)) continue;
                 int count = p.Count();
                 if (count <= 1) throw new InvalidInsertionException();
-                if (count == 2) Console.WriteLine($"INSERT {value} in row : {rowPos} count");
+                if (count == 2) Console.WriteLine($"INSERT CUZ COUNT {value} in row : {rowPos} count");
                 singlePossibilitesCounter[count].Remove((rowPos, col));
                 singlePossibilitesCounter[count - 1].Add((rowPos, col));
-                if (value == 8 && col == 2)
-                    Console.WriteLine($"DEC IN COL FOR 8 {rowPos},{col} for {row},{col}");
                 int posAva;
                 posAva = --rowAvailabilityCounter[rowPos][value-1];
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) Console.WriteLine($"INSERT {value} in row : {rowPos} row");
                 posAva = --gridAvailabilityCounter[GridPos(rowPos, col)][value - 1];
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) Console.WriteLine($"INSERT {value} in row : {rowPos} grid");
             }
 
@@ -196,16 +195,15 @@ namespace SapirSudoku
                 if (!p.Contains(value)) continue;
                 int count = p.Count();
                 if (count <= 1) throw new InvalidInsertionException();
+                if (count == 2) Console.WriteLine($"INSERT CUZ COUNT {value} in col : {colPos}");
                 singlePossibilitesCounter[count].Remove((row, colPos));
                 singlePossibilitesCounter[count - 1].Add((row, colPos));
-                if (value == 8 && colPos == 2)
-                    Console.WriteLine($"DEC IN ROW FOR 8 {row},{colPos} for {row},{col}");
                 int posAva;
                 posAva = --colAvailabilityCounter[colPos][value - 1];
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) Console.WriteLine($"INSERT {value} in col : {colPos}");
                 posAva = --gridAvailabilityCounter[GridPos(row, colPos)][value - 1];
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) Console.WriteLine($"INSERT {value} in col : {colPos}");
             }
 
@@ -229,30 +227,32 @@ namespace SapirSudoku
                     if (!p.Contains(value)) continue;
                     int count = p.Count();
                     if (count <= 1) throw new InvalidInsertionException();
-                    if (count == 2) Console.WriteLine($"INSERT {value} in grid : {GridPos(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos)}");
+                    if (count == 2) Console.WriteLine($"INSERT CUZ COUNT {value} in grid : {GridPos(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos)}");
                     singlePossibilitesCounter[count].Remove((startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos));
                     singlePossibilitesCounter[count - 1].Add((startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos));
                     if (startInGridPos.initialRow + rowPos != row)
                     {
                         int posAva = --rowAvailabilityCounter[startInGridPos.initialRow + rowPos][value - 1];
-                        //if (posAva == 0) throw new InvalidInsertionException();
+                        if (posAva == 0) throw new InvalidInsertionException();
                         if (posAva == 1) Console.WriteLine($"INSERT {value} in grid : {GridPos(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos)}");
                     }
                     if (startInGridPos.initalCol + colPos != col)
                     {
-                        if (value == 8 && startInGridPos.initalCol + colPos == 2)
-                            Console.WriteLine($"DEC IN GRID FOR 8 {startInGridPos.initialRow + rowPos},{startInGridPos.initalCol + colPos} for {row},{col}");
                         int posAva = --colAvailabilityCounter[startInGridPos.initalCol + colPos][value - 1];
-                        //if (posAva == 0) throw new InvalidInsertionException();
+                        if (posAva == 0) throw new InvalidInsertionException();
                         if (posAva == 1) Console.WriteLine($"INSERT {value} in grid : {GridPos(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos)}");
                     }
 
                 }
 
             }
+        }
 
+        private void PotentialInsertInRow(int value, int row)
+        {
 
         }
+
 
         public override void Remove(int row, int col)
         {
