@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Runtime.ExceptionServices;
 using CustomExceptions;
 using SapirBitSet;
+using SapirSudoku;
 
 namespace SapirSudoku
 {
@@ -158,21 +159,13 @@ namespace SapirSudoku
                 if (possibilite == value) continue;
                 int posAva;
                 posAva = --rowAvailabilityCounter[row][possibilite - 1];
-                if (posAva == -1)
-                    Console.WriteLine($"HERE ROW {possibilite} : {row},{col}");
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInRow(possibilite, row);
-                //if (!GetColumnPossibilities(row, col).Contains(possibilite)) continue;
                 posAva = --colAvailabilityCounter[col][possibilite - 1];
-                if (posAva == -1)
-                    Console.WriteLine($"HERE COL {possibilite} : {row},{col}");
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInCol(possibilite, col);
-                //if (!GetColumnPossibilities(row, col).Contains(possibilite)) continue;
                 posAva = --gridAvailabilityCounter[GridPos(row, col)][possibilite - 1];
-                if (posAva == -1)
-                    Console.WriteLine($"HERE GRID {possibilite} : {row},{col}");
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(possibilite, GridPos(row, col));
             }
 
@@ -190,19 +183,18 @@ namespace SapirSudoku
                 singlePossibilitesCounter[count - 1].Add((rowPos, col));
                 int posAva;
                 posAva = --rowAvailabilityCounter[rowPos][value-1];
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInRow(value, rowPos);
-                if (!BitSet.Intersection(rowAvailability[rowPos], gridAvailability[GridPos(rowPos, col)]).Contains(value))     continue;
 
                 posAva = --gridAvailabilityCounter[GridPos(rowPos, col)][value - 1];
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(rowPos, col));
             }
 
             for (int colPos = 0; colPos < sudoku.GetLength(0); colPos++)
             {
                 if (GridPos(row, colPos) == GridPos(row, col)) continue;
-                if (sudoku[row,colPos] != NONE) continue;
+                if (sudoku[row, colPos] != NONE) continue;
                 BitSet p = BitSet.Intersection(colAvailability[colPos], gridAvailability[GridPos(row, colPos)]);
                 if (!p.Contains(value)) continue;
                 int count = p.Count();
@@ -212,12 +204,11 @@ namespace SapirSudoku
                 singlePossibilitesCounter[count - 1].Add((row, colPos));
                 int posAva;
                 posAva = --colAvailabilityCounter[colPos][value - 1];
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInCol(value, colPos);
-                if (!BitSet.Intersection(colAvailability[colPos], gridAvailability[GridPos(row, colPos)]).Contains(value))     continue;
 
                 posAva = --gridAvailabilityCounter[GridPos(row, colPos)][value - 1];
-                //if (posAva == 0) throw new InvalidInsertionException();
+                if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(row, colPos));
             }
 
@@ -246,14 +237,13 @@ namespace SapirSudoku
                     if (startInGridPos.initialRow + rowPos != row)
                     {
                         int posAva = --rowAvailabilityCounter[startInGridPos.initialRow + rowPos][value - 1];
-                        //if (posAva == 0) throw new InvalidInsertionException();
+                        if (posAva == 0) throw new InvalidInsertionException();
                         if (posAva == 1) PotentialInsertInRow(value, startInGridPos.initialRow + rowPos);
-                        if (!BitSet.Intersection(colAvailability[startInGridPos.initialCol + colPos], rowAvailability[startInGridPos.initialRow + rowPos]).Contains(value))     continue;
                     }
                     if (startInGridPos.initialCol + colPos != col)
                     {
                         int posAva = --colAvailabilityCounter[startInGridPos.initialCol + colPos][value - 1];
-                        //if (posAva == 0) throw new InvalidInsertionException();
+                        if (posAva == 0) throw new InvalidInsertionException();
                         if (posAva == 1) PotentialInsertInCol(value, startInGridPos.initialCol + colPos);
                     }
 
@@ -264,6 +254,8 @@ namespace SapirSudoku
 
         private void PotentialInsertInRow(int value, int row)
         {
+            Console.WriteLine($"NEW INSERT {value} in row {row}");
+
             for (int col = 0; col < sudoku.GetLength(0); col++)
             {
                 if (GetColumnPossibilities(row, col).Contains(value))
@@ -276,6 +268,7 @@ namespace SapirSudoku
 
         private void PotentialInsertInCol(int value, int col)
         {
+            Console.WriteLine($"NEW INSERT {value} in col {col}");
             for (int row = 0; row < sudoku.GetLength(0); row++)
             {
                 if (GetColumnPossibilities(row, col).Contains(value))
@@ -288,6 +281,8 @@ namespace SapirSudoku
 
         private void PotentialInsertInGrid(int value, int grid)
         {
+            Console.WriteLine($"NEW INSERT {value} in grid {grid}");
+
             int initialRow = grid / (sudoku.GetLength(1) / grid_width) * grid_height;
             int initialCol = grid * grid_width % sudoku.GetLength(1);
 
