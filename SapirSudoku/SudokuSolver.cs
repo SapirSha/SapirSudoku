@@ -119,7 +119,7 @@ namespace SapirSudoku
             //SolveTheRest();
         }
 
-        public new void Insert(int value, int row, int col)
+        public override void Insert(int value, int row, int col)
         {
             if (!InRange(row,col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
@@ -131,6 +131,7 @@ namespace SapirSudoku
             singlePossibilitesCounter[possible.Count()].Remove(value);
             singlePossibilitesCounter[0].Add(value);
 
+
             foreach (int possibilite in possible.GetValues())
             {
                 if (possibilite == value) continue;
@@ -138,7 +139,7 @@ namespace SapirSudoku
                 colAvailabilityCounter[col][possibilite - 1]--;
                 gridAvailabilityCounter[GridPos(row, col)][possibilite - 1]--;
             }
-
+            Console.WriteLine(GridPos(row,col));
             rowAvailabilityCounter[row][value - 1]= 0;
             colAvailabilityCounter[col][value - 1]= 0;
             gridAvailabilityCounter[GridPos(row,col)][value - 1] = 0;
@@ -177,12 +178,13 @@ namespace SapirSudoku
             }
 
             (int initialRow, int initalCol) startInGridPos;
-            startInGridPos.initialRow = GridPos(row, col) / (sudoku.GetLength(1) / grid_width);
+            startInGridPos.initialRow = GridPos(row, col) / (sudoku.GetLength(1) / grid_width) * grid_height;
             startInGridPos.initalCol = GridPos(row, col) * grid_width % sudoku.GetLength(1);
             for (int rowPos = 0; rowPos < grid_height; rowPos++)
             {
                 for (int colPos = 0; colPos < grid_width; colPos++)
                 {
+                    if (startInGridPos.initialRow + rowPos == row && startInGridPos.initalCol + colPos == col) continue;
                     if (!InRange(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos))
                         continue;
                     BitSet p = GetColumnPossibilities(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos);
@@ -191,27 +193,29 @@ namespace SapirSudoku
                     if (count <= 1) throw new InvalidInsertionException();
                     singlePossibilitesCounter[count].Remove(RowColIndex(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos));
                     singlePossibilitesCounter[count - 1].Add(RowColIndex(startInGridPos.initialRow + rowPos, startInGridPos.initalCol + colPos));
-                    int posAva;
-                    Console.WriteLine(startInGridPos.initialRow + rowPos);
+                    int posAva = 1; //
 
-                    if (startInGridPos.initialRow + rowPos == row || startInGridPos.initalCol + colPos == col) continue;
-                    posAva = rowAvailabilityCounter[startInGridPos.initialRow + rowPos][value - 1]--;
-                    if (posAva == 0) throw new InvalidInsertionException();
-                    posAva = colAvailabilityCounter[startInGridPos.initalCol + colPos][value - 1]--;
-                    if (posAva == 0) throw new InvalidInsertionException();
+                    if (startInGridPos.initialRow + rowPos != row)
+                    {
+                        posAva = rowAvailabilityCounter[startInGridPos.initialRow + rowPos][value - 1]--;
+                        if (posAva == 0) throw new InvalidInsertionException();
+                    }
+                    if (startInGridPos.initalCol + colPos != col)
+                    {
+                        posAva = colAvailabilityCounter[startInGridPos.initalCol + colPos][value - 1]--;
+                        if (posAva == 0) throw new InvalidInsertionException();
+                    }
 
                 }
 
             }
-
             rowAvailability[row].Remove(value);
             colAvailability[col].Remove(value);
             gridAvailability[GridPos(row, col)].Remove(value);
             sudoku[row, col] = value;
-
         }
 
-        public new void Remove(int row, int col)
+        public override void Remove(int row, int col)
         {
 
         }
@@ -225,7 +229,7 @@ namespace SapirSudoku
             return BitSet.Intersection(rowAvailability[row], colAvailability[col], gridAvailability[GridPos(row, col)]);
         }
 
-        public new bool CanInsert(int value, int row, int col)
+        public override bool CanInsert(int value, int row, int col)
         {
             if (sudoku[row, col] == NONE || !InRange(row,col)) return true;
             return !BitSet.Union(rowAvailability[row], colAvailability[col], gridAvailability[GridPos(row, col)]).Contains(value);

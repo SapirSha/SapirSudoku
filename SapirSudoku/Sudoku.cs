@@ -77,14 +77,14 @@ namespace SapirSudoku
             return (row / grid_height) * (sudoku.GetLength(1) / grid_width) + col / grid_width;
         }
 
-        public void Remove(int row, int col)
+        public virtual void Remove(int row, int col)
         {
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
 
             sudoku[row, col] = NONE;
         }
-        public void Insert(int value, int row, int col)
+        public virtual void Insert(int value, int row, int col)
         {
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
@@ -133,7 +133,7 @@ namespace SapirSudoku
             return true;
         }
         
-        public bool CanInsert(int value, int row, int col)
+        public virtual bool CanInsert(int value, int row, int col)
         {
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");

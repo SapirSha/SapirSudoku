@@ -125,16 +125,17 @@ namespace MAIN
                 {0,0,0,4,1,9,0,0,5 },
                 {0,0,0,0,8,0,0,7,9 },
                 */
-                {0,3,0,0,0,0,0,0,0 },
+                
+                {1,2,3,4,5,6,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,0,9,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,0,9,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
-                {0,0,0,0,0,0,0,0,0 },
-                {0,0,0,0,0,0,0,0,0 },
-
+                
                 
                 /*
                 new int[]{8,0,0,0,0,0,0,0,0 },
@@ -333,9 +334,6 @@ namespace MAIN
             */
 
             SudokuSolver solver = new SudokuSolver(grid);
-            SudokuSolver solver2 = new SudokuSolver(grid);
-            SudokuSolver solver3 = new SudokuSolver(grid);
-            SudokuSolver solver4 = new SudokuSolver(grid);
 
             Console.WriteLine(solver);
             //Solve(grid);
