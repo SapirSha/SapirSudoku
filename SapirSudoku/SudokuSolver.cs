@@ -13,13 +13,13 @@ namespace SapirSudoku
         private HashSet<(int row,int col)>[] singlePossibilitesCounter;
 
         private BitSet[] rowAvailability; // Amount possible in all row
-        private int[][] rowAvailabilityCounter;
+        private BitSet[][] rowAvailabilityCounter;
         private BitSet[] colAvailability; // Amount possible in all col
-        private int[][] colAvailabilityCounter;
+        private BitSet[][] colAvailabilityCounter;
         private BitSet[] gridAvailability;// Amount possible in all grid
-        private int[][] gridAvailabilityCounter;
+        private BitSet[][] gridAvailabilityCounter;
 
-        private BitSet full; // represents a full bitset
+        private BitSet full; // represents a full bitset in range 1 to Length
 
         private Stack<(int value, int row, int col)> NextGarunteedAction;
         private Stack<(int value, int row, int col)> PrevAction;
@@ -40,12 +40,12 @@ namespace SapirSudoku
             for (int i = 0; i < length; i++)
                 rowAvailability[i] = new BitSet(full);
 
-            this.rowAvailabilityCounter = new int[length][];
+            this.rowAvailabilityCounter = new BitSet[length][];
             for (int i = 0; i < length; i++)
             {
-                rowAvailabilityCounter[i] = new int[length];
+                rowAvailabilityCounter[i] = new BitSet[length];
                 for (int j = 0; j < length; j++)
-                    rowAvailabilityCounter[i][j] = length;
+                    rowAvailabilityCounter[i][j] = new BitSet(full);
             }
 
 
@@ -54,24 +54,24 @@ namespace SapirSudoku
             for (int i = 0; i < length; i++)
                 colAvailability[i] = new BitSet(full);
 
-            this.colAvailabilityCounter = new int[length][];
+            this.colAvailabilityCounter = new BitSet[length][];
             for (int i = 0; i < length; i++)
             {
-                colAvailabilityCounter[i] = new int[length];
+                colAvailabilityCounter[i] = new BitSet[length];
                 for (int j = 0; j < length; j++)
-                    colAvailabilityCounter[i][j] = length;
+                    colAvailabilityCounter[i][j] = new BitSet(full);
             }
 
             this.gridAvailability = new BitSet[length];
             for (int i = 0; i < length; i++)
                 gridAvailability[i] = new BitSet(full);
 
-            this.gridAvailabilityCounter = new int[length][];
+            this.gridAvailabilityCounter = new BitSet[length][];
             for (int i = 0; i < length; i++)
             {
-                gridAvailabilityCounter[i] = new int[length];
+                gridAvailabilityCounter[i] = new BitSet[length];
                 for (int j = 0; j < length; j++)
-                    gridAvailabilityCounter[i][j] = length;
+                    gridAvailabilityCounter[i][j] = new BitSet(full);
             }
 
             this.NextGarunteedAction = new Stack<(int value, int row, int col)>(length * 3);
@@ -97,7 +97,7 @@ namespace SapirSudoku
             {
                 for (int j = 0; j < length; j++)
                 {
-                    Console.Write(j+1 + ": " + i[j] + " \t ");
+                    Console.Write(j  +1 + ": " + i[j].Count() + " \t ");
                 }
                 Console.WriteLine();
             }
@@ -107,7 +107,7 @@ namespace SapirSudoku
             {
                 for (int j = 0; j < length; j++)
                 {
-                    Console.Write(j + 1 + ": " + i[j] + " \t ");
+                    Console.Write(j + 1 + ": " + i[j].Count() + " \t ");
                 }
                 Console.WriteLine();
             }
@@ -117,7 +117,7 @@ namespace SapirSudoku
             {
                 for (int j = 0; j < length; j++)
                 {
-                    Console.Write(j + 1 + ": " + i[j] + " \t ");
+                    Console.Write(j + 1 + ": " + i[j].Count() + " \t ");
                 }
                 Console.WriteLine();
             }
@@ -137,17 +137,56 @@ namespace SapirSudoku
                 Console.Write(i.Item1 + " " + i.Item2 + "\t");
             Console.WriteLine();
 
-            {
+            Console.WriteLine("HERE");
+            Console.WriteLine(colAvailabilityCounter[0][8]);
+            Console.WriteLine(colAvailabilityCounter[0][8].Count());
 
-            }
-            
+            Console.WriteLine(gridAvailabilityCounter[1][7]);
+            Console.WriteLine(gridAvailabilityCounter[1][7].Count());
+
+
+
+
             while (NextGarunteedAction.Count() != 0)
             {
                 (int value, int row, int col) = NextGarunteedAction.Pop();
                 if (sudoku[row,col] == NONE)
                     Insert(value, row, col);
             }
-            
+
+
+            Console.WriteLine("Row");
+
+            foreach (var i in rowAvailabilityCounter)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    Console.Write(j + 1 + ": " + i[j].Count() + " \t ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine("Col");
+
+            foreach (var i in colAvailabilityCounter)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    Console.Write(j + 1 + ": " + i[j].Count() + " \t ");
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("GRID");
+            foreach (var i in gridAvailabilityCounter)
+            {
+                for (int j = 0; j < length; j++)
+                {
+                    Console.Write(j + 1 + ": " + i[j].Count() + " \t ");
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine();
         }
 
         public override void Insert(int value, int row, int col)
@@ -167,9 +206,9 @@ namespace SapirSudoku
             if (!possible.Contains(value))
                 throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
 
-            rowAvailabilityCounter[row][value - 1] = 0;
-            colAvailabilityCounter[col][value - 1] = 0;
-            gridAvailabilityCounter[GridPos(row, col)][value - 1] = 0;
+            rowAvailabilityCounter[row][value - 1].ClearAll();
+            colAvailabilityCounter[col][value - 1].ClearAll();
+            gridAvailabilityCounter[GridPos(row, col)][value - 1].ClearAll();
 
             rowAvailability[row].Remove(value);
             colAvailability[col].Remove(value);
@@ -183,13 +222,18 @@ namespace SapirSudoku
             foreach (int possibilite in possible.GetValues())
             {
                 int posAva;
-                posAva = --rowAvailabilityCounter[row][possibilite - 1];
+                rowAvailabilityCounter[row][possibilite - 1].Remove(col + 1);
+                posAva = rowAvailabilityCounter[row][possibilite - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInRow(possibilite, row);
-                posAva = --colAvailabilityCounter[col][possibilite - 1];
+
+                colAvailabilityCounter[col][possibilite - 1].Remove(row + 1);
+                posAva = colAvailabilityCounter[col][possibilite - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInCol(possibilite, col);
-                posAva = --gridAvailabilityCounter[GridPos(row, col)][possibilite - 1];
+
+                gridAvailabilityCounter[GridPos(row, col)][possibilite - 1].Remove(row % grid_height * grid_width + col % grid_width + 1);
+                posAva = gridAvailabilityCounter[GridPos(row, col)][possibilite - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(possibilite, GridPos(row, col));
             }
@@ -210,11 +254,14 @@ namespace SapirSudoku
                 singlePossibilitesCounter[count].Remove((rowPos, col));
                 singlePossibilitesCounter[count - 1].Add((rowPos, col));
 
-                int posAva = --rowAvailabilityCounter[rowPos][value - 1];
+                rowAvailabilityCounter[rowPos][value - 1].Remove(col + 1);
+                int posAva = rowAvailabilityCounter[rowPos][value - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInRow(value, rowPos);
 
-                posAva = --gridAvailabilityCounter[GridPos(rowPos, col)][value - 1];
+                gridAvailabilityCounter[GridPos(rowPos, col)][value - 1].Remove(rowPos % grid_height * grid_width + col % grid_width + 1);
+                posAva = gridAvailabilityCounter[GridPos(rowPos, col)][value - 1].Count();
+                
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(rowPos, col));
             }
@@ -236,11 +283,13 @@ namespace SapirSudoku
                 singlePossibilitesCounter[count].Remove((row, colPos));
                 singlePossibilitesCounter[count - 1].Add((row, colPos));
 
-                int posAva = --colAvailabilityCounter[colPos][value - 1];
+                colAvailabilityCounter[colPos][value - 1].Remove(row + 1);
+                int posAva = colAvailabilityCounter[colPos][value - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) GridPos(PotentialInsertInCol(value, colPos), colPos);
 
-                posAva = --gridAvailabilityCounter[GridPos(row, colPos)][value - 1];
+                gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Remove(row % grid_height * grid_width + col % grid_width + 1);
+                posAva = gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(row, colPos));
             }
@@ -274,13 +323,15 @@ namespace SapirSudoku
 
                     if (initRow + rowPos != row)
                     {
-                        int posAva = --rowAvailabilityCounter[initRow + rowPos][value - 1];
+                        rowAvailabilityCounter[initRow + rowPos][value - 1].Remove(initCol + colPos + 1);
+                        int posAva = rowAvailabilityCounter[initRow + rowPos][value - 1].Count();
                         if (posAva == 0) throw new InvalidInsertionException();
                         if (posAva == 1) PotentialInsertInRow(value, initRow + rowPos);
                     }
                     if (initCol + colPos != col)
                     {
-                        int posAva = --colAvailabilityCounter[initCol + colPos][value - 1];
+                        colAvailabilityCounter[initCol + colPos][value - 1].Remove(initRow + rowPos + 1);
+                        int posAva = colAvailabilityCounter[initCol + colPos][value - 1].Count();
                         if (posAva == 0) throw new InvalidInsertionException();
                         if (posAva == 1) PotentialInsertInCol(value, initCol + colPos);
                     }
