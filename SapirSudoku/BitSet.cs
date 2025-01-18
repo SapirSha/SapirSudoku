@@ -6,7 +6,7 @@ using SapirMath;
 
 namespace SapirStruct
 {
-    public class BitSet
+    public class BitSet : IEnumerable<int>
     {
         // Object size is considered as the amount of values that you can put (in other words bit size)
         private static readonly int OBJECT_SIZE_BYTE = sizeof(int);
@@ -199,24 +199,6 @@ namespace SapirStruct
             return diffSet;
         }
 
-        public IEnumerable GetValues()
-        {
-            int[] clone = (int[])set.Clone();
-            int count = 0;
-            for (int i = 0; i < clone.Length; i++)
-            {
-                while (clone[i] != 0)
-                {
-                    int smallest = count + BitOperations.TrailingZeroCount(clone[i]) + 1;
-                    yield return smallest;
-                    clone[i] ^=  1 << (smallest) >> 1;
-                }
-                count += OBJECT_SIZE_BIT;
-            }
-            yield break;
-        }
-        
-
 
         public static BitSet Subtract(BitSet subtracted, BitSet subtracter)
         {
@@ -238,6 +220,26 @@ namespace SapirStruct
             return new string(bits);
         }
 
+        public IEnumerator<int> GetEnumerator()
+        {
+            int[] clone = (int[])set.Clone();
+            int count = 0;
+            for (int i = 0; i < clone.Length; i++)
+            {
+                while (clone[i] != 0)
+                {
+                    int smallest = count + BitOperations.TrailingZeroCount(clone[i]) + 1;
+                    yield return smallest;
+                    clone[i] ^=  1 << (smallest) >> 1;
+                }
+                count += OBJECT_SIZE_BIT;
+            }
+            yield break;
+        }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
