@@ -164,18 +164,8 @@ namespace SapirSudoku
 
             Console.WriteLine();
 
-            Console.WriteLine("0 : ");
-            foreach ((int, int) i in singlePossibilitesCounter[0])
-                Console.Write(i.Item1 + " " + i.Item2 + "\t");
-            Console.WriteLine();
-            Console.WriteLine("1 : ");
-            foreach ((int, int) i in singlePossibilitesCounter[1])
-                Console.Write(i.Item1 + " " + i.Item2 + "\t");
-            Console.WriteLine();
-            Console.WriteLine("2 : ");
-            foreach ((int, int) i in singlePossibilitesCounter[2])
-                Console.Write(i.Item1 + " " + i.Item2 + "\t");
-            Console.WriteLine();
+
+            Console.WriteLine(ToString());
 
             PrevAction.Clear();
 
@@ -373,7 +363,7 @@ namespace SapirSudoku
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInCol(value, colPos);
 
-                gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Remove(row % grid_height * grid_width + col % grid_width + 1);
+                gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Remove(row % grid_height * grid_width + colPos % grid_width + 1);
                 posAva = gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(row, colPos));
@@ -397,7 +387,7 @@ namespace SapirSudoku
                     if (count <= 1) throw new InvalidInsertionException();
                     if (count == 2) PotentialInsertInSquare(initRow + rowPos, initCol + colPos);
 
-                    singlePossibilitesCounter[count].Remove((initRow + row, initCol + col));
+                    singlePossibilitesCounter[count].Remove((initRow + rowPos, initCol + colPos));
                     singlePossibilitesCounter[count - 1].Add((initRow + rowPos, initCol + colPos));
 
                     if (initRow + rowPos != row)
@@ -481,13 +471,7 @@ namespace SapirSudoku
             singlePossibilitesCounter[0].Remove((row, col));
             singlePossibilitesCounter[possibilities.Count()].Add((row, col));
 
-
-            /* IN HOW MANY PLACES IN ROW / COL / GRID CAN I PUT IT <= TO BE IMPLEMENTED
-            rowAvailabilityCounter[row][value - 1].ClearAll();
-            colAvailabilityCounter[col][value - 1].ClearAll();
-            gridAvailabilityCounter[GridPos(row, col)][value - 1].ClearAll();
-            */
-            foreach (int possibilite in possibilities)
+            foreach (int possibilite in possibilities) 
             {
                 rowAvailabilityCounter[row][possibilite - 1].Add(col + 1);
                 colAvailabilityCounter[col][possibilite - 1].Add(row + 1);
@@ -500,8 +484,8 @@ namespace SapirSudoku
         {
             for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
             {
-                if (GridPos(rowPos, col) == GridPos(row, col)) continue;
-                //if (rowPos == row) continue; MAYBE INSTEAD
+                //if (GridPos(rowPos, col) == GridPos(row, col)) continue; MAYBE BETTER THEN FOLLOWING?
+                if (rowPos == row) continue;
                 if (sudoku[rowPos, col] != NONE) continue;
                 BitSet p = GetSquarePossibilities(rowPos, col);
                 if (!p.Contains(value)) continue;
@@ -526,8 +510,8 @@ namespace SapirSudoku
         {
             for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
             {
-                if (GridPos(row, colPos) == GridPos(row, col)) continue;
-                //if (colPos == col) continue; MAYBE INSTEAD
+                //if (GridPos(row, colPos) == GridPos(row, col)) continue; MAYBE BETTER THEN FOLLOWING?
+                if (colPos == col) continue;
                 if (sudoku[row, colPos] != NONE) continue;
 
                 BitSet p = GetSquarePossibilities(row, colPos);
