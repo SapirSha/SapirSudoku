@@ -327,6 +327,7 @@ namespace SapirSudoku
                 if (GridPos(rowPos, col) == GridPos(row, col)) continue;
                 if (sudoku[rowPos, col] != NONE) continue;
                 BitSet p = GetSquarePossibilities(rowPos, col);
+
                 if (!p.Contains(value)) continue;
 
                 int count = p.Count();
@@ -472,6 +473,9 @@ namespace SapirSudoku
             colAvailability[col].Add(value);
             gridAvailability[GridPos(row, col)].Add(value);
 
+            if (GridPos(row,col) == 8 && value == 9)
+                Console.WriteLine("HERE FOR SOME REASON -----------------------------------------@@@@@@@@@@@@@@@@@@");
+
             BitSet possibilities = GetSquarePossibilities(row, col);
 
             singlePossibilitesCounter[0].Remove((row, col));
@@ -502,6 +506,11 @@ namespace SapirSudoku
                 BitSet p = GetSquarePossibilities(rowPos, col);
                 if (!p.Contains(value)) continue;
 
+                if (GridPos(rowPos, col) == 8 && value == 9)
+                {
+                    Console.WriteLine(gridAvailability[8]);
+                    Console.WriteLine("HERE OMG ------------------------------------------------------------------------------------------------------");
+                }
                 int count = p.Count();
                 singlePossibilitesCounter[count - 1].Remove((rowPos, col));
                 singlePossibilitesCounter[count].Add((rowPos, col));
@@ -519,9 +528,9 @@ namespace SapirSudoku
             {
                 if (GridPos(row, colPos) == GridPos(row, col)) continue;
                 //if (colPos == col) continue; MAYBE INSTEAD
-                if (sudoku[row, col] != NONE) continue;
+                if (sudoku[row, colPos] != NONE) continue;
 
-                BitSet p = GetSquarePossibilities(row,col);
+                BitSet p = GetSquarePossibilities(row, colPos);
                 if (!p.Contains(value)) continue;
 
                 int count = p.Count();
@@ -548,7 +557,7 @@ namespace SapirSudoku
                     if (!p.Contains(value)) continue;
 
                     int count = p.Count();
-                    singlePossibilitesCounter[count - 1].Remove((initRow + row, initCol + col));
+                    singlePossibilitesCounter[count - 1].Remove((initRow + rowPos, initCol + colPos));
                     singlePossibilitesCounter[count].Add((initRow + rowPos, initCol + colPos));
 
                     rowAvailabilityCounter[initRow + rowPos][value - 1].Add(initCol + colPos + 1);
