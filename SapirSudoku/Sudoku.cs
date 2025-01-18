@@ -31,7 +31,6 @@ namespace SapirSudoku
 
             for (int i = 1; i <= length; i++)
             {
-                Console.WriteLine("ADDING " +i +" As Possibility");
                 allowables.Add(i, i);
             }
 
