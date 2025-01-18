@@ -30,7 +30,10 @@ namespace SapirSudoku
 
 
             for (int i = 1; i <= length; i++)
-                allowables.Add(i,i);
+            {
+                Console.WriteLine("ADDING " +i +" As Possibility");
+                allowables.Add(i, i);
+            }
 
             try {
                 (int smaller, int bigger) = MathUtils.ColsestDivisibles(length);
@@ -91,9 +94,10 @@ namespace SapirSudoku
 
 
             if (value == NONE) { Remove(row, col); return; }
+
             if (allowables.ContainsKey(value) && CanInsert(value, row, col))
                 sudoku[row, col] = value;
-            else
+            else ////////////////// PROBLEM HERE FIX LATER 
                 throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
         }
 
