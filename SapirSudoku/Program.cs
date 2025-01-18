@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SapirSudoku;
-using SapirBitSet;
-using Heap;
+using SapirStruct;
 using System.Diagnostics;
 using System.Collections;
 using System.Numerics;
@@ -125,17 +124,17 @@ namespace MAIN
                 {0,0,0,4,1,9,0,0,5 },
                 {0,0,0,0,8,0,0,7,9 },
                 */
-                
+                /*
                 {0,0,0,0,1,0,0,0,0 },
                 {0,0,0,0,2,0,0,0,0 },
                 {0,0,0,0,3,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
-                {4,5,6,0,0,0,7,8,9 },
+                {4,5,6,0,0,0,7,8,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
-                
+                */
                 
                 /*
                 {8,0,0,0,0,0,0,0,0 },
@@ -148,14 +147,14 @@ namespace MAIN
                 {0,0,8,5,0,0,0,1,0 },
                 {0,9,0,0,0,0,4,0,0 },
                 */
-                /*
-                new int[]{0,0,0,1,0,0},
-                new int[]{0,0,0,5,0,6},
-                new int[]{2,0,0,0,5,0},
-                new int[]{0,5,0,0,0,2},
-                new int[]{6,0,3,0,0,0},
-                new int[]{0,0,0,6,1,3},
-                */
+                
+                {0,0,0,1,0,0},
+                {0,0,0,5,0,6},
+                {2,0,0,0,5,0},
+                {0,5,0,0,0,2},
+                {6,0,3,0,0,0},
+                {0,0,0,6,1,3},
+                
                 /* UNBEATABLE
                 {2,0,0,9,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,6,0 },
@@ -338,8 +337,7 @@ namespace MAIN
 
             Console.WriteLine(solver);
             Console.WriteLine();
-            //try { Solve(grid); } catch (Exception e) { }
-
+            //try { Solve(grid); } catch (Exception e) {  }
 
 
 

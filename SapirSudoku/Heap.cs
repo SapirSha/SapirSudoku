@@ -1,7 +1,7 @@
 ﻿using System;
 using CustomExceptions;
 
-namespace Heap
+namespace SapirStruct
 {
     public class Heap<T>
     {

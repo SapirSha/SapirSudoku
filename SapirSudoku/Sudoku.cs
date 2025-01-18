@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CustomExceptions;
-using SapirBitSet;
+using SapirStruct;
 using SapirMath;
 
 namespace SapirSudoku
