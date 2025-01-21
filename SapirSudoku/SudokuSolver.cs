@@ -26,7 +26,7 @@ namespace SapirSudoku
         private BitSet full; // represents a full bitset in range 1 to N
 
         private Stack<(int value, int row, int col)> NextGarunteedAction;
-        private Stack<(int value, int row, int col)> PrevAction;
+        private Stack<Stack<(int row, int col)>> PrevAction;
 
         int size;
         int count;
@@ -95,7 +95,7 @@ namespace SapirSudoku
             }
 
             this.NextGarunteedAction = new Stack<(int value, int row, int col)>(length * 3);
-            this.PrevAction = new Stack<(int value, int row, int col)>(length * length);
+            this.PrevAction = new Stack<Stack<(int row, int col)> >(length);
         }
         public SudokuSolver(int[,] grid) : this(grid.GetLength(0))
         {
@@ -103,6 +103,7 @@ namespace SapirSudoku
             if (grid.GetLength(1) != length)
                 throw new InvalidSudokuException($"Sudoku size must be N*N, instead was {grid.GetLength(0)}*{grid.GetLength(1)}");
 
+            PrevAction.Push(new Stack<(int row, int col)>(length));
             for (int row = 0; row < sudoku.GetLength(0); row++)
                 for (int col = 0; col < sudoku.GetLength(1); col++)
                     if (sudoku[row, col] == NONE && grid[row, col] != NONE)
@@ -110,26 +111,34 @@ namespace SapirSudoku
 
 
 
-            while (PrevAction.Count() != 0)
-            {
-                (int value, int row, int col) = PrevAction.Pop();
-                Remove(row, col);
-            }
+
 
             //PrevAction.Clear();
-
-            /*
+            PrevAction.Push(new Stack<(int row, int col)>(length));
+            
             while (NextGarunteedAction.Count() != 0)
             {
                 (int value, int row, int col) = NextGarunteedAction.Pop();
                 if (GetSquarePossibilities(row, col).Contains(value))
                     Insert(value, row, col);
             }
-            
 
-            foreach (var i in squarePossibilitesCounter[4])
-                Console.WriteLine(i.row +" " + i.col);
+
+            foreach (var i in PrevAction.Peek())
+                Remove(i.row, i.col);
+            PrevAction.Pop();
+            foreach (var i in PrevAction.Peek())
+                Remove(i.row, i.col);
+
+            /*
+            foreach (var i in PrevAction)
+            {
+                Console.WriteLine(i);
+                foreach (var j in i)
+                    Console.WriteLine(j);
+            }
             */
+
         }
 
         public override void Insert(int value, int row, int col)
@@ -145,7 +154,7 @@ namespace SapirSudoku
             UpdateGridInsert(value, row, col);
             UpdateSquareInsert(value, row, col);
             count++;
-            PrevAction.Push((value, row, col));
+            PrevAction.Peek().Push((row,col));
         }
 
         private void UpdateSquareInsert(int value, int row, int col)
