@@ -12,7 +12,9 @@ namespace SapirSudoku
 {
     public class SudokuSolver : Sudoku
     {
-        private HashSet<(int row,int col)>[] squarePossibilitesCounter; 
+        private HashSet<(int row,int col)>[] squarePossibilitesCounter;
+
+        private BitSet[,] squarePossibilities;
 
         private BitSet[] rowAvailability; // Amount possible in all row
         private BitSet[][] rowAvailabilityCounter;
@@ -36,7 +38,17 @@ namespace SapirSudoku
             for (int i = 1; i <= length; i++)
                 full.Add(i);
 
-            size = sudoku.Length;
+            squarePossibilities = new BitSet[length,length];
+            for (int row = 0; row < length; row++)
+            {
+                for (int col = 0; col < length; col++)
+                {
+                    squarePossibilities[row, col] = new BitSet(full);
+                }
+            }
+
+
+        size = sudoku.Length;
             count = 0;
 
             this.squarePossibilitesCounter = new HashSet<(int, int)>[length + 1];
@@ -98,47 +110,26 @@ namespace SapirSudoku
 
 
 
-            PrevAction.Clear();
+            while (PrevAction.Count() != 0)
+            {
+                (int value, int row, int col) = PrevAction.Pop();
+                Remove(row, col);
+            }
 
-            Console.WriteLine("1: ");
-            foreach (var x in squarePossibilitesCounter[1])
-                Console.WriteLine($"X: {x.row},{x.col}");
-            Console.WriteLine("2: ");
-            foreach (var x in squarePossibilitesCounter[2])
-                Console.WriteLine($"X: {x.row},{x.col}"); Console.WriteLine(squarePossibilitesCounter[2]);
-            Console.WriteLine();
+            //PrevAction.Clear();
 
-            Console.WriteLine(ToString());
-            Console.WriteLine();
-
+            /*
             while (NextGarunteedAction.Count() != 0)
             {
                 (int value, int row, int col) = NextGarunteedAction.Pop();
                 if (GetSquarePossibilities(row, col).Contains(value))
                     Insert(value, row, col);
             }
+            
 
-            Console.WriteLine(ToString());
-            Console.WriteLine();
-
-            while (PrevAction.Count() > 0) 
-            {
-                (int value, int row, int col) = PrevAction.Pop();
-                Remove(row, col);
-            }
-
-            Console.WriteLine("1: ");
-            foreach (var x in squarePossibilitesCounter[1])
-                Console.WriteLine($"X: {x.row},{x.col}");
-            Console.WriteLine("2: ");
-            foreach (var x in squarePossibilitesCounter[2])
-                Console.WriteLine($"X: {x.row},{x.col}"); Console.WriteLine(squarePossibilitesCounter[2]);
-            Console.WriteLine();
-
-            Console.WriteLine(ToString());
-            Console.WriteLine();
-
-
+            foreach (var i in squarePossibilitesCounter[4])
+                Console.WriteLine(i.row +" " + i.col);
+            */
         }
 
         public override void Insert(int value, int row, int col)
@@ -171,6 +162,8 @@ namespace SapirSudoku
 
             squarePossibilitesCounter[possible.Count()].Remove((row, col));
             squarePossibilitesCounter[0].Add((row, col));
+
+            squarePossibilities[row, col] = new BitSet(0);
             sudoku[row, col] = value;
 
             possible.Remove(value);
@@ -207,7 +200,8 @@ namespace SapirSudoku
                 int count = p.Count();
                 if (count <= 1) throw new InvalidInsertionException();
                 if (count == 2) PotentialInsertInSquare(rowPos, col);
-                
+
+                squarePossibilities[rowPos, col].Remove(value);
                 squarePossibilitesCounter[count].Remove((rowPos, col));
                 squarePossibilitesCounter[count - 1].Add((rowPos, col));
 
@@ -226,7 +220,6 @@ namespace SapirSudoku
 
         private void UpdateColInsert(int value, int row, int col)
         {
-
             for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
             {
                 if (GridPos(row,colPos) == GridPos(row,col)) continue;
@@ -238,7 +231,7 @@ namespace SapirSudoku
                 if (count <= 1) throw new InvalidInsertionException();
                 if (count == 2) PotentialInsertInSquare(row, colPos);
 
-
+                squarePossibilities[row, colPos].Remove(value);
                 squarePossibilitesCounter[count].Remove((row, colPos));
                 squarePossibilitesCounter[count - 1].Add((row, colPos));
 
@@ -271,6 +264,7 @@ namespace SapirSudoku
                     if (count <= 1) throw new InvalidInsertionException();
                     if (count == 2) PotentialInsertInSquare(initRow + rowPos, initCol + colPos);
 
+                    squarePossibilities[initRow + rowPos, initCol + colPos].Remove(value);
                     squarePossibilitesCounter[count].Remove((initRow + rowPos, initCol + colPos));
                     squarePossibilitesCounter[count - 1].Add((initRow + rowPos, initCol + colPos));
 
@@ -350,6 +344,7 @@ namespace SapirSudoku
 
             foreach (int possibilite in possibilities) 
             {
+                squarePossibilities[row, col].Add(possibilite);
                 rowAvailabilityCounter[row][possibilite - 1].Add(col + 1);
                 colAvailabilityCounter[col][possibilite - 1].Add(row + 1);
                 gridAvailabilityCounter[GridPos(row, col)][possibilite - 1].Add(row % grid_height * grid_width + col % grid_width + 1);
@@ -361,20 +356,20 @@ namespace SapirSudoku
         {
             for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
             {
-                //if (GridPos(rowPos, col) == GridPos(row, col)) continue; MAYBE BETTER THEN FOLLOWING?
                 if (rowPos == row) continue;
                 if (sudoku[rowPos, col] != NONE) continue;
                 BitSet p = GetSquarePossibilities(rowPos, col);
                 if (!p.Contains(value)) continue;
 
                 int count = p.Count();
+                squarePossibilities[rowPos, col].Add(value);
                 squarePossibilitesCounter[count - 1].Remove((rowPos, col));
                 squarePossibilitesCounter[count].Add((rowPos, col));
 
                 rowAvailabilityCounter[rowPos][value - 1].Add(col + 1);
                 gridAvailabilityCounter[GridPos(rowPos, col)][value - 1].Add(rowPos % grid_height * grid_width + col % grid_width + 1);
-                colAvailabilityCounter[col][value - 1].Add(rowPos + 1); // The one we clear at insert
-
+                
+                colAvailabilityCounter[col][value - 1].Add(rowPos + 1);
             }
         }
 
@@ -382,7 +377,6 @@ namespace SapirSudoku
         {
             for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
             {
-                //if (GridPos(row, colPos) == GridPos(row, col)) continue; MAYBE BETTER THEN FOLLOWING?
                 if (colPos == col) continue;
                 if (sudoku[row, colPos] != NONE) continue;
 
@@ -390,11 +384,13 @@ namespace SapirSudoku
                 if (!p.Contains(value)) continue;
 
                 int count = p.Count();
+                squarePossibilities[row, colPos].Add(value);
                 squarePossibilitesCounter[count - 1].Remove((row, colPos));
                 squarePossibilitesCounter[count].Add((row, colPos));
 
                 colAvailabilityCounter[colPos][value - 1].Add(row + 1);
                 gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Add(row % grid_height * grid_width + colPos % grid_width + 1);
+                
                 rowAvailabilityCounter[row][value - 1].Add(colPos + 1);
             }
         }
@@ -413,6 +409,7 @@ namespace SapirSudoku
                     if (!p.Contains(value)) continue;
 
                     int count = p.Count();
+                    squarePossibilities[initRow + rowPos, initCol + colPos].Add(value);
                     squarePossibilitesCounter[count - 1].Remove((initRow + rowPos, initCol + colPos));
                     squarePossibilitesCounter[count].Add((initRow + rowPos, initCol + colPos));
 
@@ -443,6 +440,28 @@ namespace SapirSudoku
         public bool IsSolved()
         {
             return size == count;
+        }
+
+        public void printPoss()
+        {
+            Console.WriteLine(squarePossibilities[2,0]);
+            for(int i = 0; i < squarePossibilities.GetLength(0); i++)
+            {
+                Console.Write($"{i}:");
+                
+
+                for (int j = 0; j < squarePossibilities.GetLength(1); j++)
+                {
+                    Console.Write(j+":");
+                    foreach(int v in squarePossibilities[i,j])
+                        Console.Write(v);
+
+                    Console.Write("\t ");
+
+                }
+                Console.WriteLine();
+            }
+
         }
 
 
