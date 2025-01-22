@@ -356,7 +356,7 @@ namespace MAIN
             Console.WriteLine();
             //try { Solve(grid); } catch (Exception e) {  }
 
-            solver.printPoss();
+            //solver.printPoss();
 
 
 
