@@ -220,6 +220,44 @@ namespace SapirStruct
             return new string(bits);
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == this) return true;
+            if (obj == null) return false;
+            if (typeof(BitSet) != obj.GetType()) return false;
+            BitSet other = (BitSet)obj;
+            int looplen = MathUtils.Min(other.set.Length, set.Length);
+
+            for (int i = 0; i < looplen; i++)
+                if (other.set[i] != set[i]) return false;
+
+            for (int i = looplen; i < other.set.Length; i++)
+                if (other.set[i] != 0) return false;
+            for (int i = looplen; i < set.Length; i++)
+                if (set[i] != 0) return false;
+
+            return true;
+        }
+        
+        public bool IsSubSetOf(BitSet superset)
+        {
+            return BitSet.Union(this, superset).Equals(superset);
+        }
+
+        public bool IsSuperSetOf(BitSet superset)
+        {
+            return BitSet.Union(superset, this).Equals(this);
+        }
+
+        public BitSet Complement()
+        {
+            BitSet result = new BitSet(this);
+            for (int i = 0; i < this.set.Length; i++)
+                result.set[i] = ~result.set[i];
+            return result;
+        }
+
+
         public IEnumerator<int> GetEnumerator()
         {
             int[] clone = (int[])set.Clone();
@@ -241,5 +279,7 @@ namespace SapirStruct
         {
             return GetEnumerator();
         }
+
+        
     }
 }
