@@ -358,6 +358,17 @@ namespace MAIN
 
             //solver.printPoss();
 
+            BitSet set1 = new BitSet(3);
+            set1.Add(7);
+            set1.Add(35);
+
+
+            BitSet set2 = new BitSet(3);
+            set2.Add(7);
+            Console.WriteLine(set1);
+
+            Console.WriteLine(set1.Complement());
+
 
 
 
