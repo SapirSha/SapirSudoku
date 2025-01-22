@@ -12,21 +12,21 @@ namespace SapirSudoku
     public class SudokuSolver : Sudoku
     {
         float LLOAD = 0.3f;
-        private HashSet<(int row,int col)>[] squarePossibilitesCounter;
+        public HashSet<(int row,int col)>[] squarePossibilitesCounter;
 
-        private BitSet[,] squarePossibilities;
+        public BitSet[,] squarePossibilities;
 
-        private BitSet[] rowAvailability; // Amount possible in all row
-        private BitSet[][] rowAvailabilityCounter;
-        private BitSet[] colAvailability; // Amount possible in all col
-        private BitSet[][] colAvailabilityCounter;
-        private BitSet[] gridAvailability;// Amount possible in all grid
-        private BitSet[][] gridAvailabilityCounter;
+        public BitSet[] rowAvailability; // Amount possible in all row
+        public BitSet[][] rowAvailabilityCounter;
+        public BitSet[] colAvailability; // Amount possible in all col
+        public BitSet[][] colAvailabilityCounter;
+        public BitSet[] gridAvailability;// Amount possible in all grid
+        public BitSet[][] gridAvailabilityCounter;
 
-        private BitSet full; // represents a full bitset in range 1 to N
+        public BitSet full; // represents a full bitset in range 1 to N
 
-        private Stack<(int value, int row, int col)> NextGarunteedAction;
-        private Stack<Stack<(int row, int col)>> PrevAction;
+        public Stack<(int value, int row, int col)> NextGarunteedAction;
+        public Stack<Stack<(int row, int col)>> PrevAction;
 
         int size;
         int count;
@@ -254,6 +254,8 @@ namespace SapirSudoku
                 
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(rowPos, col));
+                if (posAva <= sudoku.GetLength(0) * LLOAD) Hidden(rowPos, col);
+
             }
         }
 
@@ -283,6 +285,8 @@ namespace SapirSudoku
                 posAva = gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(row, colPos));
+                if (posAva <= sudoku.GetLength(0) * LLOAD) Hidden(row, colPos);
+
             }
         }
 
@@ -313,8 +317,6 @@ namespace SapirSudoku
                         int posAva = rowAvailabilityCounter[initRow + rowPos][value - 1].Count();
                         if (posAva == 0) throw new InvalidInsertionException();
                         if (posAva == 1) PotentialInsertInRow(value, initRow + rowPos);
-                        if (posAva <= sudoku.GetLength(0) * LLOAD) Hidden(value, initRow + rowPos, initCol + colPos);
-
                     }
                     if (initCol + colPos != col)
                     {
@@ -322,7 +324,6 @@ namespace SapirSudoku
                         int posAva = colAvailabilityCounter[initCol + colPos][value - 1].Count();
                         if (posAva == 0) throw new InvalidInsertionException();
                         if (posAva == 1) PotentialInsertInCol(value, initCol + colPos);
-                        if (posAva <= sudoku.GetLength(0) * LLOAD) Hidden(value, initRow + rowPos, initCol + colPos);
                     }
                 }
             }
@@ -463,9 +464,14 @@ namespace SapirSudoku
             }
         }
 
-        private void Hidden(int value, int row, int col)
+        private void Hidden(int row, int col)
         {
-            BitSet poss = GetRealSquarePossibilities(row, col);
+            BitSet possibilities_in_square = GetRealSquarePossibilities(row, col);
+            BitSet possibilities_in_grid = gridAvailabilityCounter[GridPos(row, col)][3];
+
+
+            Console.WriteLine(" " + row + " " + col);
+            Console.WriteLine(gridAvailabilityCounter[GridPos(row, col)][3]);
 
 
         }
