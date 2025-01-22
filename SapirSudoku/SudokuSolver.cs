@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
-using System.Threading.Channels;
 using CustomExceptions;
 using SapirStruct;
 using SapirSudoku;
@@ -113,7 +112,7 @@ namespace SapirSudoku
 
 
 
-            //PrevAction.Clear();
+            PrevAction.Clear();
             PrevAction.Push(new Stack<(int row, int col)>(length));
             
             while (NextGarunteedAction.Count() != 0)
@@ -122,14 +121,44 @@ namespace SapirSudoku
                 if (GetSquarePossibilities(row, col).Contains(value))
                     Insert(value, row, col);
             }
-
-
+            if (IsSolved()) return;
+            
             foreach (var i in PrevAction.Peek())
                 Remove(i.row, i.col);
             PrevAction.Pop();
+
+            /*
+            PrevAction.Push(new Stack<(int row, int col)>());
+            (int y, int x) = squarePossibilitesCounter[2].First();
+            Console.WriteLine(x +" + " +y);
+            Insert(squarePossibilities[y, x].GetSmallest(), y, x);
+
+            while (NextGarunteedAction.Count() != 0)
+            {
+                (int value, int row, int col) = NextGarunteedAction.Pop();
+                if (GetSquarePossibilities(row, col).Contains(value))
+                    Insert(value, row, col);
+            }
+            /*
             foreach (var i in PrevAction.Peek())
                 Remove(i.row, i.col);
+            PrevAction.Pop();
 
+            PrevAction.Push(new Stack<(int row, int col)>());
+            (y, x) = squarePossibilitesCounter[3].Last();
+            Console.WriteLine(x + " + " + y);
+            Insert(squarePossibilities[y, x].GetSmallest(), y, x);
+
+            while (NextGarunteedAction.Count() != 0)
+            {
+                (int value, int row, int col) = NextGarunteedAction.Pop();
+                if (GetSquarePossibilities(row, col).Contains(value))
+                    Insert(value, row, col);
+            }
+            /*
+            foreach (var i in PrevAction.Peek())
+                Remove(i.row, i.col);
+            */
             /*
             foreach (var i in PrevAction)
             {
@@ -453,19 +482,17 @@ namespace SapirSudoku
 
         public void printPoss()
         {
-            Console.WriteLine(squarePossibilities[2,0]);
             for(int i = 0; i < squarePossibilities.GetLength(0); i++)
             {
                 Console.Write($"{i}:");
-                
 
                 for (int j = 0; j < squarePossibilities.GetLength(1); j++)
                 {
+                    String msg = "";
                     Console.Write(j+":");
-                    foreach(int v in squarePossibilities[i,j])
-                        Console.Write(v);
-
-                    Console.Write("\t ");
+                    foreach (int v in squarePossibilities[i, j])
+                        msg += v;
+                    Console.Write($"{msg, -10}");
 
                 }
                 Console.WriteLine();
