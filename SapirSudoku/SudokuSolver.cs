@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
@@ -223,6 +224,7 @@ namespace SapirSudoku
                 posAva = gridAvailabilityCounter[GridPos(row, col)][possibilite - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(possibilite, GridPos(row, col));
+                if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(possibilite, row, col);
             }
         }
 
@@ -254,7 +256,7 @@ namespace SapirSudoku
                 
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(rowPos, col));
-                if (posAva <= sudoku.GetLength(0) * LLOAD) Hidden(rowPos, col);
+                if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(value, rowPos, col);
 
             }
         }
@@ -285,7 +287,7 @@ namespace SapirSudoku
                 posAva = gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
                 if (posAva == 1) PotentialInsertInGrid(value, GridPos(row, colPos));
-                if (posAva <= sudoku.GetLength(0) * LLOAD) Hidden(row, colPos);
+                if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(value, row, colPos);
 
             }
         }
@@ -464,19 +466,50 @@ namespace SapirSudoku
             }
         }
 
-        private void Hidden(int row, int col)
+        private void HiddenInGrid(int value, int row, int col)
         {
-            BitSet possibilities_in_square = GetRealSquarePossibilities(row, col);
-            BitSet possibilities_in_grid = gridAvailabilityCounter[GridPos(row, col)][3];
+            Console.WriteLine($"HELLO {value}: {row},{col}");
+            BitSet possibilities_in_grid_positions = gridAvailabilityCounter[GridPos(row, col)][value - 1];
+            BitSet poss = GetRealSquarePossibilities
+                (row = (possibilities_in_grid_positions.GetSmallest() - 1) / grid_width, col = (possibilities_in_grid_positions.GetSmallest() - 1) % grid_width);
 
+            Console.WriteLine("\n" + value +" " + possibilities_in_grid_positions);
+            Console.WriteLine("P " + GetRealSquarePossibilities(row, col));
+            Console.WriteLine("___");
+            int other = -1;
+            foreach (int p in poss)
+            {
+                if (p == value || gridAvailabilityCounter[GridPos(row, col)][p - 1].Count() == 0) continue;
+                Console.WriteLine(p + " " + gridAvailabilityCounter[GridPos(row, col)][p - 1]);
+                if (gridAvailabilityCounter[GridPos(row, col)][p - 1].IsSubSetOf(possibilities_in_grid_positions))
+                {
+                    Console.WriteLine($"HERE {value}-{p} {row},{col}");
+                    other = p;
+                }
+            }
 
-            Console.WriteLine(" " + row + " " + col);
-            Console.WriteLine(gridAvailabilityCounter[GridPos(row, col)][3]);
+            if (other != -1)
+            {
+                BitSet inSet = new BitSet(2);
+                inSet.Add(value);
+                inSet.Add(other);
+                foreach (int p2 in possibilities_in_grid_positions)
+                {
+                    row = (p2- 1) / grid_width;
+                    col = (p2 - 1) % grid_width;
+                    BitSet poss3 = GetRealSquarePossibilities(row, col);
+                    squarePossibilities[row, col] = new BitSet(inSet); //
+                }
+            }
+            
+
+            //Console.WriteLine(" " + row + " " + col);
+            //Console.WriteLine(gridAvailabilityCounter[GridPos(row, col)][3]);
 
 
         }
 
-        private BitSet GetSquarePossibilities(int row, int col)
+        public BitSet GetSquarePossibilities(int row, int col)
         {
             if (!InRange(row,col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
@@ -485,7 +518,7 @@ namespace SapirSudoku
             return BitSet.Intersection(rowAvailability[row], colAvailability[col], gridAvailability[GridPos(row, col)]);
         }
 
-        private BitSet GetRealSquarePossibilities(int row, int col)
+        public BitSet GetRealSquarePossibilities(int row, int col)
         {
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");

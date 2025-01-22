@@ -367,7 +367,9 @@ namespace MAIN
 
             solver.printPoss();
             Console.WriteLine(solver.gridAvailabilityCounter[0][3].Count());
-
+            Console.WriteLine("E");
+            Console.WriteLine(solver.GetSquarePossibilities(0, 2));
+            Console.WriteLine("E");
 
 
             watch.Stop();
