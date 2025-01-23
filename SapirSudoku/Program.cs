@@ -85,6 +85,22 @@ namespace MAIN
             return true;
         }
 
+        public static int[,] StringToGrid(String str, int length)
+        {
+            int[,] grid = new int[length, length];
+            int index = 0;
+            for (int i = 0; i < length; i++)
+                for (int j = 0; j < length; j++)
+                {
+                    if (str[index] == '.')
+                        grid[i, j] = 0;
+                    else
+                        grid[i, j] = str[index] - '0';
+                    index++;
+                }
+            return grid;
+        }
+
         public static void Main(string[] args)
         {
             //var watch = Stopwatch.StartNew();
@@ -138,6 +154,8 @@ namespace MAIN
                 {0,0,8,5,0,0,0,1,0 },
                 {0,9,0,0,0,0,4,0,0 },
                 */
+
+                /*
                 {0,0,0,0,6,0,0,0,0 },
                 {0,0,0,0,4,2,7,3,6 },
                 {0,0,6,7,3,0,0,4,0 },
@@ -147,6 +165,7 @@ namespace MAIN
                 {1,0,0,0,0,0,0,8,5 },
                 {0,6,0,0,8,0,2,7,1 },
                 {0,0,5,0,1,0,0,9,4 }
+                */
                 /*
                 {0,0,0,1,0,0},
                 {0,0,0,5,0,6},
@@ -168,7 +187,7 @@ namespace MAIN
                 {0,0,0, 4,1,9, 0,0,5 },
                 {0,0,0, 0,8,0, 0,7,9 }
                 */
-                /*
+                /* ww
                 {0,0,0, 0,0,5, 0,8,0 },
                 {0,0,0, 6,0,1, 0,4,3 },
                 {0,0,0, 0,0,0, 0,0,0 },
@@ -224,6 +243,48 @@ namespace MAIN
   new int[]  {0, 0, 1, 0, 0, 0, 0, 6, 8},
   new int[]  {0, 0, 8, 5, 0, 0, 0, 1, 0},
   new int[]  {0, 9, 0, 0, 0, 0, 4, 0, 0}
+                */
+                /* ww
+    {5,2,8,6,0,0,0,4,9 },
+    {1,3,6,4,9,0,0,2,5 },
+    {7,9,4,2,0,5,6,3,0 },
+    {0,0,0,1,0,0,2,0,0 },
+    {0,0,7,8,2,6,3,0,0 },
+    {0,0,2,5,0,9,0,6,0 },
+    {2,4,0,3,0,0,9,7,6 },
+    {8,0,9,7,0,2,4,1,3 },
+    {0,7,0,9,0,4,5,8,2 }
+                */
+                /*
+                {3,7,0,4,0,8,1,0,0 },
+                {0,0,0,9,0,3,7,0,4 },
+                {9,4,0,1,0,0,0,8,3 },
+                {4,2,0,0,0,0,0,0,5 },
+                {0,0,0,5,0,4,0,0,0 },
+                {8,0,0,0,0,0,0,4,6 },
+                {0,1,0,0,4,9,0,0,0 },
+                {5,0,9,6,0,0,4,0,0 },
+                {0,0,4,2,0,0,9,3,1 }
+                */
+                {9,0,3,4,0,0,6,7,0 },
+                {7,1,2,6,5,8,9,4,3 },
+                {0,6,4,7,3,9,0,0,2 },
+                {0,3,0,0,4,7,5,0,9 },
+                {0,0,0,0,9,0,3,0,0 },
+                {0,0,9,3,0,0,0,8,0 },
+                {4,0,0,0,6,3,0,9,0 },
+                {0,9,0,2,7,0,4,3,6 },
+                {3,0,6,9,8,4,7,0,1 }
+                /*
+                {0,0,8,0,0,7,0,0,0 },
+                {0,4,2,0,0,5,0,0,0 },
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,3,0,0,6,8,0,1 },
+                {0,0,0,0,0,0,0,0,6 },
+                {9,0,0,0,0,0,0,0,0 },
+                {0,8,0,1,3,0,4,7,0 },
+                {0,0,0,0,9,0,0,0,0 },
+                {0,1,0,0,0,0,0,0,0 }
                 */
             };
             var watch = Stopwatch.StartNew();
@@ -359,18 +420,17 @@ namespace MAIN
             */
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
-            SudokuSolver solver = new SudokuSolver(grid);
+
+            int[,] g = StringToGrid("4..372196..2...87.97....4..5.3..176..9..375.42.7...3..6....39.7..97..24.72.95.6..", 9);
+
+
+            SudokuSolver solver = new SudokuSolver(g);
 
             Console.WriteLine(solver);
             Console.WriteLine();
             //try { Solve(grid); } catch (Exception e) {  }
 
             solver.printPoss();
-            Console.WriteLine(solver.gridAvailabilityCounter[0][3].Count());
-            Console.WriteLine("E");
-            Console.WriteLine(solver.GetSquarePossibilities(0, 2));
-            Console.WriteLine("E");
-
 
             watch.Stop();
             Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");

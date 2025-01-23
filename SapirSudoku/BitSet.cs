@@ -56,7 +56,7 @@ namespace SapirStruct
             */
         }
 
-        public bool IsEmpty(int i)
+        public bool IsEmpty()
         {
             foreach (var holder in set)
                 if (holder != 0)

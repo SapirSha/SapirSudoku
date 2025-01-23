@@ -12,7 +12,7 @@ namespace SapirSudoku
 {
     public class SudokuSolver : Sudoku
     {
-        float LLOAD = 0.3f;
+        double LLOAD = 1.0/3;
         public HashSet<(int row,int col)>[] squarePossibilitesCounter;
 
         public BitSet[,] squarePossibilities;
@@ -124,7 +124,7 @@ namespace SapirSudoku
                     Insert(value, row, col);
             }
             if (IsSolved()) return;
-            
+            /*
             foreach (var i in PrevAction.Peek())
                 Remove(i.row, i.col);
             PrevAction.Pop();
@@ -223,8 +223,8 @@ namespace SapirSudoku
                 gridAvailabilityCounter[GridPos(row, col)][possibilite - 1].Remove(row % grid_height * grid_width + col % grid_width + 1);
                 posAva = gridAvailabilityCounter[GridPos(row, col)][possibilite - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
-                if (posAva == 1) PotentialInsertInGrid(possibilite, GridPos(row, col));
-                if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(possibilite, row, col);
+                else if (posAva == 1) PotentialInsertInGrid(possibilite, GridPos(row, col));
+                else if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(possibilite, row, col, posAva);
             }
         }
 
@@ -249,15 +249,15 @@ namespace SapirSudoku
                 rowAvailabilityCounter[rowPos][value - 1].Remove(col + 1);
                 int posAva = rowAvailabilityCounter[rowPos][value - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
-                if (posAva == 1) PotentialInsertInRow(value, rowPos);
+                else if (posAva == 1) PotentialInsertInRow(value, rowPos);
+                else if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInRow(value, rowPos, col, posAva);
 
                 gridAvailabilityCounter[GridPos(rowPos, col)][value - 1].Remove(rowPos % grid_height * grid_width + col % grid_width + 1);
                 posAva = gridAvailabilityCounter[GridPos(rowPos, col)][value - 1].Count();
                 
                 if (posAva == 0) throw new InvalidInsertionException();
-                if (posAva == 1) PotentialInsertInGrid(value, GridPos(rowPos, col));
-                if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(value, rowPos, col);
-
+                else if (posAva == 1) PotentialInsertInGrid(value, GridPos(rowPos, col));
+                else if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(value, rowPos, col, posAva);
             }
         }
 
@@ -286,8 +286,8 @@ namespace SapirSudoku
                 gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Remove(row % grid_height * grid_width + colPos % grid_width + 1);
                 posAva = gridAvailabilityCounter[GridPos(row, colPos)][value - 1].Count();
                 if (posAva == 0) throw new InvalidInsertionException();
-                if (posAva == 1) PotentialInsertInGrid(value, GridPos(row, colPos));
-                if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(value, row, colPos);
+                else if (posAva == 1) PotentialInsertInGrid(value, GridPos(row, colPos));
+                else if (posAva <= sudoku.GetLength(0) * LLOAD) HiddenInGrid(value, row, colPos, posAva);
 
             }
         }
@@ -318,7 +318,8 @@ namespace SapirSudoku
                         rowAvailabilityCounter[initRow + rowPos][value - 1].Remove(initCol + colPos + 1);
                         int posAva = rowAvailabilityCounter[initRow + rowPos][value - 1].Count();
                         if (posAva == 0) throw new InvalidInsertionException();
-                        if (posAva == 1) PotentialInsertInRow(value, initRow + rowPos);
+                        else if (posAva == 1) PotentialInsertInRow(value, initRow + rowPos);
+                        else if (posAva <= sudoku.GetLength(1) * LLOAD) HiddenInRow(value, initRow + rowPos, initCol + colPos, posAva);
                     }
                     if (initCol + colPos != col)
                     {
@@ -389,7 +390,6 @@ namespace SapirSudoku
 
             foreach (int possibilite in possibilities) 
             {
-                squarePossibilities[row, col].Add(possibilite);
                 rowAvailabilityCounter[row][possibilite - 1].Add(col + 1);
                 colAvailabilityCounter[col][possibilite - 1].Add(row + 1);
                 gridAvailabilityCounter[GridPos(row, col)][possibilite - 1].Add(row % grid_height * grid_width + col % grid_width + 1);
@@ -465,49 +465,83 @@ namespace SapirSudoku
                 }
             }
         }
-
-        private void HiddenInGrid(int value, int row, int col)
+        int i = 1;
+        private void HiddenInGrid(int value, int row, int col, int hidden_type)
         {
-            Console.WriteLine($"HELLO {value}: {row},{col}");
-            BitSet possibilities_in_grid_positions = gridAvailabilityCounter[GridPos(row, col)][value - 1];
-            BitSet poss = GetRealSquarePossibilities
-                (row = (possibilities_in_grid_positions.GetSmallest() - 1) / grid_width, col = (possibilities_in_grid_positions.GetSmallest() - 1) % grid_width);
+            Console.WriteLine($"IN HIDDEN CHECK {i++}");
+            // THERE ARE X SQUARES WHERE V APPEARES IN THE GRID
+            // IF THERE ARE X - 1 OTHER VALUES WHO ONLY APPEAR IN THE SAME GRIDS
+            // HIDDEN VALUES IN GRID
+            int grid = GridPos(row,col);
 
-            Console.WriteLine("\n" + value +" " + possibilities_in_grid_positions);
-            Console.WriteLine("P " + GetRealSquarePossibilities(row, col));
-            Console.WriteLine("___");
-            int other = -1;
-            foreach (int p in poss)
+            // COLUMNS WHERE VALUE APPEARS AT
+            BitSet possibilities_in_grid_for_value = gridAvailabilityCounter[grid][value - 1];
+            BitSet possibilities_in_grid_other_values = gridAvailability[grid];
+
+            BitSet Hidden = new BitSet(sudoku.GetLength(0));
+            foreach (int possibility in possibilities_in_grid_other_values)
             {
-                if (p == value || gridAvailabilityCounter[GridPos(row, col)][p - 1].Count() == 0) continue;
-                Console.WriteLine(p + " " + gridAvailabilityCounter[GridPos(row, col)][p - 1]);
-                if (gridAvailabilityCounter[GridPos(row, col)][p - 1].IsSubSetOf(possibilities_in_grid_positions))
-                {
-                    Console.WriteLine($"HERE {value}-{p} {row},{col}");
-                    other = p;
-                }
+                if (gridAvailabilityCounter[grid][possibility - 1].IsEmpty()) continue;
+                if (gridAvailabilityCounter[grid][possibility - 1].IsSubSetOf(possibilities_in_grid_for_value))
+                    Hidden.Add(possibility);
             }
 
-            if (other != -1)
+            if (Hidden.Count() >= hidden_type)
             {
-                BitSet inSet = new BitSet(2);
-                inSet.Add(value);
-                inSet.Add(other);
-                foreach (int p2 in possibilities_in_grid_positions)
+                int initRow = grid / (sudoku.GetLength(1) / grid_width) * grid_height;
+                int initCol = grid * grid_width % sudoku.GetLength(1);
+                Console.WriteLine($"REMOVING POSS FOR: V {value} - G {grid}");
+                Console.WriteLine("Grid Appears POS: " + possibilities_in_grid_for_value);
+                Console.WriteLine("Hidden NUMBERS: " + Hidden);
+                foreach (int position in possibilities_in_grid_for_value)
                 {
-                    row = (p2- 1) / grid_width;
-                    col = (p2 - 1) % grid_width;
-                    BitSet poss3 = GetRealSquarePossibilities(row, col);
-                    squarePossibilities[row, col] = new BitSet(inSet); //
+                    row =initRow + (position - 1) / grid_width;
+                    col = initCol + (position - 1) % grid_width;
+                    Console.WriteLine($"REMOVING POSSIBILITIES FOR: {value} {row},{col}");
+                    Console.WriteLine("CURRENT: " + squarePossibilities[row, col]);
+                    Console.WriteLine("HIDDEN: " + Hidden);
+                    Console.WriteLine("INTER: " + BitSet.Intersection(squarePossibilities[row, col], Hidden));
+
+                    squarePossibilities[row, col] = BitSet.Intersection(squarePossibilities[row, col], Hidden);
                 }
+            }
+        }
+        
+        private void HiddenInRow(int value, int row, int col, int hidden_type)
+        {
+            Console.WriteLine($"IN HIDDEN CHECK {i++}");
+            // THERE ARE X SQUARES WHERE V APPEARES IN THE ROW
+            // IF THERE ARE X - 1 OTHER VALUES WHO ONLY APPEAR IN THE SAME ROW
+            // HIDDEN VALUES IN ROW
+            BitSet possibilities_in_row_for_value = rowAvailabilityCounter[row][value - 1];
+            BitSet possibilities_in_row_other_values = rowAvailability[row];
+
+            BitSet Hidden = new BitSet(sudoku.GetLength(0));
+            foreach (int possibility in possibilities_in_row_other_values)
+            {
+                if (rowAvailabilityCounter[row][possibility - 1].IsEmpty()) continue;
+                if (rowAvailabilityCounter[row][possibility - 1].IsSubSetOf(possibilities_in_row_for_value))
+                    Hidden.Add(possibility);
             }
             
+            if (Hidden.Count() >= hidden_type)
+            {
+                Console.WriteLine($"REMOVING POSS FOR: V {value} - R {row}");
+                Console.WriteLine("Row Appears POS: " + possibilities_in_row_for_value);
+                Console.WriteLine("Hidden NUMBERS: " + Hidden);
+                foreach (int position in possibilities_in_row_for_value)
+                {
 
-            //Console.WriteLine(" " + row + " " + col);
-            //Console.WriteLine(gridAvailabilityCounter[GridPos(row, col)][3]);
-
-
+                    col = position - 1;
+                    Console.WriteLine($"REMOVING POSSIBILITIES FOR: {value} {row},{col}");
+                    Console.WriteLine("CURRENT:\t" + squarePossibilities[row, col]);
+                    Console.WriteLine("HIDDEN: \t" + Hidden);
+                    Console.WriteLine("INTER:  \t" + BitSet.Intersection(squarePossibilities[row, col], Hidden));
+                    squarePossibilities[row, col] = BitSet.Intersection(squarePossibilities[row, col], Hidden);
+                }
+            }
         }
+
 
         public BitSet GetSquarePossibilities(int row, int col)
         {
@@ -556,8 +590,6 @@ namespace SapirSudoku
             }
 
         }
-
-
 
     }
 }
