@@ -11,7 +11,7 @@ namespace MAIN
 {
     public static class Program
     {
-        static int MAX = 10;
+        static int MAX = 1;
         static int i = 0;
         public static void Print(this int[,] sudoku)
         {
@@ -131,17 +131,17 @@ namespace MAIN
                 new int[]{0,0,0,0,0,0,0,0,0 },
                 */
 
-                /*
-                {0,0,0,0,3,0,0,0,0 },
+                
+                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,7,6,5,0,0,0 },
+                {0,0,0,1,2,4,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
-                {0,0,0,0,0,0,0,0,0 },
-                {0,0,0,0,0,0,0,0,0 },
-                */
+                
 
                 /*
                 {8,0,0,0,0,0,0,0,0 },
@@ -266,6 +266,7 @@ namespace MAIN
                 {5,0,9,6,0,0,4,0,0 },
                 {0,0,4,2,0,0,9,3,1 }
                 */
+                /*
                 {9,0,3,4,0,0,6,7,0 },
                 {7,1,2,6,5,8,9,4,3 },
                 {0,6,4,7,3,9,0,0,2 },
@@ -275,6 +276,7 @@ namespace MAIN
                 {4,0,0,0,6,3,0,9,0 },
                 {0,9,0,2,7,0,4,3,6 },
                 {3,0,6,9,8,4,7,0,1 }
+                */
                 /*
                 {0,0,8,0,0,7,0,0,0 },
                 {0,4,2,0,0,5,0,0,0 },
@@ -285,6 +287,17 @@ namespace MAIN
                 {0,8,0,1,3,0,4,7,0 },
                 {0,0,0,0,9,0,0,0,0 },
                 {0,1,0,0,0,0,0,0,0 }
+                */
+                /*
+                {0,3,0,0,0,0,0,1,0 },
+                {0,0,8,0,9,0,0,0,0 },
+                {4,0,0,6,0,8,0,0,0 },
+                {0,0,0,0,7,6,9,4,0 },
+                {0,0,0,0,0,0,5,2,0 },
+                {0,0,0,1,2,4,0,0,0 },
+                {2,0,6,0,0,0,1,9,0 },
+                {0,0,0,7,0,0,0,0,0 },
+                {0,9,5,0,0,0,4,7,0 }
                 */
             };
             var watch = Stopwatch.StartNew();
@@ -421,19 +434,24 @@ namespace MAIN
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
 
-            int[,] g = StringToGrid("4..372196..2...87.97....4..5.3..176..9..375.42.7...3..6....39.7..97..24.72.95.6..", 9);
+            //int[,] g = StringToGrid("000000015020060000000000408003000900000100000000008000150400000000070300800000060", 9);
 
-
-            SudokuSolver solver = new SudokuSolver(g);
+            SudokuSolver solver = new SudokuSolver(grid);
 
             Console.WriteLine(solver);
             Console.WriteLine();
-            //try { Solve(grid); } catch (Exception e) {  }
 
             solver.printPoss();
+            Console.WriteLine(solver.gridAvailabilityCounter[2][2]);
+
+            //try { Solve(g); } catch (Exception e) { }
+
 
             watch.Stop();
             Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
+
+
+            
 
         }
     }
