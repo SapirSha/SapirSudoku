@@ -336,9 +336,19 @@ namespace MAIN
 800 026 540
 256 403 108
 000 851 620
+//
+002 685 004
+500 034 261
+004 210 835
 
+000 000 052
+020 500 310
+905 002 080
 
-
+800 026 540
+256 403 108
+000 851 620
+//
 002 685 004
 000 034 261
 004 210 835
@@ -481,9 +491,8 @@ namespace MAIN
             */
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
-            
-            int[,] g = StringToGrid("......26...9.8..435...3..9....215...35....1.918.379..48...549....4........5.2341.", 9);
-                SudokuSolver solver = new SudokuSolver(grid);
+
+            SudokuSolver solver = new SudokuSolver(grid);
 
                 Console.WriteLine(solver);
                 Console.WriteLine();
@@ -491,8 +500,8 @@ namespace MAIN
                 solver.printPoss();
 
             
-            try { Solve(grid); } catch (Exception e) { }
-            grid.Print();
+            //try { Solve(grid); } catch (Exception e) { }
+            //grid.Print();
 
             watch.Stop();
             Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
