@@ -299,6 +299,7 @@ namespace MAIN
                 {0,0,0,7,0,9,0,0,0 },
                 {0,9,5,0,0,0,4,7,0 }
                 */
+                /*
                 {0,3,0,0,0,0,0,1,0 },
                 {0,0,8,0,9,0,0,0,0 },
                 {4,0,0,6,0,8,0,0,0 },
@@ -308,10 +309,48 @@ namespace MAIN
                 {2,0,6,0,0,0,1,9,0 },
                 {0,0,0,7,0,0,0,0,0 },
                 {0,9,5,0,0,0,4,7,0 }
+                */
+                
+                 {0,0,2,0,8,5,0,0,4 },
+                 {0,0,0,0,3,0,0,6,0 },
+                 {0,0,4,2,1,0,0,3,0 },
+                 {0,0,0,0,0,0,0,5,2 },
+                 {0,0,0,0,0,0,3,1,0 },
+                 {9,0,0,0,0,0,0,0,0 },
+                 {8,0,0,0,0,6,0,0,0 },
+                 {2,5,0,4,0,0,0,0,8 },
+                 {0,0,0,0,0,1,6,0,0 }
+                
             };
             var watch = Stopwatch.StartNew();
             //Solve(grid);
             /*
+002 685 004
+500 034 261
+004 210 835
+
+000 000 052
+020 500 310
+905 002 080
+
+800 026 540
+256 403 108
+000 851 620
+
+
+
+002 685 004
+000 034 261
+004 210 835
+
+000 000 052
+000 000 310
+900 000 080
+
+800 026 540
+256 403 108
+000 851 620
+
             Sudoku sudoku = new Sudoku(grid);
             sudoku.PrintLine();
             SudokuSolver solver = new SudokuSolver(sudoku);
@@ -444,8 +483,6 @@ namespace MAIN
             //Console.WriteLine(s);
 
             int[,] g = StringToGrid("......26...9.8..435...3..9....215...35....1.918.379..48...549....4........5.2341.", 9);
-            try
-            {
                 SudokuSolver solver = new SudokuSolver(grid);
 
                 Console.WriteLine(solver);
@@ -453,13 +490,6 @@ namespace MAIN
 
                 solver.printPoss();
                 Console.WriteLine(solver.gridAvailabilityCounter[2][2]);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(" - \t - \t - \t - EXCEPTION STOP - \t - \t - \t -");
-                Console.WriteLine(" - \t - \t - \t - EXCEPTION STOP - \t - \t - \t -");
-                Console.WriteLine(" - \t - \t - \t - EXCEPTION STOP - \t - \t - \t -");
-            }
 
             try { Solve(grid); } catch (Exception e) { }
             grid.Print();
