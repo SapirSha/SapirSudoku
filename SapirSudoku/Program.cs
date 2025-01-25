@@ -132,12 +132,12 @@ namespace MAIN
                 */
 
                 /*
-                {0,0,0,0,0,0,0,0,0 },
-                {0,0,0,7,6,5,0,0,0 },
-                {0,0,0,1,2,4,0,0,0 },
+                {0,0,0,3,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
-                {0,0,0,0,0,0,0,0,0 },
+                {0,0,0,0,0,4,0,0,0 }, //
+                {0,0,0,0,0,2,0,0,0 }, //
+                {0,0,0,0,0,1,0,0,0 }, //
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
                 {0,0,0,0,0,0,0,0,0 },
@@ -481,7 +481,7 @@ namespace MAIN
             */
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
-
+            
             int[,] g = StringToGrid("......26...9.8..435...3..9....215...35....1.918.379..48...549....4........5.2341.", 9);
                 SudokuSolver solver = new SudokuSolver(grid);
 
@@ -489,16 +489,18 @@ namespace MAIN
                 Console.WriteLine();
 
                 solver.printPoss();
-                Console.WriteLine(solver.gridAvailabilityCounter[2][2]);
 
+            
             try { Solve(grid); } catch (Exception e) { }
             grid.Print();
 
             watch.Stop();
             Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
-
-
             
+
+
+
+
 
         }
     }
