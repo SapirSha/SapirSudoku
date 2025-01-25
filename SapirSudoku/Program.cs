@@ -321,6 +321,7 @@ namespace MAIN
                  {2,5,0,4,0,0,0,0,8 },
                  {0,0,0,0,0,1,6,0,0 }
                 */
+                /*
                 {0,0,3,8,0,0,5,1,0 },
                 {0,0,8,7,0,0,9,3,0 },
                 {1,0,0,3,0,5,7,2,8 },
@@ -330,45 +331,20 @@ namespace MAIN
                 {9,6,4,1,2,7,3,8,5 },
                 {3,8,2,6,5,9,4,7,1 },
                 {0,1,0,4,0,0,6,9,2 }
+                */
+            {9,0,8,7,3,5,1,0,0 },
+            {0,1,0,9,8,0,0,3,0 },
+            {0,0,0,0,2,0,0,9,8 },
+            {8,0,5,4,6,9,3,1,0 },
+            {0,9,0,0,7,0,0,0,0 },
+            {0,4,3,2,5,0,9,0,0 },
+            {2,5,0,0,9,0,0,0,1 },
+            {0,8,9,5,1,2,0,6,3 },
+            {0,0,1,8,4,7,0,0,9 }
             };
             var watch = Stopwatch.StartNew();
             //Solve(grid);
             /*
-002 685 004
-500 034 261
-004 210 835
-
-000 000 052
-020 500 310
-905 002 080
-
-800 026 540
-256 403 108
-000 851 620
-//
-002 685 004
-500 034 261
-004 210 835
-
-000 000 052
-020 500 310
-905 002 080
-
-800 026 540
-256 403 108
-000 851 620
-//
-002 685 004
-000 034 261
-004 210 835
-
-000 000 052
-000 000 310
-900 000 080
-
-800 026 540
-256 403 108
-000 851 620
 
             Sudoku sudoku = new Sudoku(grid);
             sudoku.PrintLine();
@@ -501,7 +477,9 @@ namespace MAIN
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
 
-            SudokuSolver solver = new SudokuSolver(grid);
+            int[,] g = StringToGrid("200090004040608020009407100010030050090060010605000908054000690000203000000000000", 9);
+
+            SudokuSolver solver = new SudokuSolver(g);
 
                 Console.WriteLine(solver);
                 Console.WriteLine();
@@ -510,7 +488,7 @@ namespace MAIN
 
             
             //try { Solve(grid); } catch (Exception e) { }
-            //grid.Print();
+            g.Print();
 
             watch.Stop();
             Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");

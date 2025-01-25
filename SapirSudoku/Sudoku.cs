@@ -23,10 +23,10 @@ namespace SapirSudoku
         }
         public Sudoku(int length = 9)
         {
-            if (length < 2)
-                throw new InvalidSudokuException("Minimum Sudoku Length is 2");
-            if (length > 128)
-                throw new InvalidSudokuException("Maximum Sudoku Length is 128");
+            if (length < 1)
+                throw new InvalidSudokuException("Minimum Sudoku Length is 1");
+            if (length > 25)
+                throw new InvalidSudokuException("Maximum Sudoku Length is 25");
 
 
             for (int i = 1; i <= length; i++)
@@ -138,6 +138,7 @@ namespace SapirSudoku
         
         public virtual bool CanInsert(int value, int row, int col)
         {
+            return true;
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
 
