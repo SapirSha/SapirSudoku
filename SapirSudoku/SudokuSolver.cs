@@ -136,7 +136,7 @@ namespace SapirSudoku
             if (!InRange(row,col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
             
-            if (!GetRealSquarePossibilities(row, col).Contains(value))
+            if (!squarePossibilities[row,col].Contains(value))
                 throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
 
             UpdateRowInsert(value, row, col);
@@ -166,7 +166,11 @@ namespace SapirSudoku
                 count = rowAvailabilityCounter[row][value - 1].Count();
                 if (count == 0) throw new InvalidInsertionException();
                 else if (count == 1) PotentialInsertInRow(value, row);
-                else if (count <= sudoku.GetLength(0) * LLOAD) HiddenInRow(value, row, col, count);
+                else
+                {
+                    if (count == 2) RowXWing(value, row, col);
+                    if (count <= sudoku.GetLength(0) * LLOAD) HiddenInRow(value, row, col, count);
+                }
             }
 
             if (changeCol)
@@ -175,7 +179,11 @@ namespace SapirSudoku
                 count = colAvailabilityCounter[col][value - 1].Count();
                 if (count == 0) throw new InvalidInsertionException();
                 else if (count == 1) PotentialInsertInCol(value, col);
-                else if (count <= sudoku.GetLength(0) * LLOAD) HiddenInCol(value, row, col, count);
+                else
+                {
+                    if (count == 2) ColXWing(value, row, col);
+                    if (count <= sudoku.GetLength(0) * LLOAD) HiddenInCol(value, row, col, count);
+                }
             }
 
             if (changeGrid)
@@ -277,7 +285,7 @@ namespace SapirSudoku
 
         public void PotentialInsertInSquare(int row, int col)
         {
-            BitSet possibilities = GetRealSquarePossibilities(row, col);
+            BitSet possibilities = squarePossibilities[row, col];
             NextGarunteedAction.Push((possibilities.GetSmallest(), row, col));
         }
 
@@ -471,22 +479,68 @@ namespace SapirSudoku
             }
         }
 
-        public BitSet GetSquarePossibilities(int row, int col)
+        public void RowXWing(int value, int row, int col)
         {
-            if (!InRange(row,col))
-                throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
-            if (sudoku[row, col] != NONE) return new BitSet(0);
+            if (rowAvailabilityCounter[row][value - 1].Count() == 2)
+            {
+                int col1 = rowAvailabilityCounter[row][value - 1].GetSmallest() - 1;
+                int col2 = rowAvailabilityCounter[row][value - 1].GetLargest() - 1;
+                if (value == 4)
+                {
+                    Console.WriteLine(col1 + " AWEE " + col2);
+                }
+                int row2 = -1;
+                foreach (int rowPos in colAvailabilityCounter[col1][value - 1])
+                {
+                    if (rowPos - 1 == row) continue;
+                    if (rowAvailabilityCounter[rowPos - 1][value - 1].Equals(rowAvailabilityCounter[row][value - 1]))
+                    {
+                        row2 = rowPos - 1;
+                        break;
+                    }
+                }
 
-            return BitSet.Intersection(rowAvailability[row], colAvailability[col], gridAvailability[GridPos(row, col)]);
+                if (row2 != -1)
+                {
+                    if (value == 4) Console.WriteLine("FOUND X WING");
+                    for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
+                    {
+                        if (rowPos == row || rowPos == row2) continue;
+                        if (value == 4) Console.WriteLine($"REMOVING {value} - R{rowPos},C{col1}{col2}");
+                        RemoveSquarePossibility(value, rowPos, col1);
+                        RemoveSquarePossibility(value, rowPos, col2);
+                    }
+                }
+            }
         }
 
-        public BitSet GetRealSquarePossibilities(int row, int col)
+        public void ColXWing(int value, int row, int col)
         {
-            if (!InRange(row, col))
-                throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
-            if (sudoku[row, col] != NONE) return new BitSet(0);
+            if (colAvailabilityCounter[col][value - 1].Count() == 2)
+            {
+                int row1 = colAvailabilityCounter[col][value - 1].GetSmallest() - 1;
+                int row2 = colAvailabilityCounter[col][value - 1].GetLargest() - 1;
+                int col2 = -1;
+                foreach (int colPos in rowAvailabilityCounter[row1][value - 1])
+                {
+                    if (colPos - 1 == col) continue;
+                    if (colAvailabilityCounter[colPos - 1][value - 1].Equals(colAvailabilityCounter[col][value - 1]))
+                    {
+                        col2 = colPos - 1;
+                        break;
+                    }
+                }
+                if (col2 != -1)
+                {
+                    for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
+                    {
+                        if (colPos == col || colPos == col2) continue;
+                        RemoveSquarePossibility(value, row1, colPos);
+                        RemoveSquarePossibility(value, row2, colPos);
+                    }
+                }
+            }
 
-            return squarePossibilities[row,col];
         }
 
         public override bool CanInsert(int value, int row, int col)
