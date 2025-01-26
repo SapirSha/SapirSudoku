@@ -346,6 +346,16 @@ namespace MAIN
             //Solve(grid);
             /*
 
+0:0:          1:678       2:          3:          4:          5:          6:78        7:678       8:
+1:0:57        1:          2:37        3:          4:          5:          6:357       7:          8:
+2:0:58        1:368       2:          3:          4:          5:          6:          7:368       8:35
+3:0:47        1:          2:27        3:          4:          5:          6:247       7:          8:
+4:0:478       1:          2:2378      3:          4:          5:24        6:2347      7:          8:37
+5:0:          1:23        2:          3:          4:          5:24        6:          7:34        8:
+6:0:          1:          2:          3:          4:          5:          6:          7:          8:
+7:0:          1:78        2:          3:          4:45        5:          6:4578      7:478       8:
+8:0:          1:278       2:278       3:          4:45        5:          6:34578     7:3478      8:357
+
             Sudoku sudoku = new Sudoku(grid);
             sudoku.PrintLine();
             SudokuSolver solver = new SudokuSolver(sudoku);
@@ -487,7 +497,7 @@ namespace MAIN
                 solver.printPoss();
 
             
-            //try { Solve(grid); } catch (Exception e) { }
+            try { Solve(g); } catch (Exception e) { }
             g.Print();
 
             watch.Stop();

@@ -31,8 +31,14 @@ namespace SapirSudoku
 
         public Stack<(int value, int row, int col)> NextGarunteedAction;
 
-        public Stack<Stack<Stack<(int value, int row, int col)>>> PrevAction;
         public Stack<Stack<(int row, int col)>> PrevInsertion;
+        // FIRST IN PREV INSERTION FOR GUESSING
+        // SECOND IN PREV INSERTION FOR INSERTIONS
+
+        public Stack<Stack<Stack<(int value, int row, int col)>>> PrevAction;
+        // FIRST IN PREV ACTION FOR GUESSING
+        // SECOND IN PREV ACTION FOR INSERTIONS
+        // THIRD FOR PREV ACTION FOR POSSIBILITY
 
         int size;
         int count;
@@ -109,68 +115,141 @@ namespace SapirSudoku
             int length = grid.GetLength(0);
             if (grid.GetLength(1) != length)
                 throw new InvalidSudokuException($"Sudoku size must be N*N, instead was {grid.GetLength(0)}*{grid.GetLength(1)}");
+
             PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(length));
 
-            PrevAction.Peek().Push(new Stack<(int value, int row, int col)>(length));
             PrevInsertion.Push(new Stack<(int row, int col)>(length));
+
             for (int row = 0; row < sudoku.GetLength(0); row++)
                 for (int col = 0; col < sudoku.GetLength(1); col++)
                     if (sudoku[row, col] == NONE && grid[row, col] != NONE)
                         Insert(grid[row, col], row, col);
 
 
+            InsertGuranteed();
+
+            if (IsSolved())
+            {
+                Console.WriteLine("SOLVED");
+                return;
+            }
 
 
-
-            PrevAction.Peek().Clear();
+            PrevAction.Clear();
             PrevInsertion.Clear();
+            
+            try { SolveTheRest(); }
+            catch (InvalidInsertionException){
+                throw new UnsolvableSudokuException("Cannot Solve The Sudoku");
+            }
+            //*/
+        }
 
-            ///*
+        public void InsertGuranteed()
+        {
             while (NextGarunteedAction.Count() != 0)
             {
-                PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(length));
 
                 (int value, int row, int col) = NextGarunteedAction.Pop();
                 if (sudoku[row, col] == 0)
                 {
-                    PrevAction.Peek().Push(new Stack<(int value, int row, int col)>(length));
-                    PrevInsertion.Push(new Stack<(int row, int col)>(length));
-
-                    Console.WriteLine($"INSERTING {value} - {row},{col}");
+                    Console.WriteLine($"INSERT {value}- {row},{col} guranteed");
                     Insert(value, row, col);
                 }
             }
-            if (IsSolved()) Console.WriteLine("SOLVED");
-            //*/
+        }
 
+        public void SolveTheRest()
+        {
+            int i;
+            for (i = 1; i < sudoku.GetLength(0); i++)
+                if (squarePossibilitesCounter[i].Count() != 0) break;
+
+            if (i == sudoku.GetLength(0))
+            {
+                Console.WriteLine(count);
+                if (IsSolved()) Console.WriteLine("SOLVED!");
+                else throw new UnsolvableSudokuException("Cannot Solve The Sudoku3");
+            }
+            (int row, int col) = squarePossibilitesCounter[i].First();
+
+
+            foreach (int value in squarePossibilities[row, col])
+            {
+                Console.WriteLine($"GUESS INSERTING |{i}| {value}-{row},{col}");
+
+                PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>());
+                PrevInsertion.Push(new Stack<(int row, int col)>());
+                printPoss();
+
+                if (value == 7 && row == 3 && col == 2)
+                {
+                    for (int j = 1; j < sudoku.GetLength(0) + 1; j++)
+                    {
+                        Console.WriteLine();
+                        foreach(var x in squarePossibilitesCounter[j])
+                            Console.Write(x);
+                    }
+                    Console.WriteLine();
+                }
+
+                Insert(value, row, col);
+                Console.WriteLine(this);
+                try
+                {
+                    try { InsertGuranteed(); }
+                    catch (InvalidInsertionException)
+                    {
+                        Console.WriteLine("EXCEPTION ACCRUED");
+                        throw new InvalidInsertionException();
+                    }
+                    if (IsSolved())
+                    {
+                        Console.WriteLine("SOLVED");
+                        return;
+                    }
+                    SolveTheRest();
+                }
+                catch (InvalidInsertionException)
+                {
+                    Console.WriteLine("REMOVING");
+                    RemoveLatestGuess();
+                }
+
+            }
+        }
+
+        public void RemoveLatestGuess()
+        {
             while (PrevInsertion.Count() != 0 && PrevAction.Count() != 0)
             {
-
                 while (PrevInsertion.Peek().Count() != 0 && PrevAction.Peek().Count() != 0)
                 {
-                    Console.WriteLine("HERE");
-
                     while (PrevAction.Peek().Peek().Count() != 0)
                     {
-                        (int value, int row, int col) = PrevAction.Peek().Peek().Pop();
-                        AddPossibility(value, row, col);
+                        (int valueAc, int rowAc, int colAc) = PrevAction.Peek().Peek().Pop();
+                        AddPossibility(valueAc, rowAc, colAc);
                     }
-                    PrevAction.Pop();
-                    (int inRow, int inCol) = PrevInsertion.Peek().Pop();
-                    DeInsert(inRow, inCol);
-                }
-                PrevInsertion.Pop();
-                PrevAction.Pop();
-            }
 
+                    (int rowIn, int colIn) = PrevInsertion.Peek().Pop();
+                    Console.WriteLine($"DeInsert: {rowIn},{colIn}");
+                    Console.WriteLine(this);
+                    DeInsert(rowIn, colIn);
+
+
+                    PrevAction.Peek().Pop();
+                }
+                PrevAction.Pop();
+                PrevInsertion.Pop();
+            }
         }
 
 
         public void AddPossibility(int value, int row, int col)
         {
-            if (squarePossibilities[row,col].Contains(value)) throw new Exception("NOT SUPPOSED TO HAPPEN");
             squarePossibilities[row, col].Add(value);
             int count = squarePossibilities[row, col].Count();
+
             squarePossibilitesCounter[count - 1].Remove((row, col));
             squarePossibilitesCounter[count].Add((row, col));
 
@@ -181,12 +260,14 @@ namespace SapirSudoku
 
         public void DeInsert(int row, int col)
         {
-            if (sudoku[row, col] == NONE) throw new Exception("NOT SUPPOSED TO HAPPEN");
             int value = sudoku[row, col];
+            if (value == NONE) return;
             rowAvailability[row].Add(value);
             colAvailability[col].Add(value);
             gridAvailability[GridPos(row, col)].Add(value);
+            AddPossibility(value, row, col);
             sudoku[row, col] = NONE;
+            count--;
         }
 
 
@@ -198,14 +279,15 @@ namespace SapirSudoku
             if (!squarePossibilities[row,col].Contains(value))
                 throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
 
+            PrevInsertion.Peek().Push((row, col));
+            PrevAction.Peek().Push(new Stack<(int value, int row, int col)>());
+
             UpdateRowInsert(value, row, col);
             UpdateColInsert(value, row, col);
             UpdateGridInsert(value, row, col);
             UpdateSquareInsert(value, row, col);
             count++;
 
-            PrevInsertion.Peek().Push((row, col));
-            PrevAction.Peek().Push(new Stack<(int value, int row, int col)>());
         }
 
         public void RemoveSquarePossibility(int value, int row, int col, bool changeRow = true, bool changeCol = true, bool changeGrid = true)
@@ -565,8 +647,6 @@ namespace SapirSudoku
                     {
                         if (rowPos == row || rowPos == row2) continue;
 
-                        if (squarePossibilities[rowPos, col1].Contains(value)) Console.WriteLine("ROW XWING");
-                        if (squarePossibilities[rowPos, col2].Contains(value)) Console.WriteLine("ROW XWING");
                         RemoveSquarePossibility(value, rowPos, col1);
                         RemoveSquarePossibility(value, rowPos, col2);
                     }
@@ -595,8 +675,6 @@ namespace SapirSudoku
                     for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
                     {
                         if (colPos == col || colPos == col2) continue;
-                        if (squarePossibilities[row1,colPos].Contains(value)) Console.WriteLine("COL XWING");
-                        if (squarePossibilities[row2, colPos].Contains(value)) Console.WriteLine("COL XWING");
 
                         RemoveSquarePossibility(value, row1, colPos);
                         RemoveSquarePossibility(value, row2, colPos);
