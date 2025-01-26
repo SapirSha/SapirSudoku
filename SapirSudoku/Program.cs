@@ -144,7 +144,7 @@ namespace MAIN
                 {0,0,0,0,0,0,0,0,0 },
                 //*/
 
-                /*
+                ///*
                 {8,0,0,0,0,0,0,0,0 },
                 {0,0,3,6,0,0,0,0,0 },
                 {0,7,0,0,9,0,2,0,0 },
@@ -234,7 +234,7 @@ namespace MAIN
     new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0},
     new int[]{0, 0, 0, 0, 0, 0, 0, 0, 5}
                 */
-                ///*
+                /*
 {8, 0, 0, 0, 0, 0, 0, 0, 0},
 {0, 0, 3, 6, 0, 0, 0, 0, 0},
 {0, 7, 0, 0, 9, 0, 2, 0, 0},
@@ -493,10 +493,10 @@ namespace MAIN
             */
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
-            int[,] g = StringToGrid("0000000000000000", 4);
+            int[,] g = StringToGrid("000000000000000000000000000000000000000000000000000000000000000000000000000000000", 9);
             try
             {
-                SudokuSolver solver = new SudokuSolver(grid);
+                SudokuSolver solver = new SudokuSolver(g);
 
                 Console.WriteLine(solver);
                 Console.WriteLine();
@@ -505,7 +505,7 @@ namespace MAIN
             }
             catch (Exception e) { Console.WriteLine("EXCEPTION" + e); }
             Console.WriteLine("END OF FIRST");
-            try { Solve(grid); } catch (Exception) { }
+            //try { Solve(grid); } catch (Exception) { }
             
 
             watch.Stop();

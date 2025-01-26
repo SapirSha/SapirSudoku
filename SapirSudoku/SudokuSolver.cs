@@ -81,6 +81,7 @@ namespace SapirSudoku
                 for (int j = 0; j < solver.sudoku.GetLength(1); j++)
                     this.colAvailabilityCounter[i][j] = new BitSet(solver.colAvailabilityCounter[i][j]);
             }
+            
         }
 
 
@@ -316,7 +317,6 @@ namespace SapirSudoku
 
         public void AddPossibility(int value, int row, int col)
         {
-            Console.WriteLine($"ADDING POSSIBILITY {value} -> {row},{col}");
             squarePossibilities[row, col].Add(value);
             int count = squarePossibilities[row, col].Count();
 
@@ -365,7 +365,6 @@ namespace SapirSudoku
             if (!squarePossibilities[row, col].Contains(value)) return;
             int count;
 
-            Console.WriteLine($"REMOVING POSSIBILITY {value} -> {row},{col}");
             PrevAction.Peek().Peek().Push((value, row, col));
 
             squarePossibilities[row, col].Remove(value);
