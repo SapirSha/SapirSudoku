@@ -44,7 +44,46 @@ namespace SapirSudoku
         int count;
 
         public SudokuSolver(Sudoku s) : this(s.CloneGrid()) { }
-        
+
+        public SudokuSolver(SudokuSolver solver)
+        {
+            this.sudoku = (int[,])solver.sudoku.Clone();
+            this.grid_height = solver.grid_height;
+            this.grid_width = solver.grid_width;
+            this.full = new BitSet(solver.full);
+            this.squarePossibilities = new BitSet[solver.sudoku.GetLength(0), solver.sudoku.GetLength(1)];
+            for (int row = 0; row < solver.sudoku.GetLength(0); row++)
+                for (int col = 0; col < solver.sudoku.GetLength(1); col++)
+                    this.squarePossibilities[row, col] = new BitSet(solver.squarePossibilities[row, col]);
+            this.squarePossibilitesCounter = new HashSet<(int, int)>[solver.sudoku.GetLength(0) + 1];
+            for (int i = 0; i <= solver.sudoku.GetLength(0); i++)
+                this.squarePossibilitesCounter[i] = new HashSet<(int, int)>(solver.sudoku.GetLength(0) * solver.sudoku.GetLength(1));
+            for (int row = 0; row < solver.sudoku.GetLength(0); row++)
+                for (int col = 0; col < solver.sudoku.GetLength(1); col++)
+                    this.squarePossibilitesCounter[solver.sudoku.GetLength(0)].Add((row, col));
+            this.rowAvailability = new BitSet[solver.sudoku.GetLength(0)];
+            for (int i = 0; i < solver.sudoku.GetLength(0); i++)
+                this.rowAvailability[i] = new BitSet(solver.rowAvailability[i]);
+            this.rowAvailabilityCounter = new BitSet[solver.sudoku.GetLength(0)][];
+            for (int i = 0; i < solver.sudoku.GetLength(0); i++)
+            {
+                this.rowAvailabilityCounter[i] = new BitSet[solver.sudoku.GetLength(0)];
+                for (int j = 0; j < solver.sudoku.GetLength(0); j++)
+                    this.rowAvailabilityCounter[i][j] = new BitSet(solver.rowAvailabilityCounter[i][j]);
+            }
+            this.colAvailability = new BitSet[solver.sudoku.GetLength(1)];
+            for (int i = 0; i < solver.sudoku.GetLength(1); i++)
+                this.colAvailability[i] = new BitSet(solver.colAvailability[i]);
+            this.colAvailabilityCounter = new BitSet[solver.sudoku.GetLength(1)][];
+            for (int i = 0; i < solver.sudoku.GetLength(1); i++)
+            {
+                this.colAvailabilityCounter[i] = new BitSet[solver.sudoku.GetLength(1)];
+                for (int j = 0; j < solver.sudoku.GetLength(1); j++)
+                    this.colAvailabilityCounter[i][j] = new BitSet(solver.colAvailabilityCounter[i][j]);
+            }
+        }
+
+
         public SudokuSolver(int length = 9) : base(length){
             this.full = new BitSet(length);
             for (int i = 1; i <= length; i++)
@@ -125,7 +164,53 @@ namespace SapirSudoku
                     if (sudoku[row, col] == NONE && grid[row, col] != NONE)
                         Insert(grid[row, col], row, col);
 
+            PrevAction.Clear();
+            PrevInsertion.Clear();
 
+            PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(length));
+            PrevInsertion.Push(new Stack<(int row, int col)>(length));
+            InsertGuranteed();
+
+            SolveTheRest();
+
+
+
+
+            //PRINT PREVACTION STACKS
+            /*
+            while (PrevAction.Count() != 0)
+            {
+                Console.WriteLine($"STACK: {PrevAction.Count()}");
+                while (PrevAction.Peek().Count() != 0)
+                {
+                    Console.WriteLine($"\tSTACK-STACK: {PrevAction.Peek().Count()}");
+                    while (PrevAction.Peek().Peek().Count() != 0)
+                    {
+                        var x = PrevAction.Peek().Peek().Pop();
+                        Console.WriteLine($"\t\tSTACK {x.value}: {x.row},{x.col}");
+                    }
+                    PrevAction.Peek().Pop();
+                }
+                PrevAction.Pop();
+            }
+            */
+            
+
+
+            /*
+            Console.WriteLine(this);
+            printPoss();
+
+            Console.WriteLine(" \t\t - \t\t - \t\t - \t\t - \t\t - \t\t - \t\t -");
+
+            RemoveLatestGuess();
+            for(int i = 0; i < sudoku.GetLength(0) + 1; i++)
+            {
+                foreach(var x in squarePossibilitesCounter[i])
+                    Console.WriteLine($"{i} -> {x}");
+            }
+                
+            /*
             InsertGuranteed();
 
             if (IsSolved())
@@ -164,7 +249,11 @@ namespace SapirSudoku
             (int, int)? min = MinimumPossibilitySquare();
             if (min == null)
             {
-                if (IsSolved()) throw new Exception("SOLVED");
+                if (IsSolved())
+                {
+                    Console.WriteLine(this);
+                    throw new Exception("SOLVED");
+                }
                 throw new UnsolvableSudokuException();
             }
 
@@ -175,10 +264,20 @@ namespace SapirSudoku
                 PrevInsertion.Push(new Stack<(int row, int col)>(sudoku.GetLength(0)));
 
                 try {
-                    int[,] x = (int[,])sudoku.Clone();
-                    x[row, col] = possibility;
-                    SudokuSolver solver = new SudokuSolver(x);
-                } catch (InvalidInsertionException) { }
+                    // INSERT
+                    // GARUNTEED
+                    // RECURSION
+                    // IF FAILED
+                    // GO BACK
+                    Insert(possibility, row, col);
+                    InsertGuranteed();
+                    SolveTheRest();
+                    RemoveLatestGuess();
+
+                } catch (InvalidInsertionException) {
+                    NextGarunteedAction.Clear();
+                    RemoveLatestGuess();
+                }
 
                 if (IsSolved()) throw new Exception("SOLVED");
             }
@@ -188,13 +287,14 @@ namespace SapirSudoku
         public (int, int)? MinimumPossibilitySquare()
         {
             int i;
-            for (i = 1; i < sudoku.GetLength(0); i++)
+            for (i = 1; i <= sudoku.GetLength(0); i++)
                 if (squarePossibilitesCounter[i].Count() != 0) break;
             return i <= sudoku.GetLength(0) ? squarePossibilitesCounter[i].First() : null;
         }
 
         public void RemoveLatestGuess()
         {
+            
             if (PrevInsertion.Count() == 0 || PrevAction.Count() == 0) return;
             while (PrevInsertion.Peek().Count() != 0 && PrevAction.Peek().Count() != 0)
             {
@@ -210,11 +310,13 @@ namespace SapirSudoku
             }
             PrevAction.Pop();
             PrevInsertion.Pop();
+            
         }
 
 
         public void AddPossibility(int value, int row, int col)
         {
+            Console.WriteLine($"ADDING POSSIBILITY {value} -> {row},{col}");
             squarePossibilities[row, col].Add(value);
             int count = squarePossibilities[row, col].Count();
 
@@ -263,6 +365,7 @@ namespace SapirSudoku
             if (!squarePossibilities[row, col].Contains(value)) return;
             int count;
 
+            Console.WriteLine($"REMOVING POSSIBILITY {value} -> {row},{col}");
             PrevAction.Peek().Peek().Push((value, row, col));
 
             squarePossibilities[row, col].Remove(value);

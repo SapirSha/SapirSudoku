@@ -26,7 +26,7 @@ namespace SapirSudoku
             if (length < 1)
                 throw new InvalidSudokuException("Minimum Sudoku Length is 1");
             if (length > 25)
-                throw new InvalidSudokuException("Maximum Sudoku Length is 25");
+                throw new InvalidSudokuException("Maximum Sudoku Length is 64");
 
 
             for (int i = 1; i <= length; i++)
