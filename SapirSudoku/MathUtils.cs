@@ -1,43 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using CustomExceptions;
 
 namespace SapirMath
 {
     public static class MathUtils
     {
-        public static bool IsPrime(int number)
-        {
-            if (number <= 1) return false;
-            if (number == 2) return true;
-            if (number % 2 == 0) return false;
-
-            var boundary = (int)Math.Floor(Math.Sqrt(number));
-
-            for (int i = 3; i <= boundary; i += 2)
-                if (number % i == 0)
-                    return false;
-
-            return true;
-        }
 
         public static (int,int) ColsestDivisibles(int number)
         {
             if (number == 0) return (0, 0);
 
-            if (number < 0) throw new ArgumentOutOfRangeException("No two positive divisibles for a negative number");
+            if (number < 0) {
+                (int smaller, int bigger) negative = ColsestDivisibles(number * -1) ;
+                return (-1 * negative.smaller, negative.bigger);
+            }
 
-            if (IsPrime((int)number))
-                throw new PrimeNumberException("Cannot find closest divisibles of a prime number");
+            var boundary = (int)Math.Floor(Math.Sqrt(number));
+            for (int i = boundary; i > 1; i--)
+                if (number % i == 0) return (i, number / i);
 
-            int smaller = (int)Math.Sqrt(number);
-
-            while (number / smaller != (float)number / smaller)
-                smaller--;
-
-            int bigger = number / smaller;
-
-            return (smaller, bigger);
+            return (-1, -1);
         }
 
         public static int Max(params int[] values)
