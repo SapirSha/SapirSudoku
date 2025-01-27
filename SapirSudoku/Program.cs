@@ -144,7 +144,7 @@ namespace MAIN
                 {0,0,0,0,0,0,0,0,0 },
                 //*/
 
-                ///*
+                /*
                 {8,0,0,0,0,0,0,0,0 },
                 {0,0,3,6,0,0,0,0,0 },
                 {0,7,0,0,9,0,2,0,0 },
@@ -494,23 +494,21 @@ namespace MAIN
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
             int[,] g = StringToGrid("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 25);
+            Console.WriteLine("HERE");
             try
             {
-                SudokuSolver solver = new SudokuSolver(g);
-                foreach (Sudoku s in solver)
-                {
-                    Console.WriteLine(s);
-                    break;
-                }
-
-                //Console.WriteLine(solver);
-                //Console.WriteLine();
-
-                //solver.printPoss();
+                int MAX_NUMBER_OF_ANSWERS = 10;
+                int c = 0;
+                Sudoku sud = new Sudoku(g);
+                foreach (Sudoku answer in sud.Answers)
+                    if (++c <= 10)
+                        Console.WriteLine(answer);
+                    else break;
+                
             }
             catch (Exception e) { Console.WriteLine("EXCEPTION" + e); }
             Console.WriteLine("END OF FIRST");
-            //try { Solve(grid); } catch (Exception) { }
+            try { Solve(grid); } catch (Exception) { }
             
 
             watch.Stop();

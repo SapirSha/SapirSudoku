@@ -26,8 +26,8 @@ namespace SapirSudoku
         {
             if (length < 1)
                 throw new InvalidSudokuException("Minimum Sudoku Length is 1");
-            if (length > 64)
-                throw new InvalidSudokuException("Maximum Sudoku Length is 64");
+            if (length > 32)
+                throw new InvalidSudokuException("Maximum Sudoku Length is 25");
 
 
             for (int i = 1; i <= length; i++)
@@ -87,6 +87,7 @@ namespace SapirSudoku
 
             sudoku[row, col] = NONE;
         }
+
         public virtual void Insert(int value, int row, int col)
         {
             if (!InRange(row, col))
@@ -151,8 +152,8 @@ namespace SapirSudoku
                 if (sudoku[row, colPos] == value)
                     return false;
 
-            int[] x = new int[] { -1,-1,-1,1,1,1,0,0,0};
-            int[] y = new int[] { -1,1,0,-1,1,0,-1,1,0};
+            int[] x = new int[] { -1,-1,-1,1,1,1,0,0,0}; ///
+            int[] y = new int[] { -1,1,0,-1,1,0,-1,1,0}; ///
 
             for (int index = 0; index < sudoku.GetLength(0); index++)
                 if (InRange(row + y[index], col + x[index]) && sudoku[row + y[index], col + x[index]] == value)
@@ -180,10 +181,16 @@ namespace SapirSudoku
             return msg;
         }
 
-        public IEnumerable<Sudoku> NextAnswer()
+        public IEnumerable<Sudoku> Answers
         {
-            SudokuSolver solver = new SudokuSolver(sudoku);
-            yield break;
+            get
+            {
+                SudokuSolver solver;
+                try { solver = new SudokuSolver(sudoku); }
+                catch (InvalidInsertionException) { yield break; }
+                foreach (Sudoku answer in solver)
+                    yield return answer;
+            }
         }
         
         public int[,] CloneGrid()
