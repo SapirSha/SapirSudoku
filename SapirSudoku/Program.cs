@@ -167,8 +167,8 @@ namespace MAIN
                 {0,6,0,0,8,0,2,7,1 },
                 {0,0,5,0,1,0,0,9,4 }
                 //*/
-                /*
-                {0,0,0,1,0,0},
+                ///*
+                {0,0,0,0,0,0},
                 {0,0,0,5,0,6},
                 {2,0,0,0,5,0},
                 {0,5,0,0,0,2},
@@ -494,21 +494,24 @@ namespace MAIN
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
             int[,] g = StringToGrid("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 25);
-            Console.WriteLine("HERE");
-            try
+            Sudoku s = new Sudoku(grid, false);
+
+            Console.WriteLine(s);
+
+            int MAX = 10;
+            int c = 0;
+
+
+            
+            foreach (Sudoku answer in s.Answers)
             {
-                int MAX_NUMBER_OF_ANSWERS = 10;
-                int c = 0;
-                Sudoku sud = new Sudoku(g);
-                foreach (Sudoku answer in sud.Answers)
-                    if (++c <= 10)
-                        Console.WriteLine(answer);
-                    else break;
-                
+                if (++c <= MAX)
+                    Console.WriteLine(
+                        "\n - - - - - - - - \n" +
+                        answer +
+                        "\n - - - - - - - - \n");
+                else break;
             }
-            catch (Exception e) { Console.WriteLine("EXCEPTION" + e); }
-            Console.WriteLine("END OF FIRST");
-            try { Solve(grid); } catch (Exception) { }
             
 
             watch.Stop();

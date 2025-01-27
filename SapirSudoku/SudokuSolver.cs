@@ -44,7 +44,7 @@ namespace SapirSudoku
         int size;
         int count;
 
-        public SudokuSolver(Sudoku s) : this(s.CloneGrid()) { }
+        public SudokuSolver(Sudoku s) : this(s.Array, s.GridWidth >= s.GridHeight) { }
 
         public SudokuSolver(SudokuSolver solver)
         {
@@ -103,7 +103,7 @@ namespace SapirSudoku
         }
 
 
-        public SudokuSolver(int length = 9) : base(length){
+        public SudokuSolver(int length = 9, bool horizontal = true) : base(length, horizontal){
             this.full = new BitSet(length);
             for (int i = 1; i <= length; i++)
                 full.Add(i);
@@ -168,7 +168,7 @@ namespace SapirSudoku
             this.PrevAction = new Stack<Stack<Stack<(int value, int row, int col)> > >(length);
             this.PrevInsertion = new Stack<Stack<(int row, int col)>>(length);
         }
-        public SudokuSolver(int[,] grid) : this(grid.GetLength(0))
+        public SudokuSolver(int[,] grid, bool horizontal = true) : this(grid.GetLength(0), horizontal)
         {
             int length = grid.GetLength(0);
             if (grid.GetLength(1) != length)

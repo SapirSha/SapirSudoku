@@ -13,20 +13,23 @@ namespace SapirSudoku
         { {NONE, 0} };
 
         protected int[,] sudoku;
+        public int[,] Array { get { return (int[,])sudoku.Clone(); } }
         protected int grid_width;
+        public int GridWidth { get { return grid_width;} }
         protected int grid_height;
+        public int GridHeight { get { return grid_height; } }
 
         public Sudoku(Sudoku sudoku)
         {
-            this.sudoku = sudoku.CloneGrid();
+            this.sudoku = sudoku.Array;
             this.grid_height = sudoku.grid_height;
             this.grid_width = sudoku.grid_width;
         }
-        public Sudoku(int length = 9)
+        public Sudoku(int length = 9, bool horizontal = true)
         {
             if (length < 1)
                 throw new InvalidSudokuException("Minimum Sudoku Length is 1");
-            if (length > 32)
+            if (length > 25)
                 throw new InvalidSudokuException("Maximum Sudoku Length is 25");
 
 
@@ -37,9 +40,16 @@ namespace SapirSudoku
 
             try {
                 (int smaller, int bigger) = MathUtils.ColsestDivisibles(length);
-
-                grid_height = smaller; // usually
-                grid_width = bigger;   // usually
+                if (horizontal)
+                {
+                    grid_height = smaller;
+                    grid_width = bigger;
+                }
+                else
+                {
+                    grid_height = bigger;
+                    grid_width = smaller;
+                }
             }
             catch (PrimeNumberException)
             {
@@ -54,7 +64,7 @@ namespace SapirSudoku
             sudoku = new int[length, length];
         }
 
-        public Sudoku(int[,] sudoku) : this(sudoku.GetLength(0))
+        public Sudoku(int[,] sudoku, bool horizontal = true) : this(sudoku.GetLength(0), horizontal)
         {
             int length = sudoku.GetLength(0);
             if (sudoku.GetLength(1) != length)
@@ -152,12 +162,14 @@ namespace SapirSudoku
                 if (sudoku[row, colPos] == value)
                     return false;
 
-            int[] x = new int[] { -1,-1,-1,1,1,1,0,0,0}; ///
-            int[] y = new int[] { -1,1,0,-1,1,0,-1,1,0}; ///
+            int initRow = GridPos(row, col) / (sudoku.GetLength(1) / grid_width) * grid_height;
+            int initCol = GridPos(row, col) * grid_width % sudoku.GetLength(1);
+            for (int rowPos = 0; rowPos < grid_height; rowPos++)
+                for (int colPos = 0; colPos < grid_width; colPos++)
 
-            for (int index = 0; index < sudoku.GetLength(0); index++)
-                if (InRange(row + y[index], col + x[index]) && sudoku[row + y[index], col + x[index]] == value)
-                    return false;
+                    if (sudoku[initRow + rowPos, initCol + colPos] == value)
+                        return false;
+
 
             return true;
         }
@@ -186,18 +198,11 @@ namespace SapirSudoku
             get
             {
                 SudokuSolver solver;
-                try { solver = new SudokuSolver(sudoku); }
+                try { solver = new SudokuSolver(this); }
                 catch (InvalidInsertionException) { yield break; }
                 foreach (Sudoku answer in solver)
                     yield return answer;
             }
-        }
-        
-        public int[,] CloneGrid()
-        {
-            int[,] newSudoku = new int[sudoku.GetLength(0),sudoku.GetLength(1)];
-            Array.Copy(sudoku, newSudoku, sudoku.Length);
-            return newSudoku;
         }
     }
 }
