@@ -7,7 +7,7 @@ using SapirMath;
 namespace SapirSudoku
 {
     /// <summary>
-    /// Represents a sudoku
+    /// A class that represents a sudoku.
     /// </summary>
     public class Sudoku
     {
@@ -57,7 +57,7 @@ namespace SapirSudoku
         /// <param name="length"> The length/type of the sudoku </param>
         /// <param name="horizontal">
         /// In cases where the grid height and grid length are different,
-        /// This value indicates whether the grids are laying down, or standing up.
+        /// This value indicates whether the grids are laying down(horizontal), or standing up(vertical).
         /// </param>
         /// <exception cref="InvalidSudokuException"> 
         /// Thrown if the length of the sudoku is invalid ,
@@ -286,13 +286,13 @@ namespace SapirSudoku
             for (int row = 0; row < sudoku.GetLength(0); row++)
             {
                 if (row != 0 && row % grid_height == 0)
-                    msg += "\n";
+                    msg += "\n\n";
 
                 for (int col = 0; col < sudoku.GetLength(1); col++)
                 {
                         if (col != 0 && col % grid_width == 0)
-                            msg += " ";
-                        msg += sudoku[row, col];
+                            msg += "   ";
+                        msg += $"{sudoku[row, col], -3}";
                 }
 
                 msg += "\n";
@@ -302,7 +302,7 @@ namespace SapirSudoku
         }
 
         /// <summary>
-        /// IEnumerable to get all solutions for the current Sudoku represented
+        /// All solutions for the current Sudoku that is represented.
         /// </summary>
         public IEnumerable<Sudoku> Answers
         {
