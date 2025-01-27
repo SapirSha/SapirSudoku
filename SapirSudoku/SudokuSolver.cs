@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -13,7 +14,7 @@ using SapirSudoku;
 
 namespace SapirSudoku
 {
-    public class SudokuSolver : Sudoku
+    public class SudokuSolver : Sudoku, IEnumerable<Sudoku>
     {
         double LLOAD = 0.5;
         public HashSet<(int row,int col)>[] squarePossibilitesCounter;
@@ -74,6 +75,7 @@ namespace SapirSudoku
             this.colAvailability = new BitSet[solver.sudoku.GetLength(1)];
             for (int i = 0; i < solver.sudoku.GetLength(1); i++)
                 this.colAvailability[i] = new BitSet(solver.colAvailability[i]);
+
             this.colAvailabilityCounter = new BitSet[solver.sudoku.GetLength(1)][];
             for (int i = 0; i < solver.sudoku.GetLength(1); i++)
             {
@@ -81,7 +83,23 @@ namespace SapirSudoku
                 for (int j = 0; j < solver.sudoku.GetLength(1); j++)
                     this.colAvailabilityCounter[i][j] = new BitSet(solver.colAvailabilityCounter[i][j]);
             }
-            
+
+            this.gridAvailability =
+                        this.gridAvailability = new BitSet[solver.sudoku.GetLength(1)];
+            for (int i = 0; i < solver.sudoku.GetLength(1); i++)
+                this.gridAvailability[i] = new BitSet(solver.gridAvailability[i]);
+            this.gridAvailabilityCounter = new BitSet[solver.sudoku.GetLength(1)][];
+            for (int i = 0; i < solver.sudoku.GetLength(1); i++)
+            {
+                this.gridAvailabilityCounter[i] = new BitSet[solver.sudoku.GetLength(1)];
+                for (int j = 0; j < solver.sudoku.GetLength(1); j++)
+                    this.gridAvailabilityCounter[i][j] = new BitSet(solver.gridAvailabilityCounter[i][j]);
+            }
+
+            this.NextGarunteedAction = new Stack<(int value, int row, int col)>(solver.NextGarunteedAction);
+
+            this.PrevAction = solver.PrevAction;
+            this.PrevInsertion = solver.PrevInsertion;
         }
 
 
@@ -171,65 +189,6 @@ namespace SapirSudoku
             PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(length));
             PrevInsertion.Push(new Stack<(int row, int col)>(length));
             InsertGuranteed();
-
-            SolveTheRest();
-
-
-
-
-            //PRINT PREVACTION STACKS
-            /*
-            while (PrevAction.Count() != 0)
-            {
-                Console.WriteLine($"STACK: {PrevAction.Count()}");
-                while (PrevAction.Peek().Count() != 0)
-                {
-                    Console.WriteLine($"\tSTACK-STACK: {PrevAction.Peek().Count()}");
-                    while (PrevAction.Peek().Peek().Count() != 0)
-                    {
-                        var x = PrevAction.Peek().Peek().Pop();
-                        Console.WriteLine($"\t\tSTACK {x.value}: {x.row},{x.col}");
-                    }
-                    PrevAction.Peek().Pop();
-                }
-                PrevAction.Pop();
-            }
-            */
-            
-
-
-            /*
-            Console.WriteLine(this);
-            printPoss();
-
-            Console.WriteLine(" \t\t - \t\t - \t\t - \t\t - \t\t - \t\t - \t\t -");
-
-            RemoveLatestGuess();
-            for(int i = 0; i < sudoku.GetLength(0) + 1; i++)
-            {
-                foreach(var x in squarePossibilitesCounter[i])
-                    Console.WriteLine($"{i} -> {x}");
-            }
-                
-            /*
-            InsertGuranteed();
-
-            if (IsSolved())
-            {
-                Console.WriteLine(this);
-                throw new Exception("SOLVED");
-                return;
-            }
-
-
-            PrevAction.Clear();
-            PrevInsertion.Clear();
-            
-            try { SolveTheRest(); }
-            catch (InvalidInsertionException){
-                throw new UnsolvableSudokuException("Cannot Solve The Sudoku");
-            }
-            //*/
         }
 
         public void InsertGuranteed()
@@ -243,46 +202,6 @@ namespace SapirSudoku
                     Insert(value, row, col);
                 }
             }
-        }
-
-        public void SolveTheRest()
-        {
-            (int, int)? min = MinimumPossibilitySquare();
-            if (min == null)
-            {
-                if (IsSolved())
-                {
-                    Console.WriteLine(this);
-                    throw new Exception("SOLVED");
-                }
-                throw new UnsolvableSudokuException();
-            }
-
-            (int row, int col) = (min.Value.Item1, min.Value.Item2);
-            foreach (int possibility in squarePossibilities[row, col])
-            {
-                PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(sudoku.GetLength(0)));
-                PrevInsertion.Push(new Stack<(int row, int col)>(sudoku.GetLength(0)));
-
-                try {
-                    // INSERT
-                    // GARUNTEED
-                    // RECURSION
-                    // IF FAILED
-                    // GO BACK
-                    Insert(possibility, row, col);
-                    InsertGuranteed();
-                    SolveTheRest();
-                    RemoveLatestGuess();
-
-                } catch (InvalidInsertionException) {
-                    NextGarunteedAction.Clear();
-                    RemoveLatestGuess();
-                }
-
-                if (IsSolved()) throw new Exception("SOLVED");
-            }
-
         }
 
         public (int, int)? MinimumPossibilitySquare()
@@ -435,7 +354,7 @@ namespace SapirSudoku
             gridAvailabilityCounter[GridPos(row, col)][value - 1].ClearAll();
 
             squarePossibilities[row, col] = new BitSet(0);
-            sudoku[row, col] = value;
+            base.Insert(value, row, col);
         }
 
         private void UpdateRowInsert(int value, int row, int col)
@@ -781,8 +700,47 @@ namespace SapirSudoku
                 }
                 Console.WriteLine();
             }
-
         }
 
+        public IEnumerator<Sudoku> GetEnumerator()
+        {
+            (int, int)? min = MinimumPossibilitySquare();
+            if (min == null)
+            {
+                if (IsSolved()) yield return new Sudoku(this);
+                yield break;
+            }
+
+            (int row, int col) = (min.Value.Item1, min.Value.Item2);
+
+            foreach (int possibility in squarePossibilities[row, col])
+            {
+                PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(sudoku.GetLength(0)));
+                PrevInsertion.Push(new Stack<(int row, int col)>(sudoku.GetLength(0)));
+
+                bool flag = true;
+
+                try {
+                    Insert(possibility, row, col);
+                    InsertGuranteed();
+                }
+                catch (InvalidInsertionException)
+                {
+                    flag = false;
+                    NextGarunteedAction.Clear();
+                }
+
+                if (flag)
+                    foreach (Sudoku s in this)
+                        yield return s;
+
+                RemoveLatestGuess();
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

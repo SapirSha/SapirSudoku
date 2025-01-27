@@ -9,7 +9,8 @@ namespace SapirSudoku
     public class Sudoku
     {
         static protected readonly int NONE = 0;
-        protected Dictionary<int, int> allowables = new Dictionary<int, int>{ {NONE, 0} };
+        protected Dictionary<int, int> allowables = new Dictionary<int, int>
+        { {NONE, 0} };
 
         protected int[,] sudoku;
         protected int grid_width;
@@ -25,7 +26,7 @@ namespace SapirSudoku
         {
             if (length < 1)
                 throw new InvalidSudokuException("Minimum Sudoku Length is 1");
-            if (length > 25)
+            if (length > 64)
                 throw new InvalidSudokuException("Maximum Sudoku Length is 64");
 
 
@@ -91,12 +92,11 @@ namespace SapirSudoku
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
 
-
             if (value == NONE) { Remove(row, col); return; }
 
             if (allowables.ContainsKey(value) && CanInsert(value, row, col))
                 sudoku[row, col] = value;
-            else ////////////////// PROBLEM HERE FIX LATER 
+            else
                 throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
         }
 
@@ -138,7 +138,6 @@ namespace SapirSudoku
         
         public virtual bool CanInsert(int value, int row, int col)
         {
-            return true;
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
 
