@@ -242,7 +242,9 @@ namespace SapirSudoku
         /// <param name="row"> A row number </param>
         /// <param name="col"> A col number</param>
         /// <returns> Whether there would be no collisions after inserting 'value' into position [row,col] </returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when row or col are outside the boundaries of the Sudoku
+        /// </exception>
         public virtual bool CanInsert(int value, int row, int col)
         {
             if (!InRange(row, col))

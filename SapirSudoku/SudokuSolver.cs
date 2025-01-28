@@ -6,8 +6,10 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlTypes;
 using System.Drawing;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
+using System.Runtime.Intrinsics.X86;
 using CustomExceptions;
 using SapirStruct;
 using SapirSudoku;
@@ -384,7 +386,8 @@ namespace SapirSudoku
         /// </exception>
         /// <exception cref="InvalidInsertionException">
         /// Thrown when trying to insert an invalid value,
-        /// Thrown when collisions accrues after insertion.
+        /// Thrown when collisions accrues after insertion,
+        /// Thrown when the Sudoku board becomes unsolvable.
         /// </exception>
         public override void Insert(int value, int row, int col)
         {
@@ -429,7 +432,7 @@ namespace SapirSudoku
         /// <exception cref="InvalidInsertionException">
         /// Thrown when collisions accrued, or when collisions become unavoidable because of the insertion.
         /// </exception>
-        public void RemoveSquarePossibility(int value, int row, int col, bool changeRow = true, bool changeCol = true, bool changeGrid = true)
+        private void RemoveSquarePossibility(int value, int row, int col, bool changeRow = true, bool changeCol = true, bool changeGrid = true)
         {
             if (!squarePossibilities[row, col].Contains(value)) return;
 
@@ -457,157 +460,278 @@ namespace SapirSudoku
                 // Remove current column from the possible columns in the current row for the current value
                 rowAvailabilityCounter[row, value - 1].Remove(col + 1);
 
-                // Let count be the number of columns that has the possibility value in the current row
+                // Count is the number of columns that has the possibility 'value' in the current row
                 count = rowAvailabilityCounter[row, value - 1].Count();
                 switch (count){
-                    // if count is 0: the last position was removed, and value cannot be placed in the row
+                    // if count is 0: the last position where value appears was removed, and value can no longer be placed in a certain row
                     case 0: throw new InvalidInsertionException();
-                    // if count is 1: there is only one column for value to be inserted in, for this row
+                    // if count is 1: there is only one column for value to be inserted in, in this column
                     case 1: PotentialInsertInRow(value, row); break;
-                    // if count is 2: potential XWing (only two in the row)
+                    // if count is 2: potential XWing (appears only twice in row)
                     case 2: RowXWing(value, row, col); break;
                     default:
                         // if count is less the Maximum search load: search for hidden groups in the row
                         if (count <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD) HiddenInRow(value, row, col, count);
                         break;
                 }
-
             }
 
             if (changeCol)
             {
+                // Remove current row from the possible rows in the current column for the current value
                 colAvailabilityCounter[col, value - 1].Remove(row + 1);
+                // Count is the number of rows that has the possibility 'value' in the current column
                 count = colAvailabilityCounter[col, value - 1].Count();
-                if (count == 0) throw new InvalidInsertionException();
-                else if (count == 1) PotentialInsertInCol(value, col);
-                else
+                switch (count)
                 {
-                    if (count == 2) ColXWing(value, row, col);
-                    if (count <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD) HiddenInCol(value, row, col, count);
+                    // if count is 0: the last position where value appears was removed, and value can no longer be placed in a certain column
+                    case 0: throw new InvalidInsertionException();
+                    // if count is 1: there is only one row for value to be inserted in, in this column
+                    case 1: PotentialInsertInCol(value, col); break;
+                    // if count is 2: potential XWing ( appears only twice in column column )
+                    case 2: ColXWing(value, row, col); break;
+                    default:
+                        // if count is less the Maximum search load: search for hidden groups in the column
+                        if (count <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD) 
+                            HiddenInCol(value, row, col, count);
+
+                        break;
                 }
             }
 
             if (changeGrid)
             {
+                // Remove current position from the possible positions in the current grid for the current value
                 gridAvailabilityCounter[GridPositionOf(row, col), value - 1].Remove(row % grid_height * grid_width + col % grid_width + 1);
+
+                // Count is the number of rows that has the possibility 'value' in the current column
                 count = gridAvailabilityCounter[GridPositionOf(row, col), value - 1].Count();
-                if (count == 0) throw new InvalidInsertionException();
-                else if (count == 1) PotentialInsertInGrid(value, GridPositionOf(row, col));
-                else
-                {
-                    if (count <= grid_width || count <= grid_height) PointingPair(value, GridPositionOf(row, col));
-                    if (count <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD) HiddenInGrid(value, row, col, count);
+
+                switch (count){
+                    // if count is 0: the last position where value appears at was removed, and value can no longer be placed in a certain grid
+                    case 0: throw new InvalidInsertionException();
+                    // if count is 1: there is only one position for value to be inserted in, in this gird.
+                    case 1: PotentialInsertInGrid(value, GridPositionOf(row, col)); break;
+                    default:
+                        // if max is less then the grid width, or less the the grid height: search for pointing groups
+                        if (count <= grid_width || count <= grid_height) 
+                            PointingGroup(value, GridPositionOf(row, col));
+                        // if count is less the Maximum search load: search for hidden groups in the grid
+                        if (count <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD) 
+                            HiddenInGrid(value, row, col, count);
+                        break;
                 }
             }
         }
 
+        /// <summary>
+        /// Helper function for the "insert" function:
+        /// updates the current grid after an insertion accrued
+        /// </summary>
+        /// <param name="value"> The value wanted to be inserted </param>
+        /// <param name="row"> A row number </param>
+        /// <param name="col"> A column number </param>
         private void UpdateSquareInsert(int value, int row, int col)
         {
             BitSet possible = squarePossibilities[row, col];
 
-            foreach (int possibilite in possible)
-                if (possibilite != value)
-                    RemoveSquarePossibility(possibilite, row, col);
+            // Remove all possibilities from the current cell ( since it is going to be filled )
+            foreach (int possibility in possible)
+                if (possibility != value)
+                    RemoveSquarePossibility(possibility, row, col);
 
+            // Put this cell's position in 0 at the frequency array ( no available posiibilities )
             squarePossibilitesCounter[possible.Count()].Remove((row, col));
             squarePossibilitesCounter[0].Add((row, col));
 
+            // Remove the current value from the possible values in the current row, column and grid.
             rowAvailability[row].Remove(value);
             colAvailability[col].Remove(value);
             gridAvailability[GridPositionOf(row, col)].Remove(value);
 
+            // Make the columns, where value can appear at in the current row, none.
             rowAvailabilityCounter[row, value - 1].ClearAll();
+            // Make the rows, where value can appear at in the current column, none.
             colAvailabilityCounter[col, value - 1].ClearAll();
+            // Make the positions, where value can appear at in the current grid, none.
             gridAvailabilityCounter[GridPositionOf(row, col), value - 1].ClearAll();
 
+            // Make the current cell possibility, no possibility.
             squarePossibilities[row, col] = new BitSet(0);
 
             sudoku[row, col] = value;
         }
 
+        /// <summary>
+        /// Helper function for the "insert" function:
+        /// Update the rows effected after an insert accrued.
+        /// </summary>
+        /// <param name="value"> the value that is inserted </param>
+        /// <param name="row"> the row number the value will be inserted </param>
+        /// <param name="col"> the column number the number will be inserted </param>
         private void UpdateRowInsert(int value, int row, int col)
         {
+            // look at all rows in the Sudoku with the same column as the inserted position
             for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
             {
+                // if the looked at position is in the same grid as the inserted position dont do anything
+                // changes in the grid will happend in 'UpdateGridInsert' function
+                ///< see cref = "UpdateGridInsert" /> 
                 if (GridPositionOf(rowPos, col) == GridPositionOf(row, col)) continue;
+
                 if (sudoku[rowPos, col] != NONE) continue;
 
+                // Remove value as a possibility from current cell.
+                // but without changing the column, since the column is the same as the inserted position, and will be cleared later
                 RemoveSquarePossibility(value, rowPos, col, true, false, true);
             }
         }
 
+        /// <summary>
+        /// Helper function for the "insert" function:
+        /// Update the columns effected after an insert accrued.
+        /// </summary>
+        /// <param name="value"> the value that is inserted </param>
+        /// <param name="row"> the row number the value will be inserted </param>
+        /// <param name="col"> the column number the number will be inserted </param>
         private void UpdateColInsert(int value, int row, int col)
         {
+            // look at all columns in the Sudoku with the same row as the inserted position
             for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
             {
+                // if the looked at position is in the same grid as the inserted position dont do anything
+                // changes in the grid will happend in 'UpdateGridInsert' function
+                ///< see cref = "UpdateGridInsert" /> 
                 if (GridPositionOf(row,colPos) == GridPositionOf(row,col)) continue;
                 if (sudoku[row, colPos] != NONE) continue;
 
+                // Remove value as a possibility from current cell.
+                // but without changing the row, since the row is the same as the inserted position, and will be cleared later.
                 RemoveSquarePossibility(value, row, colPos, false, true, true);
             }
         }
 
+        /// <summary>
+        /// Helper function for the "insert" function:
+        /// Update the grid effected after an insert accrued.
+        /// </summary>
+        /// <param name="value"> the value that is inserted </param>
+        /// <param name="row"> the row number the value will be inserted </param>
+        /// <param name="col"> the column number the number will be inserted </param>
         private void UpdateGridInsert(int value, int row, int col)
         {
+            // initial cell position of the grid
             int initRow = GridPositionOf(row, col) / (sudoku.GetLength(1) / grid_width) * grid_height;
             int initCol = GridPositionOf(row, col) * grid_width % sudoku.GetLength(1);
+
+            // look at all the cells in the grid where the insertion is happenning
             for (int rowPos = 0; rowPos < grid_height; rowPos++)
             {
                 for (int colPos = 0; colPos < grid_width; colPos++)
                 {
+                    // dont do anything with the current cell
+                    // changes to the current cell will happen in "UpdateSquareInsert"
+                    ///< see cref = "UpdateSquareInsert" /> 
                     if (initRow + rowPos == row && initCol + colPos == col) continue;
+
                     if (sudoku[initRow + rowPos, initCol + colPos] != NONE) continue;
 
+                    // Remove value as a possibility from current cell.
+                    // but without changing the grid, since the grid is the same as the inserted position, and will be cleared later.
                     RemoveSquarePossibility(value, initRow + rowPos, initCol + colPos, true, true, false);
                 }
             }
         }
 
+        /// <summary>
+        /// Gets the column where value appears only once at and push the position's values into the NextGarunteedAction stack.
+        /// </summary>
+        /// <param name="value"> the value that appears once </param>
+        /// <param name="row"> the row where the value appears at once </param>
+        /// <remarks> Value has to appear only once in the row! </remarks>
         private void PotentialInsertInRow(int value, int row)
         {
-            NextGarunteedAction.Push((value, row, (rowAvailabilityCounter[row, value - 1].GetSmallest() - 1)));
+            // Get the smallest (in this case only) value in the set (which represents a column number)
+            int col = (rowAvailabilityCounter[row, value - 1].GetSmallest() - 1);
+
+            NextGarunteedAction.Push((value, row, col));
         }
 
+        /// <summary>
+        /// Gets the row where value appears only once at and push the position's values into the NextGarunteedAction stack.
+        /// </summary>
+        /// <param name="value"> the value that appears once </param>
+        /// <param name="col"> the column where the value appears only once at </param>
+        /// <remarks> Value has to appear only once in the column! </remarks>
         private void PotentialInsertInCol(int value, int col)
         {
-            NextGarunteedAction.Push((value, colAvailabilityCounter[col, value - 1].GetSmallest() - 1, col));
+            // Get the smallest (in this case only) value in the set (which represents a row number)
+            int row = colAvailabilityCounter[col, value - 1].GetSmallest() - 1;
+
+            NextGarunteedAction.Push((value, row, col));
         }
 
+        /// <summary>
+        /// Gets the grid where value appears only once at and push the position's values into the NextGarunteedAction stack.
+        /// </summary>
+        /// <param name="value"> the value that appears once </param>
+        /// <param name="grid"> the grid where value appears only once at </param>
         private void PotentialInsertInGrid(int value, int grid)
         {
+            // Get the smallest (in this case only) value in the set (which represents a position in the grid)
             int rowInPos = (gridAvailabilityCounter[grid, value - 1].GetSmallest() - 1) / grid_width;
             int colInPos = (gridAvailabilityCounter[grid, value - 1].GetSmallest() - 1) % grid_width;
 
+            // the position of the initial cell in the grid
             int initRow = grid / (sudoku.GetLength(1) / grid_width) * grid_height;
             int initCol = grid * grid_width % sudoku.GetLength(1);
 
             NextGarunteedAction.Push((value, initRow + rowInPos, initCol + colInPos));
         }
-
-        public void PotentialInsertInSquare(int row, int col)
+        /// <summary>
+        /// Gets the only possible value in the position, and push the position's value into the NextGarunteedAction stack
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <param name="grid"> The position has to have only one possibility! </param>
+        private void PotentialInsertInSquare(int row, int col)
         {
-            BitSet possibilities = squarePossibilities[row, col];
-            NextGarunteedAction.Push((possibilities.GetSmallest(), row, col));
+            int value = squarePossibilities[row, col].GetSmallest();
+            NextGarunteedAction.Push((value, row, col));
         }
 
-
+        /// <summary>
+        /// A function to find a excecute a hidden group in a grid,
+        /// given a value and its position that is potentially in a hidden group
+        /// </summary>
+        /// <param name="value"> the value that is potentially in a hidden group</param>
+        /// <param name="row"> the row the value appears at </param>
+        /// <param name="col"> the column the number appears at </param>
+        /// <param name="hidden_type"> the amount of times value appears at in the grid </param>
         private void HiddenInGrid(int value, int row, int col, int hidden_type)
         {
-            // THERE ARE X SQUARES WHERE V APPEARES IN THE GRID
-            // IF THERE ARE X - 1 OTHER VALUES WHO ONLY APPEAR IN THE SAME GRIDS
-            // HIDDEN VALUES IN GRID
+            /* There are X cells where VALUE appears at in the grid
+             * If there are (X - 1) other values who only appear in the same cells as VALUE,
+             * HIDDEN VALUES IN GRID */
+
             int grid = GridPositionOf(row,col);
 
-            // COLUMNS WHERE VALUE APPEARS AT
+            // Positions where value appears at in the grid
             BitSet possibilities_in_grid_for_value = gridAvailabilityCounter[grid, value - 1];
-            BitSet possibilities_in_grid_other_values = gridAvailability[grid];
 
-            BitSet Hidden = new BitSet(sudoku.GetLength(0));
-            foreach (int possibility in possibilities_in_grid_other_values)
+            // A set holding all values that appear only in the same cells as VALUE in the grid
+            BitSet hidden = new BitSet(sudoku.GetLength(0));
+
+            // look at every possible value in the grid
+            foreach (int possibility in gridAvailability[grid])
             {
-                if (gridAvailabilityCounter[grid, possibility - 1].IsEmpty()) continue;
-                else if (gridAvailabilityCounter[grid, possibility - 1].IsSubSetOf(possibilities_in_grid_for_value))
-                    Hidden.Add(possibility);
+                // if the cells of possibility in the grid are a subset of the cells of value, add to the hidden set
+                if (gridAvailabilityCounter[grid, possibility - 1].IsSubSetOf(possibilities_in_grid_for_value))
+                    hidden.Add(possibility);
+
+                // if the cells of possibility in the grid are a superset of the cells of value,
+                // possibility might have the cells where the hidden group appears at,
+                // that is as long as the amount of cells is less then the Max search group load
                 else if (gridAvailabilityCounter[grid, possibility - 1].IsSuperSetOf(possibilities_in_grid_for_value))
                 {
                     if (gridAvailabilityCounter[grid, possibility - 1].Count() <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD)
@@ -618,38 +742,58 @@ namespace SapirSudoku
                 }
             }
 
-            if (Hidden.Count() >= hidden_type)
-            {
-                int initRow = grid / (sudoku.GetLength(1) / grid_width) * grid_height;
-                int initCol = grid * grid_width % sudoku.GetLength(1);
-                foreach (int position in possibilities_in_grid_for_value)
-                {
-                    row = initRow + (position - 1) / grid_width;
-                    col = initCol + (position - 1) % grid_width;
-                    foreach (int possibility_in_old in squarePossibilities[row, col])
-                    {
-                        if (Hidden.Contains(possibility_in_old)) continue;
-                        RemoveSquarePossibility(possibility_in_old, row, col);
-                    }
+            // If the amount of subsets are less then the amount of cells where value appears, its not a hidden group
+            if (hidden.Count() < hidden_type) return;
 
-                }
+
+            // The initial position in the grid
+            int initRow = grid / (sudoku.GetLength(1) / grid_width) * grid_height;
+            int initCol = grid * grid_width % sudoku.GetLength(1);
+
+            // go to every cell where value appears at in the grid (and by design where the hidden group appears)
+            foreach (int position in possibilities_in_grid_for_value)
+            {
+                // The row and the column of the cell
+                row = initRow + (position - 1) / grid_width;
+                col = initCol + (position - 1) % grid_width;
+
+                // Remove all possibilities, that are not in the hidden group, but appear in the cells of the hidden group
+                foreach (int possibility_in_old in squarePossibilities[row, col])
+                    if (!hidden.Contains(possibility_in_old))
+                        RemoveSquarePossibility(possibility_in_old, row, col);
             }
         }
         
+        /// <summary>
+        /// A function to find a excecute a hidden group in a row,
+        /// given a value and its position that is potentially in a hidden group
+        /// </summary>
+        /// <param name="value"> the value that is potentially in a hidden group</param>
+        /// <param name="row"> the row the value appears at </param>
+        /// <param name="col"> the column the number appears at </param>
+        /// <param name="hidden_type"> the amount of times value appears at in the row </param>
         private void HiddenInRow(int value, int row, int col, int hidden_type)
         {
-            // THERE ARE X SQUARES WHERE V APPEARES IN THE ROW
-            // IF THERE ARE X - 1 OTHER VALUES WHO ONLY APPEAR IN THE SAME ROW
-            // HIDDEN VALUES IN ROW
-            BitSet possibilities_in_row_for_value = rowAvailabilityCounter[row, value - 1];
-            BitSet possibilities_in_row_other_values = rowAvailability[row];
+            /* There are X cells where VALUE appears at in the row
+             * if there are (X - 1) other values who only appear in the same cells as VALUE:
+             * HIDDEN VALUES IN ROW */
 
-            BitSet Hidden = new BitSet(sudoku.GetLength(0));
-            foreach (int possibility in possibilities_in_row_other_values)
+            // A set of columns where value appears at in the row
+            BitSet possibilities_in_row_for_value = rowAvailabilityCounter[row, value - 1];
+
+            // A set holding all values that appear only in the same cells as VALUE in the row
+            BitSet hidden = new BitSet(sudoku.GetLength(0));
+
+            // look at every possible value in the row
+            foreach (int possibility in rowAvailability[row])
             {
-                if (rowAvailabilityCounter[row, possibility - 1].IsEmpty()) continue;
+                // if the cells of possibility in the row are a subset of the cells of value, add to the hidden set
                 if (rowAvailabilityCounter[row, possibility - 1].IsSubSetOf(possibilities_in_row_for_value))
-                    Hidden.Add(possibility);
+                    hidden.Add(possibility);
+
+                // if the cells of possibility in the row are a superset of the cells of value,
+                // possibility might have the cells where the hidden group appears at,
+                // that is as long as the amount of cells is less then the Max search group load
                 else if (rowAvailabilityCounter[row, possibility - 1].IsSuperSetOf(possibilities_in_row_for_value))
                 {
                     if (rowAvailabilityCounter[row, possibility - 1].Count() <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD)
@@ -659,35 +803,52 @@ namespace SapirSudoku
                     }
                 }
             }
-            
-            if (Hidden.Count() >= hidden_type)
-            {
-                foreach (int position in possibilities_in_row_for_value)
-                {
 
-                    col = position - 1;
-                    foreach (int possibility_in_old in squarePossibilities[row, col])
-                    {
-                        if (Hidden.Contains(possibility_in_old)) continue;
+            // If the amount of subsets are less then the amount of cells where value appears, its not a hidden group
+            if (hidden.Count() < hidden_type) return;
+
+            // go to every cell where value appears at in the row (and by design where the hidden group appears)
+            foreach (int position in possibilities_in_row_for_value)
+            {
+                col = position - 1;
+
+                // Remove all possibilities, that are not in the hidden group, but appear in the cells of the hidden group
+                foreach (int possibility_in_old in squarePossibilities[row, col])
+                    if (!hidden.Contains(possibility_in_old))
                         RemoveSquarePossibility(possibility_in_old, row, col);
-                    }
-                }
             }
         }
 
+        /// <summary>
+        /// A function to find a excecute a hidden group in a column,
+        /// given a value and its position that is potentially in a hidden group
+        /// </summary>
+        /// <param name="value"> the value that is potentially in a hidden group</param>
+        /// <param name="row"> the row the value appears at </param>
+        /// <param name="col"> the column the number appears at </param>
+        /// <param name="hidden_type"> the amount of times value appears at in the column </param>
         private void HiddenInCol(int value, int row, int col, int hidden_type)
         {
-            // THERE ARE X SQUARES WHERE V APPEARES IN THE COL
-            // IF THERE ARE X - 1 OTHER VALUES WHO ONLY APPEAR IN THE SAME COL
-            // HIDDEN VALUES IN COL
+            /* There are X cells where VALUE appeares at in the column
+             * If there are (X - 1) other values who only appear in the same cells as VALUE:
+             * HIDDEN VALUES IN COLUMN */
+
+            // A set of rows where value appears at in the column
             BitSet possibilities_in_col_for_value = colAvailabilityCounter[col, value - 1];
-            BitSet possibilities_in_col_other_values = colAvailability[col];
-            BitSet Hidden = new BitSet(sudoku.GetLength(0));
-            foreach (int possibility in possibilities_in_col_other_values)
+
+            // A set holding all values that appear only in the same cells as VALUE in the column
+            BitSet hidden = new BitSet(sudoku.GetLength(0));
+
+            // look at every possible value in the column
+            foreach (int possibility in colAvailability[col])
             {
-                if (colAvailabilityCounter[col, possibility - 1].IsEmpty()) continue;
+                // if the cells of possibility in the column are a subset of the cells of value, add to the hidden set
                 if (colAvailabilityCounter[col, possibility - 1].IsSubSetOf(possibilities_in_col_for_value))
-                    Hidden.Add(possibility);
+                    hidden.Add(possibility);
+
+                // if the cells of possibility in the column are a superset of the cells of value,
+                // possibility might have the cells where the hidden group appears at,
+                // that is as long as the amount of cells is less then the Max search group load
                 else if (colAvailabilityCounter[col, possibility - 1].IsSuperSetOf(possibilities_in_col_for_value))
                 {
                     if (colAvailabilityCounter[col, possibility - 1].Count() <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD)
@@ -697,126 +858,178 @@ namespace SapirSudoku
                     }
                 }
             }
-            row = possibilities_in_col_for_value.GetSmallest() - 1;
 
+            // If the amount of subsets are less then the amount of cells where value appears, its not a hidden group
+            if (hidden.Count() < hidden_type) return;
 
-            if (Hidden.Count() >= hidden_type)
+            // go to every cell where value appears at in the column (and by design where the hidden group appears)
+            foreach (int position in possibilities_in_col_for_value)
             {
-                foreach (int position in possibilities_in_col_for_value)
-                {
-                    row = position - 1;
-                    foreach(int possibility_in_old in squarePossibilities[row, col])
-                    {
-                        if (Hidden.Contains(possibility_in_old)) continue;
+                row = position - 1;
+
+                // Remove all possibilities, that are not in the hidden group, but appear in the cells of the hidden group
+                foreach (int possibility_in_old in squarePossibilities[row, col])
+                    if (!hidden.Contains(possibility_in_old)) 
                         RemoveSquarePossibility(possibility_in_old, row, col);
-                    }
-                }
             }
         }
 
-        public bool IsRowPointingGroup(int value, int grid)
+        /// <summary>
+        /// Checks whether there is a Row Pointing group in a grid
+        /// </summary>
+        /// <param name="value"> the potential value of the pointing group </param>
+        /// <param name="grid"> the grid where the group may appear</param>
+        /// <returns> Whether there is a Row Pointing group in a grid </returns>
+        private bool IsRowPointingGroup(int value, int grid)
         {
+            // a set of the cells where value appears at in the grid
             BitSet possitions = gridAvailabilityCounter[grid, value - 1];
             if (possitions.IsEmpty()) return false;
 
+            // if the cells positions are a subset of any full row, its a pointing group
             foreach (BitSet possibleRow in fullRows)
                 if (possitions.IsSubSetOf(possibleRow))
                     return true;
             return false;
         }
 
+        /// <summary>
+        /// Checks whether there is a Column Pointing group in a grid
+        /// </summary>
+        /// <param name="value"> the potential value of the pointing group </param>
+        /// <param name="grid"> the grid where the group may appear</param>
+        /// <returns> Whether there is a Row Pointing group in a grid </returns>
         public bool IsColPointingGroup(int value, int grid)
         {
+            // a set of the cells where value appears at in the grid
             BitSet possitions = gridAvailabilityCounter[grid, value - 1];
             if (possitions.IsEmpty()) return false;
 
+            // if the cells positions are a subset of any full column, its a pointing group
             foreach (BitSet possibleRow in fullCols)
                 if (possitions.IsSubSetOf(possibleRow))
                     return true;
+
             return false;
         }
-
-        public void PointingPair(int value, int grid)
+        /// <summary>
+        /// A function to search and excecute a pointing group.
+        /// </summary>
+        /// <param name="value"> The value that is potentially the pointing group </param>
+        /// <param name="grid"> the grid where the group may appear</param>
+        public void PointingGroup(int value, int grid)
         {
             if (IsRowPointingGroup(value, grid))
             {
+                // The initial row of the grid
                 int initRow = grid / (sudoku.GetLength(1) / grid_width) * grid_height;
+                // The row where value appears at (and by design where the pointing griup is)
                 int row = initRow + (gridAvailabilityCounter[grid, value - 1].GetSmallest() - 1) / grid_width;
+
+                // Remove all possibilities for value in all other grids, besides the grid of the pointing group
                 for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
-                {
-                    if (GridPositionOf(row, colPos) == grid) continue;
-                    RemoveSquarePossibility(value, row, colPos);
-                }
+                    if (GridPositionOf(row, colPos) != grid)
+                        RemoveSquarePossibility(value, row, colPos);
             }
             else if (IsColPointingGroup(value, grid))
             {
+                // The initial column of the grid
                 int initCol = grid * grid_width % sudoku.GetLength(1);
+                // The column where value appears at (and by design where the pointing griup is)
                 int col = initCol + (gridAvailabilityCounter[grid, value - 1].GetSmallest() - 1) % grid_width;
+
+                // Remove all possibilities for value in all other grids, besides the grid of the pointing group
                 for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
-                {
-                    if (GridPositionOf(rowPos, col) == grid) continue;
-                    RemoveSquarePossibility(value, rowPos, col);
-                }
+                    if (GridPositionOf(rowPos, col) != grid)
+                        RemoveSquarePossibility(value, rowPos, col);
             }
         }
 
-        int i = 0;
+        /// <summary>
+        /// A function to search and excecute an XWing for a row,
+        /// where value appears only twice in the row.
+        /// </summary>
+        /// <param name="value"> The potential value in the XWing </param>
+        /// <param name="row"> The row position of the value </param>
+        /// <param name="col"> The column position of the value</param>
+        /// <remarks> VALUE appears only twice in the row! </remarks>
         public void RowXWing(int value, int row, int col)
         {
-            if (rowAvailabilityCounter[row, value - 1].Count() == 2)
+            // First column of appearance
+            int col1 = rowAvailabilityCounter[row, value - 1].GetSmallest() - 1;
+            // Second column of appearance
+            int col2 = rowAvailabilityCounter[row, value - 1].GetLargest() - 1;
+
+            int row2 = -1;
+
+            // go through every appearance of value in the two columns he appears
+            foreach (int rowPos in colAvailabilityCounter[col1, value - 1])
             {
-                int col1 = rowAvailabilityCounter[row, value - 1].GetSmallest() - 1;
-                int col2 = rowAvailabilityCounter[row, value - 1].GetLargest() - 1;
-                int row2 = -1;
-                foreach (int rowPos in colAvailabilityCounter[col1, value - 1])
+                if (rowPos - 1 != row)
                 {
-                    if (rowPos - 1 == row) continue;
+                    // if a certain, difference row, has the exact same two columns appearance: its the second row of the XWing
                     if (rowAvailabilityCounter[rowPos - 1, value - 1].Equals(rowAvailabilityCounter[row, value - 1]))
                     {
                         row2 = rowPos - 1;
                         break;
                     }
                 }
+            }
+            // If no other row found, no XWing
+            if (row2 == -1) return;
 
-                if (row2 != -1)
+            // Remove all other positions that are not in the XWing (not in the same rows)
+            for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
+            {
+                if (rowPos != row && rowPos != row2)
                 {
-                    for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
-                    {
-                        if (rowPos == row || rowPos == row2) continue;
-
-                        RemoveSquarePossibility(value, rowPos, col1);
-                        RemoveSquarePossibility(value, rowPos, col2);
-                    }
+                    RemoveSquarePossibility(value, rowPos, col1);
+                    RemoveSquarePossibility(value, rowPos, col2);
                 }
             }
         }
 
+        /// <summary>
+        /// A function to search and excecute an XWing for a column,
+        /// where value appears only twice in the column.
+        /// </summary>
+        /// <param name="value"> The potential value in the XWing </param>
+        /// <param name="row"> The row position of the value </param>
+        /// <param name="col"> The column position of the value</param>
+        /// <remarks> VALUE appears only twice in the column! </remarks>
         public void ColXWing(int value, int row, int col)
         {
-            if (colAvailabilityCounter[col, value - 1].Count() == 2)
+            // First row of appearance
+            int row1 = colAvailabilityCounter[col, value - 1].GetSmallest() - 1;
+            // Second row of appearance
+            int row2 = colAvailabilityCounter[col, value - 1].GetLargest() - 1;
+
+            int col2 = -1;
+
+            // go through every appearance of value in the two rows he appears
+            foreach (int colPos in rowAvailabilityCounter[row1, value - 1])
             {
-                int row1 = colAvailabilityCounter[col, value - 1].GetSmallest() - 1;
-                int row2 = colAvailabilityCounter[col, value - 1].GetLargest() - 1;
-                int col2 = -1;
-                foreach (int colPos in rowAvailabilityCounter[row1, value - 1])
+                if (colPos - 1 != col)
                 {
-                    if (colPos - 1 == col) continue;
+                    // if a certain, difference column, has the exact same two rows appearance: its the second column of the XWing
                     if (colAvailabilityCounter[colPos - 1, value - 1].Equals(colAvailabilityCounter[col, value - 1]))
                     {
                         col2 = colPos - 1;
                         break;
                     }
                 }
-                if (col2 != -1)
-                {
-                    for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
-                    {
-                        if (colPos == col || colPos == col2) continue;
+            }
 
-                        RemoveSquarePossibility(value, row1, colPos);
-                        RemoveSquarePossibility(value, row2, colPos);
-                    }
-                }
+            // If no other column found, no XWing
+            if (col2 == -1) return;
+
+            // Remove all other positions that are not in the XWing (not in the same column)
+            for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
+            {
+                if (colPos == col || colPos == col2) continue;
+
+                RemoveSquarePossibility(value, row1, colPos);
+                RemoveSquarePossibility(value, row2, colPos);
             }
 
         }
@@ -827,29 +1040,20 @@ namespace SapirSudoku
             return !BitSet.Union(rowAvailability[row], colAvailability[col], gridAvailability[GridPositionOf(row, col)]).Contains(value);
         }
 
+        /// <summary>
+        /// Checks whether the Sudoku is full/solved
+        /// </summary>
+        /// <returns> Whether the Sudoku is solved or not </returns>
         public bool IsSolved()
         {
             return size <= count;
         }
 
-        public void printPoss()
-        {
-            for(int i = 0; i < squarePossibilities.GetLength(0); i++)
-            {
-                Console.Write($"{i}:");
-
-                for (int j = 0; j < squarePossibilities.GetLength(1); j++)
-                {
-                    String msg = "";
-                    Console.Write(j+":");
-                    foreach (int v in squarePossibilities[i, j])
-                        msg += v;
-                    Console.Write($"{msg, -10}");
-                }
-                Console.WriteLine();
-            }
-        }
-
+        /// <summary>
+        /// Fully solves the Sudoku if not yes solved,
+        /// and in cases of more then one answer, solves all
+        /// </summary>
+        /// <returns> IEnumerator with all Sudoku answers as Sudoku instances </returns>
         public IEnumerator<Sudoku> GetEnumerator()
         {
             (int, int)? min = MinimumPossibilitySquare();

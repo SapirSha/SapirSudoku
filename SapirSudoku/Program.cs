@@ -504,9 +504,9 @@ namespace MAIN
             */
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
-            int[,] g = StringToGrid("000006000059000008200008000045000000003000000006003054000325006000000000000000000", 9);
+            int[,] g = StringToGrid("000005080000601043000000000010500000000106000300000005530000061000000004000000000", 9);
             
-            Sudoku s = new Sudoku(g, true);
+            Sudoku s = new Sudoku(grid, true);
 
             Console.WriteLine(s);
 
