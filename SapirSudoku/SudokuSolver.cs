@@ -1036,8 +1036,8 @@ namespace SapirSudoku
 
         public override bool CanInsert(int value, int row, int col)
         {
-            if (sudoku[row, col] == NONE || !InRange(row,col)) return true;
-            return !BitSet.Union(rowAvailability[row], colAvailability[col], gridAvailability[GridPositionOf(row, col)]).Contains(value);
+            if (sudoku[row, col] != NONE || !InRange(row,col)) return false;
+            return squarePossibilities[row, col].Contains(value);
         }
 
         /// <summary>
@@ -1046,7 +1046,7 @@ namespace SapirSudoku
         /// <returns> Whether the Sudoku is solved or not </returns>
         public bool IsSolved()
         {
-            return size <= count;
+            return count >= size;
         }
 
         /// <summary>
@@ -1056,7 +1056,10 @@ namespace SapirSudoku
         /// <returns> IEnumerator with all Sudoku answers as Sudoku instances </returns>
         public IEnumerator<Sudoku> GetEnumerator()
         {
+            // Get the position of the square with the minimum possibilities to insert to
             (int, int)? min = MinimumPossibilitySquare();
+
+            // if there are no squares with possibilities its either solved or unsolvable
             if (min == null)
             {
                 if (IsSolved()) yield return new Sudoku(this);
@@ -1065,6 +1068,7 @@ namespace SapirSudoku
 
             (int row, int col) = (min.Value.Item1, min.Value.Item2);
 
+            // try to insert every possibility, and for each possibility, try to solve the Sudoku
             foreach (int possibility in squarePossibilities[row, col])
             {
                 PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(sudoku.GetLength(0)));
@@ -1074,7 +1078,7 @@ namespace SapirSudoku
 
                 try {
                     Insert(possibility, row, col);
-                    InsertGuranteed();
+                    InsertGuranteed(); // insert all the guarenteed actions
                 }
                 catch (InvalidInsertionException)
                 {
@@ -1084,8 +1088,11 @@ namespace SapirSudoku
 
                 if (flag)
                     foreach (Sudoku s in this)
+                        // return all the answers that the possibility got
                         yield return s;
 
+                /* Remove the latest guess, in other words, remove everything since the last insertion in this function
+                 * and prepare it to insert a new possibility */
                 RemoveLatestGuess();
             }
         }
