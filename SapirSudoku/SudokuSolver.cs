@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Data.Common;
-using System.Data.SqlTypes;
-using System.Drawing;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
-using System.Runtime.Intrinsics.X86;
+﻿using System.Collections;
 using CustomExceptions;
 using SapirStruct;
 using SapirSudoku;
@@ -92,14 +81,36 @@ namespace SapirSudoku
         /// </summary>
         private Stack<(int value, int row, int col)> NextGarunteedAction;
 
-        private Stack<Stack<(int row, int col)>> PrevInsertion;
-        // FIRST IN PREV INSERTION FOR GUESSING
-        // SECOND IN PREV INSERTION FOR INSERTIONS
+        /// <summary>
+        /// This class is designed to diffrentiate the insertion made.
+        /// Each insertion is its own class, with his own possibility removals
+        /// </summary>
+        private class Insertion {
+            public int row; 
+            public int col;
 
-        private Stack<Stack<Stack<(int value, int row, int col)>>> PrevAction;
-        // FIRST IN PREV ACTION FOR GUESSING
-        // SECOND IN PREV ACTION FOR INSERTIONS
-        // THIRD FOR PREV ACTION FOR POSSIBILITY
+            public Stack<(int value, int row, int col)> possibilities = new Stack<(int value, int row, int col)>();
+            public Insertion(int row, int col)
+            {
+                this.row = row;
+                this.col = col;
+            }
+        }
+
+        /// <summary>
+        /// This class is designed to diffrentiate the guesses made.
+        /// Each guess is its own class, with his own insertions and possibility removals(in insertions).
+        /// </summary>
+        private class Guess{
+            // a stack of insertions with property initialization (to automatically create the stack)
+            public Stack<Insertion> insertions = new Stack<Insertion>();
+        }
+
+        /// <summary>
+        /// A stack of guesses.
+        /// With it its possible to go revert back to the latest unsure insertion, in case of solving, or unsolvable.
+        /// </summary>
+        private Stack<Guess> previousActions;
 
         /// <summary>
         /// An array of Bitsets, each representing a full different row
@@ -205,9 +216,7 @@ namespace SapirSudoku
 
             this.NextGarunteedAction = new Stack<(int value, int row, int col)>(length * 3);
 
-            this.PrevAction = new Stack<Stack<Stack<(int value, int row, int col)> > >(length);
-
-            this.PrevInsertion = new Stack<Stack<(int row, int col)>>(length);
+            this.previousActions = new Stack<Guess>(length * 3);
 
 
             // Insert all full rows into the full rows array
@@ -247,8 +256,8 @@ namespace SapirSudoku
             if (arr.GetLength(1) != length)
                 throw new InvalidSudokuException($"Sudoku size must be N*N, instead was {arr.GetLength(0)}*{arr.GetLength(1)}");
 
-            PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(length));
-            PrevInsertion.Push(new Stack<(int row, int col)>(length));
+            // consider the start as a new guess
+            previousActions.Push(new Guess());
 
             // Insert into the current empty Sudoku all values that are in the initialized array
             for (int row = 0; row < sudoku.GetLength(0); row++)
@@ -257,11 +266,8 @@ namespace SapirSudoku
                         Insert(arr[row, col], row, col);
 
             // Clear the undo stacks, since we wont come back from here
-            PrevAction.Clear();
-            PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(length));
-
-            PrevInsertion.Clear();
-            PrevInsertion.Push(new Stack<(int row, int col)>(length));
+            previousActions.Clear();
+            previousActions.Push(new Guess());
 
             // Insert the values that their places are guranteed
             InsertGuranteed();
@@ -304,23 +310,28 @@ namespace SapirSudoku
         /// </summary>
         private void RemoveLatestGuess()
         {
-            if (PrevInsertion.Count() == 0 || PrevAction.Count() == 0) return;
+            // if no remainning guesses
+            if (previousActions.Count() == 0) return;
 
-            while (PrevInsertion.Peek().Count() != 0 && PrevAction.Peek().Count() != 0)
+            // undo every insertion
+            while (previousActions.Peek().insertions.Count() != 0)
             {
-                while (PrevAction.Peek().Peek().Count() != 0)
+                Insertion latestInsertion = previousActions.Peek().insertions.Pop();
+
+                // undo every posibility
+                while (latestInsertion.possibilities.Count() != 0)
                 {
-                    (int valueAc, int rowAc, int colAc) = PrevAction.Peek().Peek().Pop();
+                    (int valueAc, int rowAc, int colAc) = latestInsertion.possibilities.Pop();
+
+                    // remove possibility
                     AddPossibility(valueAc, rowAc, colAc);
                 }
-                (int rowIn, int colIn) = PrevInsertion.Peek().Pop();
-                DeInsert(rowIn, colIn);
 
-                PrevAction.Peek().Pop();
+                // remove insertion
+                DeInsert(latestInsertion.row, latestInsertion.col);
             }
-            PrevAction.Pop();
-            PrevInsertion.Pop();
-            
+            // remove latest guess from the stack
+            previousActions.Pop();
         }
 
         /// <summary>
@@ -400,10 +411,10 @@ namespace SapirSudoku
             if (!squarePossibilities[row,col].Contains(value))
                 throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
 
-            // Save this insertion
-            PrevInsertion.Peek().Push((row, col));
-            // Separate insertions
-            PrevAction.Peek().Push(new Stack<(int value, int row, int col)>());
+
+            // Save current insertion as a part of current guess
+            Guess currentGuess = previousActions.Peek();
+            currentGuess.insertions.Push(new Insertion(row, col));
 
             // Update peers with the same current col (row changes)
             UpdateRowInsert(value, row, col);
@@ -436,10 +447,11 @@ namespace SapirSudoku
         {
             if (!squarePossibilities[row, col].Contains(value)) return;
 
-            int count;
+            // save this possibility removal as a part of the current insertion
+            Insertion currentInsertion = previousActions.Peek().insertions.Peek();
+            currentInsertion.possibilities.Push((value, row, col));
 
-            //Save this possibility removal
-            PrevAction.Peek().Peek().Push((value, row, col));
+            int count;
             
             squarePossibilities[row, col].Remove(value);
 
@@ -1071,22 +1083,25 @@ namespace SapirSudoku
             // try to insert every possibility, and for each possibility, try to solve the Sudoku
             foreach (int possibility in squarePossibilities[row, col])
             {
-                PrevAction.Push(new Stack<Stack<(int value, int row, int col)>>(sudoku.GetLength(0)));
-                PrevInsertion.Push(new Stack<(int row, int col)>(sudoku.GetLength(0)));
+                // since its an unsure insertion, consider it as a guess,
+                // and push it into a new item in the stack to later revert to
+                previousActions.Push(new Guess());
 
-                bool flag = true;
+                bool solvable = true;
 
                 try {
                     Insert(possibility, row, col);
                     InsertGuranteed(); // insert all the guarenteed actions
                 }
+                // caught when an insertion is invalid, or the board becomes unsolvable
                 catch (InvalidInsertionException)
                 {
-                    flag = false;
+                    solvable = false;
+                    // clear leftover from the stack
                     NextGarunteedAction.Clear();
                 }
 
-                if (flag)
+                if (solvable)
                     foreach (Sudoku s in this)
                         // return all the answers that the possibility got
                         yield return s;
