@@ -515,7 +515,6 @@ namespace MAIN
             int c = 0;
 
 
-            
             foreach (Sudoku answer in s.Answers)
             {
                 if (++c <= MAX)
