@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using SapirSudoku;
-using SapirStruct;
+﻿using SapirSudoku.src;
 using System.Diagnostics;
-using System.Collections;
-using System.Numerics;
-using System.ComponentModel.DataAnnotations;
-using CustomExceptions;
 
 namespace MAIN
 {

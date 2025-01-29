@@ -1,10 +1,10 @@
 ﻿// This file contains main part of the SudokuSolver class
 
 using System.Collections;
-using CustomExceptions;
-using SapirStruct;
+using SapirSudoku.src.Exceptions;
+using SapirSudoku.src.DataStructures;
 
-namespace SapirSudoku
+namespace SapirSudoku.src.SolveSudoku
 {
     /// <summary>
     ///  A class that solve a Sudoku.
@@ -20,7 +20,7 @@ namespace SapirSudoku
         /// Every HashSet in the array holds the positions where
         /// the amount of possible insertions is equal to the index
         /// </summary>
-        private HashSet<(int row,int col)>[] squarePossibilitesCounter;
+        private HashSet<(int row, int col)>[] squarePossibilitesCounter;
 
         /// <summary>
         /// Each cell of the 2d array is a BitSet Representing the possible insertions
@@ -86,8 +86,9 @@ namespace SapirSudoku
         /// This class is designed to diffrentiate the insertion made.
         /// Each insertion is its own class, with his own possibility removals
         /// </summary>
-        private class Insertion {
-            public int row; 
+        private class Insertion
+        {
+            public int row;
             public int col;
 
             public Stack<(int value, int row, int col)> possibilities = new Stack<(int value, int row, int col)>();
@@ -102,7 +103,8 @@ namespace SapirSudoku
         /// This class is designed to diffrentiate the guesses made.
         /// Each guess is its own class, with his own insertions and possibility removals(in insertions).
         /// </summary>
-        private class Guess{
+        private class Guess
+        {
             // a stack of insertions with property initialization (to automatically create the stack)
             public Stack<Insertion> insertions = new Stack<Insertion>();
         }
@@ -152,12 +154,13 @@ namespace SapirSudoku
         /// Thrown if the length of the sudoku is invalid ,
         /// Either because it is out of range, or because it is a prime number.
         /// </exception>
-        protected SudokuSolver(int length = 9, bool horizontal = true) : base(length, horizontal){
+        protected SudokuSolver(int length = 9, bool horizontal = true) : base(length, horizontal)
+        {
             size = sudoku.Length;
             count = 0;
 
             // Create a BitSet representing a full row/column/grid 
-            this.full = new BitSet(length);
+            full = new BitSet(length);
             for (int i = 1; i <= length; i++)
                 full.Add(i);
 
@@ -167,70 +170,72 @@ namespace SapirSudoku
                 for (int col = 0; col < length; col++)
                     // Make the possible values for every cell all values (i.e. full)
                     squarePossibilities[row, col] = new BitSet(full);
-            
 
-            this.squarePossibilitesCounter = new HashSet<(int, int)>[length + 1];
+
+            squarePossibilitesCounter = new HashSet<(int, int)>[length + 1];
             for (int i = 0; i <= length; i++)
-                squarePossibilitesCounter[i] = new HashSet<(int, int)> (length * length);
+                squarePossibilitesCounter[i] = new HashSet<(int, int)>(length * length);
 
             // Add to the last frequency all of the possible positions (since nothing is inserted yet)
             for (int row = 0; row < length; row++)
                 for (int col = 0; col < length; col++)
-                    squarePossibilitesCounter[length].Add((row,col));
+                    squarePossibilitesCounter[length].Add((row, col));
 
 
-            this.rowAvailability = new BitSet[length];
+            rowAvailability = new BitSet[length];
             for (int row = 0; row < length; row++)
                 // Make the possibilities in every row, every possibility.
                 rowAvailability[row] = new BitSet(full);
 
             // Make the possible columns for every row, for every value, all columns.
-            this.rowAvailabilityCounter = new BitSet[length,length];
+            rowAvailabilityCounter = new BitSet[length, length];
             for (int row = 0; row < length; row++)
                 for (int value = 1; value < length + 1; value++)
                     rowAvailabilityCounter[row, value - 1] = new BitSet(full);
 
 
             // Make the possibilities in every col, every possibility.
-            this.colAvailability = new BitSet[length];
+            colAvailability = new BitSet[length];
             for (int col = 0; col < length; col++)
                 colAvailability[col] = new BitSet(full);
 
             // Make the possible rows for every column, for every value, all rows.
-            this.colAvailabilityCounter = new BitSet[length,length];
+            colAvailabilityCounter = new BitSet[length, length];
             for (int col = 0; col < length; col++)
                 for (int value = 1; value < length + 1; value++)
                     colAvailabilityCounter[col, value - 1] = new BitSet(full);
 
 
             // Make the possibilities in every grid, every possibility.
-            this.gridAvailability = new BitSet[length];
+            gridAvailability = new BitSet[length];
             for (int grid = 0; grid < length; grid++)
                 gridAvailability[grid] = new BitSet(full);
 
             // Make the possible positions in grid for every grid, for every values, all positions.
-            this.gridAvailabilityCounter = new BitSet[length, length];
+            gridAvailabilityCounter = new BitSet[length, length];
             for (int position = 0; position < length; position++)
                 for (int value = 1; value < length + 1; value++)
                     gridAvailabilityCounter[position, value - 1] = new BitSet(full);
 
 
-            this.NextGarunteedAction = new Stack<(int value, int row, int col)>(length * 3);
+            NextGarunteedAction = new Stack<(int value, int row, int col)>(length * 3);
 
-            this.previousActions = new Stack<Guess>(length * 3);
+            previousActions = new Stack<Guess>(length * 3);
 
 
             // Insert all full rows into the full rows array
-            this.fullRows = new BitSet[grid_height];
-            for (int i = 0; i < grid_height; i++) {
+            fullRows = new BitSet[grid_height];
+            for (int i = 0; i < grid_height; i++)
+            {
                 fullRows[i] = new BitSet(grid_width);
                 for (int j = 0; j < grid_width; j++)
                     fullRows[i].Add(i * grid_width + j + 1);
             }
 
             // Insert all full cols into the full cols array
-            this.fullCols = new BitSet[grid_width];
-            for (int i = 0; i < grid_width; i++) {
+            fullCols = new BitSet[grid_width];
+            for (int i = 0; i < grid_width; i++)
+            {
                 fullCols[i] = new BitSet(sudoku.GetLength(0));
                 for (int j = 0; j < grid_height; j++)
                     fullCols[i].Add(i + j * grid_height + 1);
@@ -263,7 +268,7 @@ namespace SapirSudoku
             // Insert into the current empty Sudoku all values that are in the initialized array
             for (int row = 0; row < sudoku.GetLength(0); row++)
                 for (int col = 0; col < sudoku.GetLength(1); col++)
-                    if (this.sudoku[row, col] == NONE && arr[row, col] != NONE)
+                    if (sudoku[row, col] == NONE && arr[row, col] != NONE)
                         Insert(arr[row, col], row, col);
 
             // Clear the undo stacks, since we wont come back from here
@@ -292,10 +297,10 @@ namespace SapirSudoku
             if (!allowables.ContainsKey(value))
                 throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku, Invalid Value!");
 
-            if (!InRange(row,col))
+            if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
-            
-            if (!squarePossibilities[row,col].Contains(value))
+
+            if (!squarePossibilities[row, col].Contains(value))
                 throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku, Collisions accrued!");
 
 
@@ -321,7 +326,7 @@ namespace SapirSudoku
 
         public override bool CanInsert(int value, int row, int col)
         {
-            if (sudoku[row, col] != NONE || !InRange(row,col)) return false;
+            if (sudoku[row, col] != NONE || !InRange(row, col)) return false;
             return squarePossibilities[row, col].Contains(value);
         }
 
@@ -362,7 +367,8 @@ namespace SapirSudoku
 
                 bool solvable = true;
 
-                try {
+                try
+                {
                     Insert(possibility, row, col);
                     InsertGuranteed(); // insert all the guarenteed actions
                 }

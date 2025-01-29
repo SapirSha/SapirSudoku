@@ -1,6 +1,5 @@
-﻿using System;
-
-namespace CustomExceptions
+﻿
+namespace SapirSudoku.src.Exceptions
 {
     public class InvalidValueException : Exception
     {

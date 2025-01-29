@@ -1,9 +1,9 @@
 ﻿// This file contains the helper methods of the SudokuSolver class
 
-using CustomExceptions;
-using SapirStruct;
+using SapirSudoku.src.Exceptions;
+using SapirSudoku.src.DataStructures;
 
-namespace SapirSudoku
+namespace SapirSudoku.src.SolveSudoku
 {
     public partial class SudokuSolver
     {

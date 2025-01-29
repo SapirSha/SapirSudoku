@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace CustomExceptions
+﻿
+namespace SapirSudoku.src.Exceptions
 {
     public class InvalidInsertionException : Exception
     {

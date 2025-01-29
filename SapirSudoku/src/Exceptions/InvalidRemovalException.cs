@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CustomExceptions
+﻿
+namespace SapirSudoku.src.Exceptions
 {
     public class InvalidRemovalException : Exception
     {

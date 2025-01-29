@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using CustomExceptions;
-using SapirStruct;
-using SapirMath;
+﻿using SapirSudoku.src.Exceptions;
+using SapirSudoku.src.DataStructures;
+using SapirSudoku.src.Utilities;
+using SapirSudoku.src.SolveSudoku;
 
-namespace SapirSudoku
+namespace SapirSudoku.src
 {
     /// <summary>
     /// A class that represents a sudoku.
@@ -18,7 +17,7 @@ namespace SapirSudoku
         /// <summary> Represents the value that is not considered a clue in the Sudoku </summary>
         protected static readonly int NONE = 0;
         /// <summary> Holds the allowed values in the Sudoku </summary>
-        protected Dictionary<int, int> allowables = new Dictionary<int, int> { {NONE, 0} };
+        protected Dictionary<int, int> allowables = new Dictionary<int, int> { { NONE, 0 } };
 
         /// <summary> Represents the Sudoku itself and it's inserted values </summary>
         protected int[,] sudoku;
@@ -28,7 +27,7 @@ namespace SapirSudoku
 
 
         protected int grid_width;
-        public int GridWidth { get { return grid_width;} }
+        public int GridWidth { get { return grid_width; } }
 
 
         protected int grid_height;
@@ -48,8 +47,8 @@ namespace SapirSudoku
         {
             // Clone 2d array with values
             this.sudoku = sudoku.Array;
-            this.grid_height = sudoku.grid_height;
-            this.grid_width = sudoku.grid_width;
+            grid_height = sudoku.grid_height;
+            grid_width = sudoku.grid_width;
         }
         /// <summary>
         /// A constructor to create a new Sudoku instance, with no clues in it.
@@ -76,18 +75,21 @@ namespace SapirSudoku
                 allowables.Add(i, i);
 
             // Get the two closest divisibles to the length
-            (int smaller, int bigger) = MathUtils.ColsestDivisibles(length);
+            (int smaller, int bigger) = MathUtilities.ClosestMultiplications(length);
 
 
             if (smaller == 1)
                 if (length != 1)
                     throw new InvalidSudokuException("Cannot Create a Sudoku with a prime number as length");
 
-            if (horizontal) {
+            if (horizontal)
+            {
                 // the grids are lying down
                 grid_height = smaller;
                 grid_width = bigger;
-            } else {
+            }
+            else
+            {
                 // the grids are standing up
                 grid_height = bigger;
                 grid_width = smaller;
@@ -119,8 +121,8 @@ namespace SapirSudoku
             // Insert all the values in the params 2d array to the class 2d array
             for (int row = 0; row < sudoku.GetLength(0); row++)
                 for (int col = 0; col < sudoku.GetLength(1); col++)
-                    if (sudoku[row,col] != NONE)
-                        Insert(sudoku[row,col], row, col);
+                    if (sudoku[row, col] != NONE)
+                        Insert(sudoku[row, col], row, col);
         }
 
         /// <summary>
@@ -144,7 +146,7 @@ namespace SapirSudoku
         /// <returns> The grid number which the position [row,col] appears at. </returns>
         protected int GridPositionOf(int row, int col)
         {
-            return (row / grid_height) * (sudoku.GetLength(1) / grid_width) + col / grid_width;
+            return row / grid_height * (sudoku.GetLength(1) / grid_width) + col / grid_width;
         }
 
         /// <summary>
@@ -251,7 +253,7 @@ namespace SapirSudoku
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");
 
             // if cell already occupied: return false
-            if (sudoku[row,col] != NONE) return false;
+            if (sudoku[row, col] != NONE) return false;
 
             // if value appears in the same col: return false (row changes)
             for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
@@ -282,9 +284,9 @@ namespace SapirSudoku
         /// Converts the Sudoku represented to an appropriate String
         /// </summary>
         /// <returns> A string representing the Sudoku </returns>
-        public override String ToString()
+        public override string ToString()
         {
-            String msg = "";
+            string msg = "";
             for (int row = 0; row < sudoku.GetLength(0); row++)
             {
                 if (row != 0 && row % grid_height == 0)
@@ -292,9 +294,9 @@ namespace SapirSudoku
 
                 for (int col = 0; col < sudoku.GetLength(1); col++)
                 {
-                        if (col != 0 && col % grid_width == 0)
-                            msg += "   ";
-                        msg += $"{sudoku[row, col], -3}";
+                    if (col != 0 && col % grid_width == 0)
+                        msg += "   ";
+                    msg += $"{sudoku[row, col],-3}";
                 }
 
                 msg += "\n";

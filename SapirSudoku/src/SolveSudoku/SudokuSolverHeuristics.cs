@@ -1,8 +1,8 @@
 ﻿// This file contains the heuristics part of the SudokuSolver class
 
-using SapirStruct;
+using SapirSudoku.src.DataStructures;
 
-namespace SapirSudoku
+namespace SapirSudoku.src.SolveSudoku
 {
     public partial class SudokuSolver
     {
