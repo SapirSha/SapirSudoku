@@ -260,7 +260,7 @@ namespace SapirSudoku.src.SolveSudoku
             int length = arr.GetLength(0);
             // if width is not equal to height: not symmetrical. thus, invalid length.
             if (arr.GetLength(1) != length)
-                throw new InvalidSudokuException($"Sudoku size must be N*N, instead was {arr.GetLength(0)}*{arr.GetLength(1)}");
+                throw new InvalidSudokuSizeException($"Sudoku size must be N*N, instead was {arr.GetLength(0)}*{arr.GetLength(1)}");
 
             // consider the start as a new guess
             previousActions.Push(new Guess());
@@ -295,7 +295,7 @@ namespace SapirSudoku.src.SolveSudoku
         public override void Insert(int value, int row, int col)
         {
             if (!allowables.ContainsKey(value))
-                throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku, Invalid Value!");
+                throw new InvalidValueException($"Cannot Insert '{value}' to {row},{col} in sudoku, Invalid Value!");
 
             if (!InRange(row, col))
                 throw new ArgumentOutOfRangeException($"Row({row}) And Col({col}) Cannot Be Outside The Sudoku");

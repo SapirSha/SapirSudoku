@@ -1,5 +1,6 @@
 ﻿using SapirSudoku.src;
 using SapirSudoku.src.DataStructures;
+using SapirSudoku.src.IO;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -500,11 +501,12 @@ namespace MAIN
             */
             //Sudoku s = new Sudoku(grid);
             //Console.WriteLine(s);
-            
-            ///*
-            int[,] g = StringToGrid("0000:=000000000?70050;01:00@90<8900800700004600=60:=080000070002=00030890>?500012;01@:000008007>00001000@0000900000<>?0740000000006@900000>0100002;0600=800<00500070002000000000<0900>?5;4020=0@0020=0@0<0907000>?500400=6000<803<0000002001@:0000=68000?0004020", 16);
-            
-            Sudoku s = new Sudoku(g, true);
+
+            /*
+            String st = "0000040000000000";
+            //int[,] g = StringToGrid(st, 25);
+
+            Sudoku s = SudokuConvertionsHelper.ConvertStringToSudoku(st);
 
             Console.WriteLine(s);
 
@@ -528,26 +530,7 @@ namespace MAIN
             
             //*/
 
-            ISet<int> e = new BitSet(10);
-            e.Add(5);
-            e.Add(7);
-            e.Add(8);
-            e.Add(25);
-
-            HashSet<int> set = new HashSet<int> { 5, 7, 8 };
-            BitSet e2 = new BitSet(set);
-
-            int[] a = new int[] { 1, 2, 3,4,5,6 };
-            e.CopyTo(a, 1);
-            foreach(int i in a)
-                Console.WriteLine("WASD " + i);
-
-            Console.WriteLine(e.IsSupersetOf(e2));
-            Console.WriteLine(e.IsSupersetOf(set));
-
-
-            Console.WriteLine(e);
-
+            ConsoleOutput.UI();
 
 
         }

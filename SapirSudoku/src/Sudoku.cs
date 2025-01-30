@@ -62,13 +62,13 @@ namespace SapirSudoku.src
         /// Thrown if the length of the sudoku is invalid ,
         /// Either because it is out of range, or because it is a prime number
         /// </exception>
-        protected Sudoku(int length = 9, bool horizontal = true)
+        public Sudoku(int length = 9, bool horizontal = true)
         {
             if (length < MIN_SUDOKU_LENGTH)
-                throw new InvalidSudokuException("Minimum Sudoku Length is 1");
+                throw new InvalidSudokuSizeException("Minimum Sudoku Length is 1");
 
             if (length > MAX_SUDOKU_LENGTH)
-                throw new InvalidSudokuException("Maximum Sudoku Length is 25");
+                throw new InvalidSudokuSizeException($"Maximum Sudoku Length is {MAX_SUDOKU_LENGTH}");
 
             // Add the allowed numbers to the allowed numbers hashset
             for (int i = 1; i <= length; i++)
@@ -80,7 +80,7 @@ namespace SapirSudoku.src
 
             if (smaller == 1)
                 if (length != 1)
-                    throw new InvalidSudokuException("Cannot Create a Sudoku with a prime number as length");
+                    throw new InvalidSudokuSizeException($"Cannot Create a Sudoku with a prime number as length {bigger}*{smaller}");
 
             if (horizontal)
             {
@@ -187,7 +187,7 @@ namespace SapirSudoku.src
             if (allowables.ContainsKey(value))
                 sudoku[row, col] = value;
             else
-                throw new InvalidInsertionException($"Cannot Insert '{value}' to {row},{col} in sudoku");
+                throw new InvalidValueException($"Cannot Insert '{value}' to sudoku({sudoku.GetLength(0)}*{sudoku.GetLength(1)})");
         }
 
         /// <summary>
