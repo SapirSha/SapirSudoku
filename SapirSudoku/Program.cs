@@ -1,5 +1,5 @@
 ﻿using SapirSudoku.src;
-using SapirSudoku.src.DataStructures.BitSet;
+using SapirSudoku.src.DataStructures;
 using System.Diagnostics;
 using System.Globalization;
 
@@ -528,16 +528,23 @@ namespace MAIN
             
             //*/
 
-            BitSet e = new BitSet(10);
+            ISet<int> e = new BitSet(10);
             e.Add(5);
             e.Add(7);
             e.Add(8);
+            e.Add(25);
 
-            HashSet<int> set = new HashSet<int> { 5,2, 7, 8 };
+            HashSet<int> set = new HashSet<int> { 5, 7, 8 };
             BitSet e2 = new BitSet(set);
 
+            int[] a = new int[] { 1, 2, 3,4,5,6 };
+            e.CopyTo(a, 1);
+            foreach(int i in a)
+                Console.WriteLine("WASD " + i);
 
-            Console.WriteLine(e.SetEquals(e2));
+            Console.WriteLine(e.IsSupersetOf(e2));
+            Console.WriteLine(e.IsSupersetOf(set));
+
 
             Console.WriteLine(e);
 

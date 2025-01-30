@@ -350,7 +350,7 @@ namespace SapirSudoku.src.SolveSudoku
             (int, int)? min = MinimumPossibilitySquare();
 
             // if there are no squares with possibilities its either solved or unsolvable
-            if (min == null)
+            if (min is null)
             {
                 if (IsSolved()) yield return new Sudoku(this);
                 yield break;
