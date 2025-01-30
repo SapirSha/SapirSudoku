@@ -1,6 +1,6 @@
 ﻿// This file contains the heuristics part of the SudokuSolver class
 
-using SapirSudoku.src.DataStructures;
+using SapirSudoku.src.DataStructures.BitSet;
 
 namespace SapirSudoku.src.SolveSudoku
 {
@@ -32,13 +32,13 @@ namespace SapirSudoku.src.SolveSudoku
             foreach (int possibility in gridAvailability[grid])
             {
                 // if the cells of possibility in the grid are a subset of the cells of value, add to the hidden set
-                if (gridAvailabilityCounter[grid, possibility - 1].IsSubSetOf(possibilities_in_grid_for_value))
+                if (gridAvailabilityCounter[grid, possibility - 1].IsSubsetOf(possibilities_in_grid_for_value))
                     hidden.Add(possibility);
 
                 // if the cells of possibility in the grid are a superset of the cells of value,
                 // possibility might have the cells where the hidden group appears at,
                 // that is as long as the amount of cells is less then the Max search group load
-                else if (gridAvailabilityCounter[grid, possibility - 1].IsSuperSetOf(possibilities_in_grid_for_value))
+                else if (gridAvailabilityCounter[grid, possibility - 1].IsSupersetOf(possibilities_in_grid_for_value))
                 {
                     if (gridAvailabilityCounter[grid, possibility - 1].Count() <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD)
                     {
@@ -95,13 +95,13 @@ namespace SapirSudoku.src.SolveSudoku
             foreach (int possibility in rowAvailability[row])
             {
                 // if the cells of possibility in the row are a subset of the cells of value, add to the hidden set
-                if (rowAvailabilityCounter[row, possibility - 1].IsSubSetOf(possibilities_in_row_for_value))
+                if (rowAvailabilityCounter[row, possibility - 1].IsSubsetOf(possibilities_in_row_for_value))
                     hidden.Add(possibility);
 
                 // if the cells of possibility in the row are a superset of the cells of value,
                 // possibility might have the cells where the hidden group appears at,
                 // that is as long as the amount of cells is less then the Max search group load
-                else if (rowAvailabilityCounter[row, possibility - 1].IsSuperSetOf(possibilities_in_row_for_value))
+                else if (rowAvailabilityCounter[row, possibility - 1].IsSupersetOf(possibilities_in_row_for_value))
                 {
                     if (rowAvailabilityCounter[row, possibility - 1].Count() <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD)
                     {
@@ -151,13 +151,13 @@ namespace SapirSudoku.src.SolveSudoku
             foreach (int possibility in colAvailability[col])
             {
                 // if the cells of possibility in the column are a subset of the cells of value, add to the hidden set
-                if (colAvailabilityCounter[col, possibility - 1].IsSubSetOf(possibilities_in_col_for_value))
+                if (colAvailabilityCounter[col, possibility - 1].IsSubsetOf(possibilities_in_col_for_value))
                     hidden.Add(possibility);
 
                 // if the cells of possibility in the column are a superset of the cells of value,
                 // possibility might have the cells where the hidden group appears at,
                 // that is as long as the amount of cells is less then the Max search group load
-                else if (colAvailabilityCounter[col, possibility - 1].IsSuperSetOf(possibilities_in_col_for_value))
+                else if (colAvailabilityCounter[col, possibility - 1].IsSupersetOf(possibilities_in_col_for_value))
                 {
                     if (colAvailabilityCounter[col, possibility - 1].Count() <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD)
                     {
@@ -197,7 +197,7 @@ namespace SapirSudoku.src.SolveSudoku
 
             // if the cells positions are a subset of any full row, its a pointing group
             foreach (BitSet possibleRow in fullRows)
-                if (possitions.IsSubSetOf(possibleRow))
+                if (possitions.IsSubsetOf(possibleRow))
                     return true;
             return false;
         }
@@ -217,7 +217,7 @@ namespace SapirSudoku.src.SolveSudoku
 
             // if the cells positions are a subset of any full column, its a pointing group
             foreach (BitSet possibleRow in fullCols)
-                if (possitions.IsSubSetOf(possibleRow))
+                if (possitions.IsSubsetOf(possibleRow))
                     return true;
 
             return false;
@@ -234,7 +234,7 @@ namespace SapirSudoku.src.SolveSudoku
                 // The initial row of the grid
                 int initRow = grid / (sudoku.GetLength(1) / grid_width) * grid_height;
                 // The row where value appears at (and by design where the pointing griup is)
-                int row = initRow + (gridAvailabilityCounter[grid, value - 1].GetSmallest() - 1) / grid_width;
+                int row = initRow + (gridAvailabilityCounter[grid, value - 1].Smallest - 1) / grid_width;
 
                 // Remove all possibilities for value in all other grids, besides the grid of the pointing group
                 for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
@@ -246,7 +246,7 @@ namespace SapirSudoku.src.SolveSudoku
                 // The initial column of the grid
                 int initCol = grid * grid_width % sudoku.GetLength(1);
                 // The column where value appears at (and by design where the pointing griup is)
-                int col = initCol + (gridAvailabilityCounter[grid, value - 1].GetSmallest() - 1) % grid_width;
+                int col = initCol + (gridAvailabilityCounter[grid, value - 1].Smallest - 1) % grid_width;
 
                 // Remove all possibilities for value in all other grids, besides the grid of the pointing group
                 for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
@@ -266,9 +266,9 @@ namespace SapirSudoku.src.SolveSudoku
         private void RowXWing(int value, int row, int col)
         {
             // First column of appearance
-            int col1 = rowAvailabilityCounter[row, value - 1].GetSmallest() - 1;
+            int col1 = rowAvailabilityCounter[row, value - 1].Smallest - 1;
             // Second column of appearance
-            int col2 = rowAvailabilityCounter[row, value - 1].GetLargest() - 1;
+            int col2 = rowAvailabilityCounter[row, value - 1].Largest - 1;
 
             int row2 = -1;
 
@@ -278,7 +278,7 @@ namespace SapirSudoku.src.SolveSudoku
                 if (rowPos - 1 != row)
                 {
                     // if a certain, difference row, has the exact same two columns appearance: its the second row of the XWing
-                    if (rowAvailabilityCounter[rowPos - 1, value - 1].Equals(rowAvailabilityCounter[row, value - 1]))
+                    if (rowAvailabilityCounter[rowPos - 1, value - 1].SetEquals(rowAvailabilityCounter[row, value - 1]))
                     {
                         row2 = rowPos - 1;
                         break;
@@ -310,9 +310,9 @@ namespace SapirSudoku.src.SolveSudoku
         private void ColXWing(int value, int row, int col)
         {
             // First row of appearance
-            int row1 = colAvailabilityCounter[col, value - 1].GetSmallest() - 1;
+            int row1 = colAvailabilityCounter[col, value - 1].Smallest - 1;
             // Second row of appearance
-            int row2 = colAvailabilityCounter[col, value - 1].GetLargest() - 1;
+            int row2 = colAvailabilityCounter[col, value - 1].Smallest - 1;
 
             int col2 = -1;
 
@@ -322,7 +322,7 @@ namespace SapirSudoku.src.SolveSudoku
                 if (colPos - 1 != col)
                 {
                     // if a certain, difference column, has the exact same two rows appearance: its the second column of the XWing
-                    if (colAvailabilityCounter[colPos - 1, value - 1].Equals(colAvailabilityCounter[col, value - 1]))
+                    if (colAvailabilityCounter[colPos - 1, value - 1].SetEquals(colAvailabilityCounter[col, value - 1]))
                     {
                         col2 = colPos - 1;
                         break;

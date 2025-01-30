@@ -2,7 +2,7 @@
 
 using System.Collections;
 using SapirSudoku.src.Exceptions;
-using SapirSudoku.src.DataStructures;
+using SapirSudoku.src.DataStructures.BitSet;
 
 namespace SapirSudoku.src.SolveSudoku
 {

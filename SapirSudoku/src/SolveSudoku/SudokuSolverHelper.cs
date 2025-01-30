@@ -1,7 +1,7 @@
 ﻿// This file contains the helper methods of the SudokuSolver class
 
 using SapirSudoku.src.Exceptions;
-using SapirSudoku.src.DataStructures;
+using SapirSudoku.src.DataStructures.BitSet;
 
 namespace SapirSudoku.src.SolveSudoku
 {
@@ -258,11 +258,11 @@ namespace SapirSudoku.src.SolveSudoku
             gridAvailability[GridPositionOf(row, col)].Remove(value);
 
             // Make the columns, where value can appear at in the current row, none.
-            rowAvailabilityCounter[row, value - 1].ClearAll();
+            rowAvailabilityCounter[row, value - 1].Clear();
             // Make the rows, where value can appear at in the current column, none.
-            colAvailabilityCounter[col, value - 1].ClearAll();
+            colAvailabilityCounter[col, value - 1].Clear();
             // Make the positions, where value can appear at in the current grid, none.
-            gridAvailabilityCounter[GridPositionOf(row, col), value - 1].ClearAll();
+            gridAvailabilityCounter[GridPositionOf(row, col), value - 1].Clear();
 
             // Make the current cell possibility, no possibility.
             squarePossibilities[row, col] = new BitSet(0);
@@ -363,7 +363,7 @@ namespace SapirSudoku.src.SolveSudoku
         private void PotentialInsertInRow(int value, int row)
         {
             // Get the smallest (in this case only) value in the set (which represents a column number)
-            int col = (rowAvailabilityCounter[row, value - 1].GetSmallest() - 1);
+            int col = (rowAvailabilityCounter[row, value - 1].Smallest - 1);
 
             NextGarunteedAction.Push((value, row, col));
         }
@@ -377,7 +377,7 @@ namespace SapirSudoku.src.SolveSudoku
         private void PotentialInsertInCol(int value, int col)
         {
             // Get the smallest (in this case only) value in the set (which represents a row number)
-            int row = colAvailabilityCounter[col, value - 1].GetSmallest() - 1;
+            int row = colAvailabilityCounter[col, value - 1].Smallest - 1;
 
             NextGarunteedAction.Push((value, row, col));
         }
@@ -391,8 +391,8 @@ namespace SapirSudoku.src.SolveSudoku
         private void PotentialInsertInGrid(int value, int grid)
         {
             // Get the smallest (in this case only) value in the set (which represents a position in the grid)
-            int rowInPos = (gridAvailabilityCounter[grid, value - 1].GetSmallest() - 1) / grid_width;
-            int colInPos = (gridAvailabilityCounter[grid, value - 1].GetSmallest() - 1) % grid_width;
+            int rowInPos = (gridAvailabilityCounter[grid, value - 1].Smallest - 1) / grid_width;
+            int colInPos = (gridAvailabilityCounter[grid, value - 1].Smallest - 1) % grid_width;
 
             // the position of the initial cell in the grid
             int initRow = grid / (sudoku.GetLength(1) / grid_width) * grid_height;
@@ -408,7 +408,7 @@ namespace SapirSudoku.src.SolveSudoku
         /// <param name="grid"> The position has to have only one possibility! </param>
         private void PotentialInsertInSquare(int row, int col)
         {
-            int value = squarePossibilities[row, col].GetSmallest();
+            int value = squarePossibilities[row, col].Smallest;
             NextGarunteedAction.Push((value, row, col));
         }
 
