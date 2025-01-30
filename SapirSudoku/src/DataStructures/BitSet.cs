@@ -4,7 +4,7 @@ using System.Numerics;
 using SapirSudoku.src.Exceptions;
 using SapirSudoku.src.Utilities;
 
-namespace SapirSudoku.src.DataStructures.BitSet
+namespace SapirSudoku.src.DataStructures
 {
     public class BitSet : ISet<int>
     {
@@ -16,7 +16,7 @@ namespace SapirSudoku.src.DataStructures.BitSet
 
 
         private int[] set;
-        public int[] Set { get { return set; } set { this.set = value; } }
+        public int[] Set { get { return set; } set { set = value; } }
 
 
         public int Smallest
@@ -82,7 +82,7 @@ namespace SapirSudoku.src.DataStructures.BitSet
 
         private void Expand(int capacity)
         {
-            if ((capacity - 1) >> DIV_BY_OBJECT_SIZE >= set.Length)
+            if (capacity - 1 >> DIV_BY_OBJECT_SIZE >= set.Length)
             {
                 int[] newSet = new int[capacity + (OBJECT_SIZE_BIT - 1) >> DIV_BY_OBJECT_SIZE];
                 set.CopyTo(newSet, 0);
@@ -97,7 +97,7 @@ namespace SapirSudoku.src.DataStructures.BitSet
             if (value - 1 >> DIV_BY_OBJECT_SIZE >= set.Length)
                 Expand(value);
 
-            set[(value - 1) >> DIV_BY_OBJECT_SIZE] |= 1 << ((value - 1) % OBJECT_SIZE_BIT);
+            set[value - 1 >> DIV_BY_OBJECT_SIZE] |= 1 << (value - 1) % OBJECT_SIZE_BIT;
 
             return true;
         }
@@ -137,7 +137,7 @@ namespace SapirSudoku.src.DataStructures.BitSet
         {
             int loopLen = MathUtilities.Min(other.set.Length, set.Length);
             for (int i = 0; i < loopLen; i++)
-                this.set[i] &= ~other.set[i];
+                set[i] &= ~other.set[i];
         }
 
         public IEnumerator<int> GetEnumerator()
@@ -179,7 +179,7 @@ namespace SapirSudoku.src.DataStructures.BitSet
             if (!IsSubsetOf(other)) return false;
 
             foreach (int value in other)
-                if (!this.Contains(value))
+                if (!Contains(value))
                     return true;
 
             return false;
@@ -188,9 +188,9 @@ namespace SapirSudoku.src.DataStructures.BitSet
         public bool IsProperSupersetOf(IEnumerable<int> other)
         {
             if (!IsSupersetOf(other)) return false;
-                foreach (int value in this)
-                    if (!other.Contains(value))
-                        return true;
+            foreach (int value in this)
+                if (!other.Contains(value))
+                    return true;
 
             return false;
         }
@@ -259,9 +259,9 @@ namespace SapirSudoku.src.DataStructures.BitSet
             if (value <= 0)
                 return false;
 
-            if ((value - 1) >> DIV_BY_OBJECT_SIZE < set.Length)
+            if (value - 1 >> DIV_BY_OBJECT_SIZE < set.Length)
             {
-                set[(value - 1) >> DIV_BY_OBJECT_SIZE] &= ~(1 << ((value - 1) % OBJECT_SIZE_BIT));
+                set[value - 1 >> DIV_BY_OBJECT_SIZE] &= ~(1 << (value - 1) % OBJECT_SIZE_BIT);
                 return true;
             }
 
@@ -385,7 +385,7 @@ namespace SapirSudoku.src.DataStructures.BitSet
 
         public override string ToString()
         {
-            String msg = $"{base.ToString()}: ";
+            string msg = $"{base.ToString()}: ";
             foreach (int value in this)
                 msg += $"{value} ";
             return msg;

@@ -1,7 +1,7 @@
 ﻿using SapirSudoku.src.Exceptions;
 using SapirSudoku.src.Utilities;
 using SapirSudoku.src.SolveSudoku;
-using SapirSudoku.src.DataStructures.BitSet;
+using SapirSudoku.src.DataStructures;
 
 namespace SapirSudoku.src
 {

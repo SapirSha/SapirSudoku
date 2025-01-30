@@ -1,7 +1,7 @@
 ﻿// This file contains the helper methods of the SudokuSolver class
 
 using SapirSudoku.src.Exceptions;
-using SapirSudoku.src.DataStructures.BitSet;
+using SapirSudoku.src.DataStructures;
 
 namespace SapirSudoku.src.SolveSudoku
 {

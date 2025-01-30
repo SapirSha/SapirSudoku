@@ -1,6 +1,6 @@
 ﻿// This file contains the heuristics part of the SudokuSolver class
 
-using SapirSudoku.src.DataStructures.BitSet;
+using SapirSudoku.src.DataStructures;
 
 namespace SapirSudoku.src.SolveSudoku
 {
