@@ -13,14 +13,15 @@ namespace SapirSudoku.src.IO
         public static Sudoku ConvertStringToSudoku(String sudokuString)
         {
             int fullLength = sudokuString.Length;
-            int length = (int)Math.Sqrt(fullLength);
-            if (Math.Sqrt(fullLength) != length)
+            if (!MathUtilities.IsPerfectSquareRoot(fullLength))
             {
                 (int smaller, int bigger) = MathUtilities.ClosestMultiplications(fullLength);
                 throw new InvalidSudokuSizeException($"Sudoku length must be N*N, " +
                     $"but got length: {fullLength} as the full sudoku, which doesnt have an integer square root");
             }
 
+
+            int length = (int)Math.Sqrt(fullLength);
             Sudoku sudoku = new Sudoku((int)Math.Sqrt(fullLength));
 
             for (int index = 0; index < fullLength; index++)

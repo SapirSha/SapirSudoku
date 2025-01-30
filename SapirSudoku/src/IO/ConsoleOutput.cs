@@ -16,17 +16,14 @@ namespace SapirSudoku.src.IO
             menu.AppendLine("Enter Sudoku String:");
             return menu.ToString();
         }
-        public static void UI()
-        {
-            Console.WriteLine(Menu());
 
-            Sudoku? sudoku = null;
-            try
-            {
-                sudoku = ConsoleInput.GetSudoku();
-                
-            } 
-            catch(InvalidValueException invalidInsertion)
+        private static Sudoku? TryGetSudoku()
+        {
+            try{
+                Sudoku sudoku = ConsoleInput.GetSudoku();
+                return sudoku;
+            }
+            catch (InvalidValueException invalidInsertion)
             {
                 Console.WriteLine("Invalid Sudoku Board: found invalid values");
                 Console.WriteLine(invalidInsertion.Message);
@@ -35,24 +32,40 @@ namespace SapirSudoku.src.IO
             {
                 Console.WriteLine(invalidSize.Message);
             }
+            return null;
+        }
 
-            if (sudoku is null)
-                return;
-            int c = 0;
-            int MAX = 3;
+        public static void UI()
+        {
+            Console.WriteLine(Menu());
 
-            foreach (Sudoku answer in sudoku.Answers)
+            while (true)
             {
-                if (++c <= MAX)
-                    Console.WriteLine(
-                        "\n - - - - - - - - \n" +
-                        answer +
-                        "\n - - - - - - - - \n");
-                else break;
+                Sudoku? sudoku = TryGetSudoku();
+                if (sudoku is null) continue;
+
+                if (!sudoku.IsValid())
+                {
+                    Console.WriteLine("Invalid Sudoku! found collisions at input!");
+                    continue;
+                }
+
+                int c = 0;
+                int MAX = 3;
+
+                foreach (Sudoku answer in sudoku.Answers)
+                {
+                    if (++c <= MAX)
+                        Console.WriteLine(
+                            "\n - - - - - - - - \n" +
+                            answer +
+                            "\n - - - - - - - - \n");
+                    else break;
+                }
+
+                if (c == 0) Console.WriteLine("Unsolvable board!");
+
             }
-
-
-
 
         }
     }

@@ -10,8 +10,8 @@ namespace SapirSudoku.src.Utilities
         /// <summary>
         /// A function that returns the two closest numbers that thier multiplication is value number.
         /// </summary>
-        /// <param name="number"></param>
-        /// <returns></returns>
+        /// <param name="number"> The value to find the closest multiplication from </param>
+        /// <returns>A tuple that contains the tow closest numbers that thier multiplication is 'number'</returns>
         public static (int, int) ClosestMultiplications(int number)
         {
             if (number == 0) return (0, 0);
@@ -31,6 +31,10 @@ namespace SapirSudoku.src.Utilities
             // Should never reach here since every number is divisible by one
             throw new InvalidValueException();
         }
+
+        /// <returns> True if the number is a perfect square root</returns>
+        public static bool IsPerfectSquareRoot(int num)
+            => Math.Sqrt(num) == (int)Math.Sqrt(num);
 
         /// <summary>
         /// Get the maximum value from a multiple values

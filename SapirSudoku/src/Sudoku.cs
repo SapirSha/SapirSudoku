@@ -21,6 +21,7 @@ namespace SapirSudoku.src
 
         /// <summary> Represents the Sudoku itself and it's inserted values </summary>
         protected int[,] sudoku;
+        public int[,] SudokuArray { get { return sudoku; } }
 
         /// <summary> A clone of the 2d array that represents the Sudoku </summary>
         public int[,] Array { get { return (int[,])sudoku.Clone(); } }
@@ -80,7 +81,7 @@ namespace SapirSudoku.src
 
             if (smaller == 1)
                 if (length != 1)
-                    throw new InvalidSudokuSizeException($"Cannot Create a Sudoku with a prime number as length {bigger}*{smaller}");
+                    throw new InvalidSudokuSizeException($"Cannot Create a Sudoku with a prime number as length (Sudoku is: {bigger}*{smaller})");
 
             if (horizontal)
             {

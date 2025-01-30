@@ -12,13 +12,9 @@ namespace SapirSudoku.src.IO
         public static Sudoku GetSudoku()
         {
             String input = Console.ReadLine();
-            if (input is null) throw new Exception();
+            if (input is null) throw new EndOfStreamException();
             Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(input);
             return sudoku;
         }
-
-
-
-
     }
 }
