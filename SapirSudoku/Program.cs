@@ -3,6 +3,7 @@ using SapirSudoku.src.DataStructures;
 using SapirSudoku.src.IO;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace MAIN
 {
@@ -98,6 +99,30 @@ namespace MAIN
             return grid;
         }
 
+        public static void SudokuPrintAsA2DArray(this Sudoku s)
+        {
+            string msg = "";
+            int[,] sudoku = s.SudokuArray;
+            int grid_width = s.GridWidth;
+            int grid_height = s.GridHeight;
+            for (int row = 0; row < sudoku.GetLength(0); row++)
+            {
+                msg += "{";
+                if (row != 0 && row % grid_height == 0)
+                    msg += "\n\n";
+
+                for (int col = 0; col < sudoku.GetLength(1); col++)
+                {
+                    if (col != 0 && col % grid_width == 0)
+                        msg += "  ";
+                    msg += $"{sudoku[row, col],-3},";
+                }
+                msg += "},";
+                msg += "\n";
+            }
+            Console.WriteLine(msg);
+        }
+
         public static void Main(string[] args)
         {
             //var watch = Stopwatch.StartNew();
@@ -140,7 +165,7 @@ namespace MAIN
                 {0,0,0,0,0,0,0,0,0 },
                 //*/
 
-                ///*
+                /*
                 {8,0,0,0,0,0,0,0,0 },
                 {0,0,3,6,0,0,0,0,0 },
                 {0,7,0,0,9,0,2,0,0 },
@@ -163,7 +188,7 @@ namespace MAIN
                 {0,6,0,0,8,0,2,7,1 },
                 {0,0,5,0,1,0,0,9,4 }
                 //*/
-                /*
+                ///*
                 {0,0,0,0,0,0},
                 {0,0,0,5,0,6},
                 {2,0,0,0,5,0},
@@ -532,6 +557,10 @@ namespace MAIN
 
             //ConsoleOutput.UI();
 
+            //Sudoku s = SudokuConvertionsHelper.ConvertStringToSudoku("10023400<06000700080007003009:6;0<00:0010=0;00>0300?200>000900<0=000800:0<201?000;76000@000?005=000:05?0040800;0@0059<00100000800200000=00<580030=00?0300>80@000580010002000=9?000<406@0=00700050300<0006004;00@0700@050>0010020;1?900=002000>000>000;0200=3500<");
+            Sudoku s = new Sudoku(grid);
+            Console.WriteLine(s.Answers.Count());
+            s.SudokuPrintAsA2DArray();
         }
     }
 }

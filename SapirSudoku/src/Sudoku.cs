@@ -10,8 +10,8 @@ namespace SapirSudoku.src
     /// </summary>
     public class Sudoku
     {
-        protected static readonly int MAX_SUDOKU_LENGTH = 25;
-        protected static readonly int MIN_SUDOKU_LENGTH = 1;
+        public static readonly int MAX_SUDOKU_LENGTH = 25;
+        public static readonly int MIN_SUDOKU_LENGTH = 1;
 
 
         /// <summary> Represents the value that is not considered a clue in the Sudoku </summary>
