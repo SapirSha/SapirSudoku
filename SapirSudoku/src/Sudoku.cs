@@ -324,5 +324,22 @@ namespace SapirSudoku.src
                     yield return answer;
             }
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == this) return true;
+            if (obj is null) return false;
+            if (typeof(Sudoku) != obj.GetType()) return false;
+            Sudoku other = (Sudoku)obj;
+            if (sudoku.GetLength(0) != other.sudoku.GetLength(0))
+                return false;
+
+            for (int row = 0; row < sudoku.GetLength(0); row++)
+                for(int col = 0; col < sudoku.GetLength(1); col++)
+                    if (sudoku[row, col] != other.sudoku[row, col])
+                        return false;
+
+            return true;
+        }
     }
 }

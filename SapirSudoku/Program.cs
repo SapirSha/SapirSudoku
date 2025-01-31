@@ -530,8 +530,7 @@ namespace MAIN
             
             //*/
 
-            ConsoleOutput.UI();
-
+            //ConsoleOutput.UI();
 
         }
     }
