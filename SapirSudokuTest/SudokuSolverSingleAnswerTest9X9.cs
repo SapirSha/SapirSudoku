@@ -8,7 +8,6 @@ public class SudokuSolverSingleAnswerTest9X9
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku1()
     {
-
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -381,7 +380,7 @@ public class SudokuSolverSingleAnswerTest9X9
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
-
+    [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku10()
     {
 
