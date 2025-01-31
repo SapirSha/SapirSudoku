@@ -238,7 +238,7 @@ namespace SapirSudoku.src.SolveSudoku
             {
                 fullCols[i] = new BitSet(sudoku.GetLength(0));
                 for (int j = 0; j < grid_height; j++)
-                    fullCols[i].Add(i + j * grid_height + 1);
+                    fullCols[i].Add(i + j * grid_width + 1);
             }
         }
         /// <summary>
