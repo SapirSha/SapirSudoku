@@ -101,26 +101,26 @@ namespace MAIN
 
         public static void SudokuPrintAsA2DArray(this Sudoku s)
         {
-            string msg = "";
-            int[,] sudoku = s.SudokuArray;
-            int grid_width = s.GridWidth;
-            int grid_height = s.GridHeight;
-            for (int row = 0; row < sudoku.GetLength(0); row++)
+            int[,] board = s.SudokuArray;
+            int gridWidth = s.GridWidth;
+            int gridHieght = s.GridHeight;
+            for (int row = 0; row < board.GetLength(0); row++)
             {
-                msg += "{";
-                if (row != 0 && row % grid_height == 0)
-                    msg += "\n\n";
+                if (row % gridHieght == 0 && row != 0)
+                    Console.Write("\n");
 
-                for (int col = 0; col < sudoku.GetLength(1); col++)
+                Console.Write("{");
+                for (int col = 0; col < board.GetLength(1); col++)
                 {
-                    if (col != 0 && col % grid_width == 0)
-                        msg += "  ";
-                    msg += $"{sudoku[row, col],-3},";
+                    if (col % gridWidth == 0 && col != 0)
+                        Console.Write(" ");
+                    Console.Write(board[row, col]);
+                    Console.Write(",");
+
                 }
-                msg += "},";
-                msg += "\n";
+                Console.WriteLine("},");
+
             }
-            Console.WriteLine(msg);
         }
 
         public static void Main(string[] args)
@@ -188,7 +188,7 @@ namespace MAIN
                 {0,6,0,0,8,0,2,7,1 },
                 {0,0,5,0,1,0,0,9,4 }
                 //*/
-                ///*
+                /*
                 {0,0,0,0,0,0},
                 {0,0,0,5,0,6},
                 {2,0,0,0,5,0},
@@ -322,17 +322,6 @@ namespace MAIN
                 {0,9,5,0,0,0,4,7,0 }
                 //*/
                 /*
-                {0,3,0,0,0,0,0,1,0 },
-                {0,0,8,0,9,0,0,0,0 },
-                {4,0,0,6,0,8,0,0,0 },
-                {0,0,0,0,7,6,9,4,0 },
-                {0,0,0,0,0,0,5,2,0 },
-                {0,0,0,1,2,4,0,0,0 },
-                {2,0,6,0,0,0,1,9,0 },
-                {0,0,0,7,0,0,0,0,0 },
-                {0,9,5,0,0,0,4,7,0 }
-                //*/
-                /*
                  {0,0,2,0,8,5,0,0,4 },
                  {0,0,0,0,3,0,0,6,0 },
                  {0,0,4,2,1,0,0,3,0 },
@@ -343,7 +332,7 @@ namespace MAIN
                  {2,5,0,4,0,0,0,0,8 },
                  {0,0,0,0,0,1,6,0,0 }
                 //*/
-                /*
+                ///*
                 {0,0,3,8,0,0,5,1,0 },
                 {0,0,8,7,0,0,9,3,0 },
                 {1,0,0,3,0,5,7,2,8 },
@@ -557,10 +546,21 @@ namespace MAIN
 
             //ConsoleOutput.UI();
 
-            //Sudoku s = SudokuConvertionsHelper.ConvertStringToSudoku("10023400<06000700080007003009:6;0<00:0010=0;00>0300?200>000900<0=000800:0<201?000;76000@000?005=000:05?0040800;0@0059<00100000800200000=00<580030=00?0300>80@000580010002000=9?000<406@0=00700050300<0006004;00@0700@050>0010020;1?900=002000>000>000;0200=3500<");
-            Sudoku s = new Sudoku(grid);
-            Console.WriteLine(s.Answers.Count());
+            Sudoku s = SudokuConvertionsHelper.ConvertStringToSudoku("504020807700000003000703000008030900005090400000604000800302001020060050600080009");
+            //Sudoku s = new Sudoku(grid);
             s.SudokuPrintAsA2DArray();
+            
+            //Console.WriteLine(s.Answers.Count());
+            
+            foreach (Sudoku answer in s.Answers)
+            {
+                Console.WriteLine("-----------------");
+                Console.WriteLine(answer);
+                Console.WriteLine();
+                answer.SudokuPrintAsA2DArray();
+                Console.WriteLine("-----------------");
+            }
+            
         }
     }
 }
