@@ -174,8 +174,6 @@ namespace SapirSudoku.src.SolveSudoku
                     case 0: throw new InvalidInsertionException($"Can no longer insert value: {value} in row {row}");
                     // if count is 1: there is only one column for value to be inserted in, in this column
                     case 1: PotentialInsertInRow(value, row); break;
-                    // if count is 2: potential XWing (appears only twice in row)
-                    case 2: RowXWing(value, row, col); break;
                     default:
                         // if count is less the Maximum search load: search for hidden groups in the row
                         if (count <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD) HiddenInRow(value, row, col, count);
@@ -195,8 +193,6 @@ namespace SapirSudoku.src.SolveSudoku
                     case 0: throw new InvalidInsertionException($"Can no longer insert value: {value} in column {col}");
                     // if count is 1: there is only one row for value to be inserted in, in this column
                     case 1: PotentialInsertInCol(value, col); break;
-                    // if count is 2: potential XWing ( appears only twice in column column )
-                    case 2: ColXWing(value, row, col); break;
                     default:
                         // if count is less the Maximum search load: search for hidden groups in the column
                         if (count <= sudoku.GetLength(0) * GROUP_SEARCH_LOAD)
