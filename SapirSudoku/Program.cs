@@ -101,7 +101,7 @@ namespace MAIN
 
         public static void SudokuPrintAsA2DArray(this Sudoku s)
         {
-            int[,] board = s.SudokuArray;
+            int[,] board = s.Board;
             int gridWidth = s.GridWidth;
             int gridHieght = s.GridHeight;
             for (int row = 0; row < board.GetLength(0); row++)
@@ -377,200 +377,21 @@ namespace MAIN
                 */
 
             };
-            var watch = Stopwatch.StartNew();
-            //Solve(grid);
+            //var watch = Stopwatch.StartNew();
+            ConsoleOutput.UI();
             /*
+            String stringBoard = "0000:=000000000?70050;01:00@90<8900800700004600=60:=080000070002=00030890>?500012;01@:000008007>00001000@0000900000<>?0740000000006@900000>0100002;0600=800<00500070002000000000<0900>?5;4020=0@0020=0@0<0907000>?500400=6000<803<0000002001@:0000=68000?0004023";
 
-812 753 649
-943 682 175
-675 491 283
-
-154 237 896
-369 845 721
-287 169 534
-
-521 974 368
-438 526 917
-796 318 452
-
-            Sudoku sudoku = new Sudoku(grid);
-            sudoku.PrintLine();
-            SudokuSolver solver = new SudokuSolver(sudoku);
-            int i = 0;
-            IEnumerable<Sudoku> answers = solver.Solve();
-            foreach (Sudoku s in answers)
-            {
-                if (i >= 1) break;
-                Console.WriteLine($"\n{++i}:");
-                s.PrintLine();
-                if (!(s.IsValid().valid && IsSameBase(sudoku, s)))
-                    throw new Exception("ALALAL");
-            }
-            if (i == 0)
-                Console.WriteLine("Unbeatable!");
-            /*
-            try
-            {
-                //Solve(grid);
-            }
-            catch (Exception ex)
-            {
-
-            }
-            */
-            /*
-            MAX = 1;
-            Sudoku sudoku = new Sudoku(grid);
-            SudokuSolver solver = new SudokuSolver(sudoku);
-            solver.PrintLine();
-            int ans = 1;
-            foreach (Sudoku answer in solver.Solve())
-            {
-                Console.WriteLine("\n" + ans++ +": ");
-                answer.PrintLine();
-                if (ans >= MAX) break;
-            }
-            if (ans == 1)
-                Console.WriteLine("UNBEATABLE");
-            Console.WriteLine();
-            watch.Stop();
-            Console.WriteLine($"CLASS: {watch.ElapsedMilliseconds}ms");
-            
-            var watch2 = Stopwatch.StartNew();
-            try { Solve(grid); }
-            catch (Exception) { Console.WriteLine("STOP"); }
-            watch2.Stop();
-            Console.WriteLine($"FUNC: {watch2.ElapsedMilliseconds}ms");
-            */
-            /*
-        }
-
-        catch (Exception e)
-        {
-            Console.WriteLine("EXCEPTION --- ");
-            Console.WriteLine(e.Message);
-            Console.WriteLine(e.GetType());
-            Console.WriteLine(e.StackTrace);
-            Console.WriteLine("EXCEPTION --- ");
-        }
-
-
-
-        //sudoku.Print();
-
-
-        /*
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
-        sudoku.Print();
-        try
-        { sudoku.Solve(); }
-        catch (Exception ex)
-        {
-            Console.WriteLine("FINISH");
-        }
-        stopwatch.Stop();
-        TimeSpan ts = stopwatch.Elapsed;
-
-        long elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-        Console.WriteLine($"Elapsed Time: {stopwatch.ElapsedMilliseconds} ms");
-
-            new int[] { 5, 3, 0, 0, 7, 0, 0, 0, 0 },
-                new int[] { 6, 0, 0, 1, 9, 5, 0, 0, 0 },
-                new int[] { 0, 9, 8, 0, 0, 0, 0, 6, 0 },
-                new int[] { 8, 0, 0, 0, 6, 0, 0, 0, 3 },
-                new int[] { 4, 0, 0, 8, 0, 3, 0, 0, 1 },
-                new int[] { 7, 0, 0, 0, 2, 0, 0, 0, 6 },
-                new int[] { 0, 6, 0, 0, 0, 0, 2, 8, 0 },
-                new int[] { 0, 0, 0, 4, 1, 9, 0, 0, 5 },
-                new int[] { 0, 0, 0, 0, 8, 0, 0, 7, 9 },
-
-
-
-            /*= ""
-                + "030605000"
-                + "600090002"
-                + "070100006"
-                + "090000000"
-                + "810050069" 
-                + "000000080" 
-                + "400003020" 
-                + "900020005" 
-                + "000908030";*/
-
-            //  Solve(grid) = 32ms
-            // Solve grid 1000 solves in 7421
-            // Sudoku.Solve in 4211
-            // 469/491/483 .solve for empty 100
-            //476/496/496 solve() for empty
-            // no print empty solve() 230/222/230
-            // no print empty .solve 235/237/231
-
-            // Print the execution time in milliseconds 
-            // by using the property elapsed milliseconds 
-
-            /*
-            Heap<int> hip = new Heap<int>(10, (x,y) => y > x);
-
-            int[] arr = new int[] { 10, 9, 5, 4, 7, 1, 2, 3,8,8,8 };
-            foreach (int i in arr)
-                hip.Push(i);
-
-            for (int i = 0; i < hip.values.Length; i++)
-            {
-                Console.WriteLine(hip.values[i]);
-            }
-
-
-            */
-            //Sudoku s = new Sudoku(grid);
-            //Console.WriteLine(s);
-
-            /*
-            String st = "0000040000000000";
-            //int[,] g = StringToGrid(st, 25);
-
-            Sudoku s = SudokuConvertionsHelper.ConvertStringToSudoku(st);
-
-            Console.WriteLine(s);
-
-            int MAX = 10;
-            int c = 0;
-
-
-            foreach (Sudoku answer in s.Answers)
-            {
-                if (++c <= MAX)
-                    Console.WriteLine(
-                        "\n - - - - - - - - \n" +
-                        answer +
-                        "\n - - - - - - - - \n");
-                else break;
-            }
-            
-
-            
-            //*/
-
-            //ConsoleOutput.UI();
-            //Sudoku s = SudokuConvertionsHelper.ConvertStringToSudoku("00<60070B05H0:1004000000020C0=000:00000000B50000010000000F000030200><0@8I000@0002G00=<F000E?C30000>0G0H00000I840@CE0070003<0904020000000:0H<A@00050000009006I0008053000000D00BC?0:;000B<C0000000G00700400000000>0F00B@D06;=0000000F0I001A54700>083E00;00060D=?00000090020I0180050E0010000@:07004D00900>0H0A0I2500000=00000F00000C1800007E00<02A000B6@00?00=0:08:B<@900050000C00A0E0?00F0800?03060E0070B>50100000000C010@;000:FI?000000E000310E004000020=0HI00>00600000000?0<>06AH0000000=0005G@40=H720900?30F000000800ID20C000010000E300<0000@<050;E0G00?0000C900000I:00009DF74030>IB0;0000010?H060F80I>0:;090D1@070G00=>=E100500060F0G:000200B7;");
-            Sudoku s = new Sudoku(grid, false);
+            Sudoku s = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             s.SudokuPrintAsA2DArray();
-            IEnumerable<Sudoku> e = s.Answers;
-            Console.WriteLine(s.IsValid());
-            Console.WriteLine(e.Count());
-            
+
             foreach (Sudoku answer in s.Answers)
-            {
-                Console.WriteLine("-----------------");
-                Console.WriteLine(answer);
-                Console.WriteLine();
                 answer.SudokuPrintAsA2DArray();
-                Console.WriteLine("-----------------");
-            }
-            //*/
-            watch.Stop();
-            Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
+            
+
+            */
+            //watch.Stop();
+            //Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
 
         }
     }

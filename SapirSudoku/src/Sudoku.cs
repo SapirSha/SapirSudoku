@@ -21,10 +21,9 @@ namespace SapirSudoku.src
 
         /// <summary> Represents the Sudoku itself and it's inserted values </summary>
         protected int[,] sudoku;
-        public int[,] SudokuArray { get { return sudoku; } }
 
         /// <summary> A clone of the 2d array that represents the Sudoku </summary>
-        public int[,] Array { get { return (int[,])sudoku.Clone(); } }
+        public int[,] Board { get { return (int[,])sudoku.Clone(); } }
 
 
         protected int grid_width;
@@ -47,7 +46,7 @@ namespace SapirSudoku.src
         public Sudoku(Sudoku sudoku)
         {
             // Clone 2d array with values
-            this.sudoku = sudoku.Array;
+            this.sudoku = sudoku.Board;
             grid_height = sudoku.grid_height;
             grid_width = sudoku.grid_width;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using SapirSudoku.src.Exceptions;
@@ -30,5 +31,20 @@ namespace SapirSudoku.src.IO
             return sudoku;
         }
 
+        public static String ConvertSudokuToString(Sudoku sudoku)
+        {
+            int[,] sudokuBoard = sudoku.Board;
+            char[] stringBoard = new char[sudokuBoard.Length];
+
+            for (int row = 0; row < sudokuBoard.GetLength(0); row++)
+            {
+                for(int col = 0; col< sudokuBoard.GetLength(1); col++)
+                {
+                    stringBoard[row * sudokuBoard.GetLength(0) + col] = (char)(sudokuBoard[row, col] + '0');
+                }
+            }
+
+            return new string(stringBoard);
+        }
     }
 }

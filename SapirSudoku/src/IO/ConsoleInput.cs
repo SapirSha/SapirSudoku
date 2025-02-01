@@ -9,6 +9,12 @@ namespace SapirSudoku.src.IO
 {
     public static class ConsoleInput
     {
+        public static String? GetInput()
+        {
+            return Console.ReadLine();
+        }
+
+
         public static Sudoku GetSudoku()
         {
             String input = Console.ReadLine();

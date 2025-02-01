@@ -139,7 +139,7 @@ namespace SapirSudoku.src.SolveSudoku
         /// A constructor that creates a SudokuSolver instance using a Sudoku instance
         /// </summary>
         /// <param name="s"> The base Sudoku to create the instance of </param>
-        public SudokuSolver(Sudoku s) : this(s.Array, s.IsGridHorizontal()) { }
+        public SudokuSolver(Sudoku s) : this(s.Board, s.IsGridHorizontal()) { }
 
         /// <summary>
         /// A constructor that creates an empty SudokuSolver instance.

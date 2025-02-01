@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SapirSudoku.src.Exceptions;
 
@@ -20,7 +22,16 @@ namespace SapirSudoku.src.IO
         private static Sudoku? TryGetSudoku()
         {
             try{
-                Sudoku sudoku = ConsoleInput.GetSudoku();
+                String input = ConsoleInput.GetInput();
+                
+
+                Sudoku? sudoku = null;
+
+
+                if (IsSudoku(input))
+                    sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(input);
+                else if (IsFilePath(input))
+                    sudoku = FileInput.GetSudoku(input);
                 return sudoku;
             }
             catch (InvalidValueException invalidInsertion)
@@ -35,38 +46,43 @@ namespace SapirSudoku.src.IO
             return null;
         }
 
+        public static bool IsSudoku(String str)
+        {
+            int length = str.Length;
+            char maxLetterPossible = (char)Math.Ceiling(Math.Sqrt(length) + '0');
+            if (maxLetterPossible - '0' > Sudoku.MAX_SUDOKU_LENGTH) return false;
+            String stringSudokuRegex = "^[";
+
+            if (maxLetterPossible < '9') maxLetterPossible = '9';
+
+            for (char sudokuLetter = '0'; sudokuLetter <= maxLetterPossible; sudokuLetter++)
+                stringSudokuRegex += sudokuLetter;
+            stringSudokuRegex += "]+$";
+
+            Console.WriteLine("STRING REGEX = " + stringSudokuRegex);
+
+            Console.WriteLine(str);
+            Regex sudokuRegex = new Regex(@stringSudokuRegex);
+
+            return sudokuRegex.IsMatch(@str);
+        }
+
+        public static bool IsFilePath(String str)
+        {
+            return !IsSudoku(str);
+        }
+
         public static void UI()
         {
-            Console.WriteLine(Menu());
-
             while (true)
             {
+                Console.WriteLine(Menu());
+
                 Sudoku? sudoku = TryGetSudoku();
-                if (sudoku is null) continue;
-
-                if (!sudoku.IsValid())
-                {
-                    Console.WriteLine("Invalid Sudoku! found collisions at input!");
-                    continue;
-                }
-
-                int c = 0;
-                int MAX = 3;
-
-                foreach (Sudoku answer in sudoku.Answers)
-                {
-                    if (++c <= MAX)
-                        Console.WriteLine(
-                            "\n - - - - - - - - \n" +
-                            answer +
-                            "\n - - - - - - - - \n");
-                    else break;
-                }
-
-                if (c == 0) Console.WriteLine("Unsolvable board!");
-
+                
+                
+                Console.WriteLine(sudoku is null ? "NULL" : sudoku);
             }
-
         }
     }
 }
