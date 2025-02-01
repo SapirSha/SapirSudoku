@@ -8,13 +8,22 @@ namespace SapirSudoku.src.IO
 {
     public static class FileInput
     {
-        public static Sudoku GetSudoku(String? pathFile)
+        public static Sudoku? GetSudoku(String? pathFile)
         {
-            if (pathFile is null)
+            if (pathFile is null || pathFile.Equals(""))
                 pathFile = AppDomain.CurrentDomain.BaseDirectory;
-            String fileContent = File.ReadAllText(pathFile);
-            Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(fileContent);
-            return sudoku;
+            try
+            {
+                String fileContent = File.ReadAllText(pathFile);
+                Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(fileContent);
+                return sudoku;
+            }
+            catch (FileNotFoundException) { }
+            catch (DirectoryNotFoundException) { }
+            catch (IOException) { }
+
+
+            return null;
         }
     }
 }
