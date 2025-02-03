@@ -1,9 +1,11 @@
 ﻿using SapirSudoku.src;
 using SapirSudoku.src.DataStructures;
+using SapirSudoku.src.Exceptions;
 using SapirSudoku.src.IO;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MAIN
 {
@@ -379,17 +381,11 @@ namespace MAIN
             };
             //var watch = Stopwatch.StartNew();
             ConsoleOutput.UI();
-            /*
-            String stringBoard = "0000:=000000000?70050;01:00@90<8900800700004600=60:=080000070002=00030890>?500012;01@:000008007>00001000@0000900000<>?0740000000006@900000>0100002;0600=800<00500070002000000000<0900>?5;4020=0@0020=0@0<0907000>?500400=6000<803<0000002001@:0000=68000?0004023";
 
-            Sudoku s = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
-            s.SudokuPrintAsA2DArray();
 
-            foreach (Sudoku answer in s.Answers)
-                answer.SudokuPrintAsA2DArray();
-            
 
-            */
+
+
             //watch.Stop();
             //Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
 

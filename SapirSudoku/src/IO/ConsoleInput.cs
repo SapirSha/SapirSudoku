@@ -9,18 +9,37 @@ namespace SapirSudoku.src.IO
 {
     public static class ConsoleInput
     {
+        private static void ExitKeyHandler(object? sender, ConsoleCancelEventArgs args)
+        {
+            args.Cancel = true;
+        }
+
         public static String? GetInput()
         {
-            return Console.ReadLine();
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(ExitKeyHandler);
+
+            try
+            {
+                return Console.ReadLine();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
 
-        public static Sudoku GetSudoku()
+        public static int? GetInputInt()
         {
-            String input = Console.ReadLine();
-            if (input is null) throw new EndOfStreamException();
-            Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(input);
-            return sudoku;
+            String? input = GetInput();
+
+            if (input is null)
+                return null;
+
+            if (int.TryParse(input, out int n))
+                return n;
+            else return -1;
+
         }
     }
 }
