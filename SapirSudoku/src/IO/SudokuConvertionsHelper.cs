@@ -13,6 +13,7 @@ namespace SapirSudoku.src.IO
     {
         public static Sudoku ConvertStringToSudoku(String sudokuString)
         {
+            const char MINIMUM_ALLOWED = '0';
             int fullLength = sudokuString.Length;
             if (!MathUtilities.IsPerfectSquareRoot(fullLength))
             {
@@ -26,7 +27,7 @@ namespace SapirSudoku.src.IO
             Sudoku sudoku = new Sudoku((int)Math.Sqrt(fullLength));
 
             for (int index = 0; index < fullLength; index++)
-                sudoku.Insert(sudokuString[index] - '0', index / length, index % length);
+                sudoku.Insert(sudokuString[index] - MINIMUM_ALLOWED, index / length, index % length);
 
             return sudoku;
         }

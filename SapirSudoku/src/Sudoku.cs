@@ -10,14 +10,14 @@ namespace SapirSudoku.src
     /// </summary>
     public class Sudoku
     {
-        public static readonly int MAX_SUDOKU_LENGTH = 25;
-        public static readonly int MIN_SUDOKU_LENGTH = 1;
+        public const int MAX_SUDOKU_LENGTH = 25;
+        public const int MIN_SUDOKU_LENGTH = 1;
 
 
         /// <summary> Represents the value that is not considered a clue in the Sudoku </summary>
-        protected static readonly int NONE = 0;
+        public const int NONE = 0;
         /// <summary> Holds the allowed values in the Sudoku </summary>
-        protected Dictionary<int, int> allowables = new Dictionary<int, int> { { NONE, 0 } };
+        public readonly Dictionary<int, int> allowables = new Dictionary<int, int> { { NONE, 0 } };
 
         /// <summary> Represents the Sudoku itself and it's inserted values </summary>
         protected int[,] sudoku;
@@ -144,7 +144,7 @@ namespace SapirSudoku.src
         /// <param name="row"> A row number </param>
         /// <param name="col"> A col number </param>
         /// <returns> The grid number which the position [row,col] appears at. </returns>
-        protected int GridPositionOf(int row, int col)
+        public int GridPositionOf(int row, int col)
         {
             return row / grid_height * (sudoku.GetLength(1) / grid_width) + col / grid_width;
         }
