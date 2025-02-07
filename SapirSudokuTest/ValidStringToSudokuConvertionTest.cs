@@ -1,6 +1,4 @@
-﻿using SapirSudoku;
-using SapirSudoku.src;
-using SapirSudoku.src.Exceptions;
+﻿using SapirSudoku.src;
 using SapirSudoku.src.IO;
 
 namespace SapirSudokuTest
