@@ -390,6 +390,10 @@ namespace SapirSudoku.src.SolveSudoku
                 RemoveLatestGuess();
             }
         }
+        public override void Remove(int row, int col)
+        {
+            throw new InvalidRemovalException("Cannot Remove From a Sudoku Solver!");
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {

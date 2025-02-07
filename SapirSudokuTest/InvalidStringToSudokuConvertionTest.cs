@@ -13,6 +13,7 @@ public class InvalidStringToSudokuConvertionTest
     {
         String stringBoard = "00000000000000000";
         Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
+        //Should throw an exception
         Assert.Fail();
     }
 
@@ -23,6 +24,7 @@ public class InvalidStringToSudokuConvertionTest
         char[] longCharArray = new char[Sudoku.MAX_SUDOKU_LENGTH * Sudoku.MAX_SUDOKU_LENGTH + 1];
         String stringBoard = new String(longCharArray);
         Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
+        //Should throw an exception
         Assert.Fail();
     }
 
@@ -32,6 +34,7 @@ public class InvalidStringToSudokuConvertionTest
     {
         String stringBoard = "";
         Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
+        //Should throw an exception
         Assert.Fail();
     }
 
@@ -41,6 +44,7 @@ public class InvalidStringToSudokuConvertionTest
     {
         String stringBoard = "0005000000000000";
         Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
+        //Should throw an exception
         Assert.Fail();
     }
 
@@ -51,6 +55,7 @@ public class InvalidStringToSudokuConvertionTest
         char[] longCharArray = new char[49];
         String stringBoard = new String(longCharArray);
         Sudoku sudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
+        //Should throw an exception
         Assert.Fail();
     }
 }
