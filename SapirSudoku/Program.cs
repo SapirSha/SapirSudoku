@@ -148,7 +148,7 @@ namespace MAIN
             };
             var watch = Stopwatch.StartNew();
 
-            //UI.StartUI();
+            //UI.StartUI(); 
             String sudokuString = "0<00F5E00A000BGH0030DC000030G7<6HD000:0A00=4@;08B040E8DB2?301;0<C006:07000>I9@?H;8C0000406A000BF00000C006F00@0D000?07000000:I0D09:E>20000640I000;1H000;5030A0@G0H29F0:00?0E00C07G0000=003;0@E00D0002050?C0<020705F00103@00H00;000=FH1890400G00?5EA260B03I0000<00I=0000A0D0009:>00;1G4I0>0H<E03000F?5A=D000000690;0G710000I=3>00000F<@0000@>0A000?200<04C0=G0H33000029;:50G000F0B00040?000073I00906:?C000@A00>D050000A@000C<D>0000F036I204?00008002H0F=000<070000EB90F40010>600E80020G=@0?0:0B000:A00400010>00I0070000000400007?0000C3E0<0F000000;00300I0005H700>90B@0C<030900:A070F0000000G0>00>000?G0BH0:A00040000<D07=07DC=0<0;0@00908:GB005400";
             Sudoku sudoku = new Sudoku(SudokuConvertionsHelper.ConvertStringToSudoku(sudokuString));
 
@@ -157,7 +157,8 @@ namespace MAIN
                 Console.WriteLine(answer);
                 break;
             }
-
+            // 1032 / 1101 / 972 / 964 / 980
+            // 927 / 962 / 943 / 938 / 985
             watch.Stop();
             Console.WriteLine($"The Execution time of the program is: {watch.ElapsedMilliseconds}ms");
 

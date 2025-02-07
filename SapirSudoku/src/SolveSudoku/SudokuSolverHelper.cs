@@ -276,15 +276,14 @@ namespace SapirSudoku.src.SolveSudoku
         /// <param name="col"> the column number the number will be inserted </param>
         private void UpdateRowInsert(int value, int row, int col)
         {
-            // look at all rows in the Sudoku with the same column as the inserted position
-            for (int rowPos = 0; rowPos < sudoku.GetLength(0); rowPos++)
+            // look at all rows in the Sudoku with the same column as the inserted position, where value appeares as a possibility
+            foreach (int rowPosition in colAvailabilityCounter[col, value - 1])
             {
+                int rowPos = rowPosition - 1;
                 // if the looked at position is in the same grid as the inserted position dont do anything
                 // changes in the grid will happend in 'UpdateGridInsert' function
                 ///< see cref = "UpdateGridInsert" /> 
                 if (GridPositionOf(rowPos, col) == GridPositionOf(row, col)) continue;
-
-                if (sudoku[rowPos, col] != NONE) continue;
 
                 // Remove value as a possibility from current cell.
                 // but without changing the column, since the column is the same as the inserted position, and will be cleared later
@@ -302,14 +301,14 @@ namespace SapirSudoku.src.SolveSudoku
         /// <param name="col"> the column number the number will be inserted </param>
         private void UpdateColInsert(int value, int row, int col)
         {
-            // look at all columns in the Sudoku with the same row as the inserted position
-            for (int colPos = 0; colPos < sudoku.GetLength(1); colPos++)
+            // look at all columns in the Sudoku with the same row as the inserted position, where value appears as a possibility
+            foreach (int colPosition in rowAvailabilityCounter[row, value - 1])
             {
+                int colPos = colPosition - 1;
                 // if the looked at position is in the same grid as the inserted position dont do anything
                 // changes in the grid will happend in 'UpdateGridInsert' function
                 ///< see cref = "UpdateGridInsert" /> 
                 if (GridPositionOf(row, colPos) == GridPositionOf(row, col)) continue;
-                if (sudoku[row, colPos] != NONE) continue;
 
                 // Remove value as a possibility from current cell.
                 // but without changing the row, since the row is the same as the inserted position, and will be cleared later.
@@ -328,25 +327,26 @@ namespace SapirSudoku.src.SolveSudoku
         private void UpdateGridInsert(int value, int row, int col)
         {
             // initial cell position of the grid
-            int initRow = GridPositionOf(row, col) / (sudoku.GetLength(1) / grid_width) * grid_height;
-            int initCol = GridPositionOf(row, col) * grid_width % sudoku.GetLength(1);
+            int positionOfGrid = GridPositionOf(row, col);
+            int initRow = positionOfGrid / (sudoku.GetLength(1) / grid_width) * grid_height;
+            int initCol = positionOfGrid * grid_width % sudoku.GetLength(1);
 
-            // look at all the cells in the grid where the insertion is happenning
-            for (int rowPos = 0; rowPos < grid_height; rowPos++)
+            // Go through all position in the grid where value appeares
+            foreach(int gridPosition in gridAvailabilityCounter[positionOfGrid, value - 1])
             {
-                for (int colPos = 0; colPos < grid_width; colPos++)
-                {
-                    // dont do anything with the current cell
-                    // changes to the current cell will happen in "UpdateSquareInsert"
-                    ///< see cref = "UpdateSquareInsert" /> 
-                    if (initRow + rowPos == row && initCol + colPos == col) continue;
+                int gridPos = gridPosition - 1;
+                // The position of the position in the sudoku
+                int rowPos = initRow + gridPos / grid_width;
+                int colPos = initCol + gridPos % grid_width;
 
-                    if (sudoku[initRow + rowPos, initCol + colPos] != NONE) continue;
+                // dont do anything with the current cell
+                // changes to the current cell will happen in "UpdateSquareInsert"
+                ///< see cref = "UpdateSquareInsert" /> 
+                if (rowPos == row && colPos == col) continue;
 
-                    // Remove value as a possibility from current cell.
-                    // but without changing the grid, since the grid is the same as the inserted position, and will be cleared later.
-                    RemoveSquarePossibility(value, initRow + rowPos, initCol + colPos, true, true, false);
-                }
+                // Remove value as a possibility from current cell.
+                // but without changing the grid, since the grid is the same as the inserted position, and will be cleared later.
+                RemoveSquarePossibility(value, rowPos, colPos, true, true, false);
             }
         }
 
