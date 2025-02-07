@@ -197,17 +197,23 @@ namespace SapirSudoku.src
         /// <returns> If the Sudoku represented has no collisions </returns>
         public bool IsValid()
         {
-            // remember value got in every row
+            // Create a set to remember all the values that appear in the row
+            // every index in the rows array is the index of the row
             BitSet[] rows = new BitSet[sudoku.GetLength(0)];
-            for (int i = 0; i < rows.Length; i++) rows[i] = new BitSet(sudoku.GetLength(0));
+            for (int i = 0; i < rows.Length; i++) 
+                rows[i] = new BitSet(sudoku.GetLength(0));
 
-            // remember value got in every column
+            // Create a set to remember all the values that appear in the column
+            // every index in the cols array is the index of the column
             BitSet[] cols = new BitSet[sudoku.GetLength(0)];
-            for (int i = 0; i < cols.Length; i++) cols[i] = new BitSet(sudoku.GetLength(0));
+            for (int i = 0; i < cols.Length; i++)
+                cols[i] = new BitSet(sudoku.GetLength(0));
 
-            // remember value got in every grid
+            // Create a set to remember all the values that appear in the grid
+            // every index in the grids array is the index of the grid
             BitSet[] grids = new BitSet[sudoku.GetLength(0)];
-            for (int i = 0; i < grids.Length; i++) grids[i] = new BitSet(sudoku.GetLength(0));
+            for (int i = 0; i < grids.Length; i++)
+                grids[i] = new BitSet(sudoku.GetLength(0));
 
 
             for (int row = 0; row < sudoku.GetLength(0); row++)

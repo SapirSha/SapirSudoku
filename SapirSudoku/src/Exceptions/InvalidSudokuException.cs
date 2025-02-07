@@ -1,5 +1,4 @@
-﻿
-namespace SapirSudoku.src.Exceptions
+﻿namespace SapirSudoku.src.Exceptions
 {
     public class InvalidSudokuException : Exception
     {

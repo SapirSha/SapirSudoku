@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using SapirSudoku.src.Exceptions;
-using SapirSudoku.src.Utilities;
 
 namespace SapirSudoku.src.DataStructures
 {
@@ -284,7 +282,7 @@ namespace SapirSudoku.src.DataStructures
         /// <param name="other"> The BitSet containning the items to remove </param>
         public void ExceptWith(BitSet other)
         {
-            int loopLen = MathUtilities.Min(other.set.Length, set.Length);
+            int loopLen = Math.Min(other.set.Length, set.Length);
             for (int i = 0; i < loopLen; i++)
                 set[i] &= ~other.set[i];
         }
@@ -325,7 +323,7 @@ namespace SapirSudoku.src.DataStructures
         /// <param name="other"> The element that determines which values to save in current BitSet </param>
         public void IntersectWith(BitSet other)
         {
-            int i, loopLen = MathUtilities.Min(other.set.Length, set.Length);
+            int i, loopLen = Math.Min(other.set.Length, set.Length);
             // go thorugh sets, and save only bits that are in both value types, until one set is empty
             for (i = 0; i <= loopLen; i++)
                 set[i] &= other.set[i];
@@ -496,7 +494,7 @@ namespace SapirSudoku.src.DataStructures
         {
             if (set.Length < other.set.Length) Expand(other.set.Length << OBJECT_SIZE_BIT);
 
-            int loopLen = MathUtilities.Min(set.Length, other.set.Length);
+            int loopLen = Math.Min(set.Length, other.set.Length);
             for (int i = 0; i < loopLen; i++)
                 set[i] |= other.set[i];
         }
@@ -517,7 +515,7 @@ namespace SapirSudoku.src.DataStructures
             if (obj == null) return false;
             if (typeof(BitSet) != obj.GetType()) return false;
             BitSet other = (BitSet)obj;
-            int looplen = MathUtilities.Min(other.set.Length, set.Length);
+            int looplen = Math.Min(other.set.Length, set.Length);
 
             for (int i = 0; i < looplen; i++)
                 if (other.set[i] != set[i]) return false;

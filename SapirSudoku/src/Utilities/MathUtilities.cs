@@ -50,19 +50,5 @@ namespace SapirSudoku.src.Utilities
             return max;
         }
 
-        /// <summary>
-        /// Get the minimum value from multiple values
-        /// </summary>
-        /// <param name="values"> the values to find the minimum from</param>
-        /// <returns> the least significant value </returns>
-        public static int Min(params int[] values)
-        {
-            int min = values[0];
-
-            for (int i = 1; i < values.Length; i++)
-                if (min > values[i]) min = values[i];
-            return min;
-        }
-
     }
 }
