@@ -31,7 +31,12 @@ namespace SapirSudoku.src.IO
 
             foreach (Sudoku answer in sudoku.Answers)
             {
+                // print Sudoku 
+                HandleOutput("\n\n - - - - - - - -");
+                HandleOutput(answer.ToString());
+                // print Sudku String
                 PrintSudoku(answer);
+                HandleOutput(" - - - - - - - -");
                 countAnswers++;
 
                 // Print the time it took to get to the first answer

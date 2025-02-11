@@ -2,6 +2,7 @@
 using SapirSudoku.src.Utilities;
 using SapirSudoku.src.SolveSudoku;
 using SapirSudoku.src.DataStructures;
+using System.Text;
 
 namespace SapirSudoku.src
 {
@@ -292,23 +293,23 @@ namespace SapirSudoku.src
         /// <returns> A string representing the Sudoku </returns>
         public override string ToString()
         {
-            string msg = "";
+            StringBuilder msg = new StringBuilder(sudoku.GetLength(0) * sudoku.GetLength(1));
             for (int row = 0; row < sudoku.GetLength(0); row++)
             {
                 if (row != 0 && row % grid_height == 0)
-                    msg += "\n\n";
+                    msg.Append("\n\n");
 
                 for (int col = 0; col < sudoku.GetLength(1); col++)
                 {
                     if (col != 0 && col % grid_width == 0)
-                        msg += "   ";
-                    msg += $"{sudoku[row, col],-3}";
+                        msg.Append("   ");
+                    msg.Append($"{sudoku[row, col],-3}");
                 }
 
-                msg += "\n";
+                msg.Append("\n");
             }
 
-            return msg;
+            return msg.ToString();
         }
 
         /// <summary>

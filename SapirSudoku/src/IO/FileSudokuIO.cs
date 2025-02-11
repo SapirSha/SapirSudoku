@@ -48,7 +48,7 @@ namespace SapirSudoku.src.IO
             }
 
             // Put all the lines that are sudokus into a list
-            List<String> sudokuLines = lines.Where(line => TypeOfInput.IsSudoku(line)).ToList();
+            List<String> sudokuLines = lines.Where(line => TypeOfInput.IsSudoku(line.Trim())).ToList();
             
             if (sudokuLines.Count == 0)
             {
@@ -64,7 +64,7 @@ namespace SapirSudoku.src.IO
                     HandleOutput($"\n\n - - - - - Sudoku {sudokuCounter++}:");
 
                 PrintWithoutFile("\n");
-                ProcessSudoku(line);
+                ProcessSudoku(line.Trim());
                 PrintWithoutFile("\n");
             }
             // Resets the stage to be pending if it ever changed
@@ -79,7 +79,12 @@ namespace SapirSudoku.src.IO
 
             foreach (Sudoku answer in sudoku.Answers)
             {
+                // print Sudku to console
+                PrintWithoutFile("\n\n - - - - - - - - ");
+                PrintWithoutFile(answer.ToString());
+                // print Sudku String to file and console
                 PrintSudoku(answer);
+                PrintWithoutFile(" - - - - - - - - ");
                 countAnswers++;
 
                 if (countAnswers == 1)
