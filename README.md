@@ -32,8 +32,8 @@ when looking at file outputs, the string format of the sudoku will be printed bo
 the program will also output the time it took to get to the first solution.
 
 # requirements
-net8.0
-MSTest 3.6.1
+- net8.0
+- MSTest 3.6.1
 
 # How the algorithm works
 The sudoku revolves around backtracking and uses hidden groups, pointing groups, and naked singles as heuristics.
