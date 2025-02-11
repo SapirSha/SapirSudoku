@@ -8,6 +8,7 @@ public sealed class SudokuSolverSingleAnswerTest16X16
     [TestMethod]
     public void Should_SolveSudoku_When_GotA16X16ValidSudoku1()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -58,13 +59,17 @@ public sealed class SudokuSolverSingleAnswerTest16X16
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA16X16ValidSudoku2()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -115,13 +120,17 @@ public sealed class SudokuSolverSingleAnswerTest16X16
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA16X16ValidSudoku3()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -172,13 +181,17 @@ public sealed class SudokuSolverSingleAnswerTest16X16
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA16X16ValidSudoku4()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -229,13 +242,17 @@ public sealed class SudokuSolverSingleAnswerTest16X16
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA16X16ValidSudoku5()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -286,7 +303,10 @@ public sealed class SudokuSolverSingleAnswerTest16X16
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 }

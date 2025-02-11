@@ -8,6 +8,7 @@ public class SudokuSolverSingleAnswerTest9X9
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku1()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -42,13 +43,16 @@ public class SudokuSolverSingleAnswerTest9X9
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku2()
     {
-
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -83,14 +87,17 @@ public class SudokuSolverSingleAnswerTest9X9
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku3()
     {
-
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -125,14 +132,17 @@ public class SudokuSolverSingleAnswerTest9X9
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku4()
     {
-
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -167,14 +177,17 @@ public class SudokuSolverSingleAnswerTest9X9
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku5()
     {
-
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -209,14 +222,17 @@ public class SudokuSolverSingleAnswerTest9X9
             }
         );
 
+        // Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        // Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku6()
     {
-
+        // Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -250,15 +266,18 @@ public class SudokuSolverSingleAnswerTest9X9
                 {7,6,4, 2,8,5, 9,3,1,},
             }
         );
-
+        
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku7()
     {
-
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -292,15 +311,17 @@ public class SudokuSolverSingleAnswerTest9X9
                 {3,2,6, 9,8,4, 7,5,1,}
             }
         );
-
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+        
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku8()
     {
-
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -334,15 +355,17 @@ public class SudokuSolverSingleAnswerTest9X9
                 {3,9,5, 8,1,2, 4,7,6,},
             }
         );
-
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku9()
     {
-
+        // Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -377,13 +400,16 @@ public class SudokuSolverSingleAnswerTest9X9
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
     [TestMethod]
     public void Should_SolveSudoku_When_GotA9X9ValidSudoku10()
     {
-
+        // Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -417,8 +443,10 @@ public class SudokuSolverSingleAnswerTest9X9
                 {5,1,7, 4,8,3, 6,9,2,},
             }
         );
-
+        // Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 }

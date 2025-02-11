@@ -8,6 +8,7 @@ public sealed class SudokuSolverUnsolvableTests
     [TestMethod]
     public void Should_NotReturnAnswer_When_GotA9X9ValidUnsolvableSudoku1()
     {
+        // Arrange
         Sudoku unsolvableSudoku = new Sudoku(
             new int[,]
             {
@@ -24,12 +25,18 @@ public sealed class SudokuSolverUnsolvableTests
                 {0,0,0, 0,0,0, 0,0,0,},
             }
             );
-        Assert.IsTrue(unsolvableSudoku.Answers.Count() == 0);
+        
+        //Act
+        IEnumerable<Sudoku> Answers = unsolvableSudoku.Answers;
+
+        //Assert
+        Assert.IsTrue(Answers.Count() == 0);
     }
 
     [TestMethod]
     public void Should_NotReturnAnswer_When_GotA9X9ValidUnsolvableSudoku2()
     {
+        //Arrange
         Sudoku unsolvableSudoku = new Sudoku(
             new int[,]
             {
@@ -46,12 +53,18 @@ public sealed class SudokuSolverUnsolvableTests
                 {0,0,0, 0,0,0, 0,0,0,},
             }
             );
-        Assert.IsTrue(unsolvableSudoku.Answers.Count() == 0);
+
+        //Act
+        IEnumerable<Sudoku> Answers = unsolvableSudoku.Answers;
+
+        //Assert
+        Assert.IsTrue(Answers.Count() == 0);
     }
 
     [TestMethod]
     public void Should_NotReturnAnswer_When_GotA9X9ValidUnsolvableSudoku3()
     {
+        //Arrange
         Sudoku unsolvableSudoku = new Sudoku(
             new int[,]
             {
@@ -68,12 +81,18 @@ public sealed class SudokuSolverUnsolvableTests
                 {0,0,7, 0,0,0, 0,0,0,},
             }
             );
-        Assert.IsTrue(unsolvableSudoku.Answers.Count() == 0);
+
+        //Act
+        IEnumerable<Sudoku> Answers = unsolvableSudoku.Answers;
+
+        //Assert
+        Assert.IsTrue(Answers.Count() == 0);
     }
 
     [TestMethod]
     public void Should_NotReturnAnswer_When_GotA9X9ValidUnsolvableSudoku4()
     {
+        //Arrange
         Sudoku unsolvableSudoku = new Sudoku(
             new int[,]
             {
@@ -90,12 +109,18 @@ public sealed class SudokuSolverUnsolvableTests
                 {0,0,0, 0,0,0, 9,0,0,}
             }
             );
-        Assert.IsTrue(unsolvableSudoku.Answers.Count() == 0);
+
+        //Act
+        IEnumerable<Sudoku> Answers = unsolvableSudoku.Answers;
+
+        //Assert
+        Assert.IsTrue(Answers.Count() == 0);
     }
 
     [TestMethod]
     public void Should_NotReturnAnswer_When_GotA16X16ValidUnsolvableSudoku1()
     {
+        //Arrange
         Sudoku unsolvableSudoku = new Sudoku(
             new int[,]
             {
@@ -130,12 +155,17 @@ public sealed class SudokuSolverUnsolvableTests
                 {0 ,0 ,0 ,0 ,0 , 0 ,0 ,0 ,0 ,0 , 0 ,0 ,0 ,0 ,0 , 0 ,0 ,0 ,0 ,0 , 0 ,0 ,1 ,8 ,0 ,},
             }
             );
-        Assert.IsTrue(unsolvableSudoku.Answers.Count() == 0);
+        //Act
+        IEnumerable<Sudoku> Answers = unsolvableSudoku.Answers;
+
+        //Assert
+        Assert.IsTrue(Answers.Count() == 0);
     }
 
     [TestMethod]
     public void Should_NotReturnAnswer_When_GotA16X16ValidUnsolvableSudoku2()
     {
+        // Arrange
         Sudoku unsolvableSudoku = new Sudoku(
             new int[,]
             {
@@ -160,11 +190,17 @@ public sealed class SudokuSolverUnsolvableTests
                 {0 ,0 ,0 ,0 , 3 ,0 ,5 ,0 , 10,4 ,0 ,8 , 0 ,7 ,0 ,9 ,},
             }
             );
-        Assert.IsTrue(unsolvableSudoku.Answers.Count() == 0);
+
+        //Act
+        IEnumerable<Sudoku> Answers = unsolvableSudoku.Answers;
+
+        //Assert
+        Assert.IsTrue(Answers.Count() == 0);
     }
 
     public void Should_NotReturnAnswer_When_GotA16X16ValidUnsolvableSudoku3()
     {
+        //Arrange
         Sudoku unsolvableSudoku = new Sudoku(
             new int[,]
             {
@@ -189,6 +225,11 @@ public sealed class SudokuSolverUnsolvableTests
                 {0 ,0 ,13,6 , 8 ,0 ,0 ,0 , 15,0 ,0 ,0 , 4 ,0 ,2 ,3 ,},
             }
             );
+        
+        //Act
+        IEnumerable<Sudoku> Answers = unsolvableSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(unsolvableSudoku.Answers.Count() == 0);
     }
 
@@ -196,6 +237,7 @@ public sealed class SudokuSolverUnsolvableTests
     [TestMethod]
     public void Should_NotReturnAnswer_When_GotA25X25ValidUnsolvableSudoku1()
     {
+        //Assert
         Sudoku unsolvableSudoku = new Sudoku(
             new int[,]
             {
@@ -230,6 +272,10 @@ public sealed class SudokuSolverUnsolvableTests
                 {0 ,0 ,0 ,0 ,0 , 0 ,0 ,0 ,0 ,0 , 0 ,0 ,0 ,0 ,0 , 0 ,0 ,0 ,0 ,0 , 0 ,0 ,1 ,8 ,0 ,},
             }
             );
+        // Act
+        IEnumerable<Sudoku> Answers = unsolvableSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(unsolvableSudoku.Answers.Count() == 0);
     }
 }

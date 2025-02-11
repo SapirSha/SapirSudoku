@@ -8,6 +8,7 @@ public sealed class SudokuSolverRectangleGridTest
     [TestMethod]
     public void Should_SolveSudoku_When_GotA6X6ValidSudoku1()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -71,13 +72,17 @@ public sealed class SudokuSolverRectangleGridTest
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA6X6ValidSudoku3()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -106,12 +111,16 @@ public sealed class SudokuSolverRectangleGridTest
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
     [TestMethod]
     public void Should_SolveSudoku_When_GotA6X6ValidSudoku4()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -140,12 +149,16 @@ public sealed class SudokuSolverRectangleGridTest
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
     [TestMethod]
     public void Should_SolveSudoku_When_GotA8X8ValidSudoku1()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -180,13 +193,17 @@ public sealed class SudokuSolverRectangleGridTest
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA8X8ValidSudoku2()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -221,12 +238,16 @@ public sealed class SudokuSolverRectangleGridTest
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
     [TestMethod]
     public void Should_SolveSudoku_When_GotA10X10ValidSudoku()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -267,12 +288,16 @@ public sealed class SudokuSolverRectangleGridTest
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
     [TestMethod]
     public void Should_SolveSudoku_When_GotA12X12ValidSudoku()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -314,8 +339,11 @@ public sealed class SudokuSolverRectangleGridTest
                 {8 ,11,6 ,1 , 5 ,7 ,9 ,4 , 3 ,2 ,10,12,},
             }
         );
-
+        
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 }

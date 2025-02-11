@@ -8,6 +8,7 @@ public sealed class SudokuSolverSingleAnswerTest25X25
     [TestMethod]
     public void Should_SolveSudoku_When_GotA25X25ValidSudoku1()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -78,13 +79,17 @@ public sealed class SudokuSolverSingleAnswerTest25X25
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA25X25ValidSudoku2()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -155,13 +160,17 @@ public sealed class SudokuSolverSingleAnswerTest25X25
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 
     [TestMethod]
     public void Should_SolveSudoku_When_GotA25X25ValidSudoku3()
     {
+        //Arrange
         Sudoku toSolveSudoku = new Sudoku(
             new int[,]
             {
@@ -232,7 +241,10 @@ public sealed class SudokuSolverSingleAnswerTest25X25
             }
         );
 
+        //Act
         IEnumerable<Sudoku> Answers = toSolveSudoku.Answers;
+
+        //Assert
         Assert.IsTrue(Answers.First().Equals(expectedSudoku) && Answers.Count() == 1);
     }
 }

@@ -25,8 +25,8 @@ namespace SapirSudokuTest
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValidEmpty4X4StringBoard()
         {
+            //Arrange
             String stringBoard = "0000000000000000";
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -38,15 +38,18 @@ namespace SapirSudokuTest
                 }
             );
 
+            //act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
+            //Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValidEmpty9X9StringBoard()
         {
+            //Arrange
             String stringBoard = "000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -64,14 +67,17 @@ namespace SapirSudokuTest
 
                 }
             );
+            //Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
-
+            //Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValidEmpty16X16StringBoard()
         {
+            //Arrange
             String stringBoard = 
                 "0000000000000000" +
                 "0000000000000000" +
@@ -90,7 +96,6 @@ namespace SapirSudokuTest
                 "0000000000000000" +
                 "0000000000000000" ;
 
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -116,13 +121,17 @@ namespace SapirSudokuTest
                 }
             );
 
+            //Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
+            //Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValidEmpty25X25StringBoard()
         {
+            //Arrange
             String stringBoard =
                 "0000000000000000000000000" +
                 "0000000000000000000000000" +
@@ -150,7 +159,6 @@ namespace SapirSudokuTest
                 "0000000000000000000000000" +
                 "0000000000000000000000000";
 
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -186,13 +194,17 @@ namespace SapirSudokuTest
                 }
             );
 
+            //Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
+            //Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValidEmpty6X6StringBoard()
         {
+            // Arrange
             String stringBoard =
                 "000000" +
                 "000000" +
@@ -200,7 +212,7 @@ namespace SapirSudokuTest
                 "000000" +
                 "000000" +
                 "000000";
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
+
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -214,14 +226,17 @@ namespace SapirSudokuTest
                     {0,0,0, 0,0,0 },
                 }
             );
+            // Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
-
+            // Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValidEmpty15X15StringBoard()
         {
+            // Arrange
             String stringBoard =
                 "000000000000000" +
                 "000000000000000" +
@@ -239,7 +254,6 @@ namespace SapirSudokuTest
                 "000000000000000" +
                 "000000000000000";
 
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -265,13 +279,17 @@ namespace SapirSudokuTest
                 }
             );
 
+            // Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
+            // Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValidEmpty20X20StringBoard()
         {
+            // Arrange
             String stringBoard =
                 "00000000000000000000" +
                 "00000000000000000000" +
@@ -294,7 +312,6 @@ namespace SapirSudokuTest
                 "00000000000000000000" +
                 "00000000000000000000";
 
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -325,7 +342,10 @@ namespace SapirSudokuTest
                 }
             );
 
+            // Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
+            // Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
@@ -343,7 +363,6 @@ namespace SapirSudokuTest
                 "300500000" +
                 "000000200";
 
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -361,13 +380,17 @@ namespace SapirSudokuTest
                 }
             );
 
+            //Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
+            //Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValid16X16StringBoard()
         {
+            // Arrange
             String stringBoard = 
                 "10023400<0600070" +
                 "0080007003009:6;" +
@@ -386,7 +409,6 @@ namespace SapirSudokuTest
                 ";1?900=002000>00" +
                 "0>000;0200=3500<";
 
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -412,13 +434,17 @@ namespace SapirSudokuTest
                 }
             );
 
+            //Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
+            // Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
 
         [TestMethod]
         public void Should_CreateSudoku_When_RecievedAValid6X6StringBoard()
         {
+            //Arrange
             String stringBoard = 
                 "000000" +
                 "000506" +
@@ -427,7 +453,6 @@ namespace SapirSudokuTest
                 "603000" +
                 "000613";
 
-            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
             Sudoku expectedSudoku = new Sudoku(
                 new int[,]
                 {
@@ -442,7 +467,10 @@ namespace SapirSudokuTest
                 }
             );
 
+            //Act
+            Sudoku gottenSudoku = SudokuConvertionsHelper.ConvertStringToSudoku(stringBoard);
 
+            //Assert
             Assert.IsTrue(gottenSudoku.Equals(expectedSudoku));
         }
     }
